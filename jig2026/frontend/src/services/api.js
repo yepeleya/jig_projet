@@ -190,7 +190,15 @@ export class AuthService extends ApiService {
   }
 
   async register(userData) {
-    return this.post('/auth/register', userData)
+    console.log('🔐 AuthService.register appelé avec:', userData)
+    try {
+      const response = await this.post('/auth/register', userData)
+      console.log('📨 Réponse brute de l\'API:', response)
+      return response
+    } catch (error) {
+      console.error('💥 Erreur dans AuthService.register:', error)
+      throw error
+    }
   }
 
   async logout() {

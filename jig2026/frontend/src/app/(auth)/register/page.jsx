@@ -240,21 +240,39 @@ export default function RegisterPage() {
       // Préparer les données sans la confirmation du mot de passe
       const { confirmerMotDePasse, ...dataToSend } = formData
       
+      console.log('📤 Envoi des données d\'inscription:', dataToSend)
       const response = await authService.register(dataToSend)
+      console.log('📥 Réponse reçue:', response)
       
-      if (response.success) {
-        showNotification('success', 'Inscription réussie ! Vous pouvez maintenant vous connecter.')
+      // Vérifier plusieurs formats de réponse possibles
+      if (response && (response.success || response.data || response.user)) {
+        showNotification('success', response.message || 'Inscription réussie ! Vous pouvez maintenant vous connecter.')
         
         // Redirection vers la page de connexion après 2 secondes
         setTimeout(() => {
           router.push('/login')
         }, 2000)
       } else {
-        showNotification('error', response.message || 'Erreur lors de l\'inscription')
+        const errorMessage = response?.message || response?.error || 'Erreur lors de l\'inscription'
+        showNotification('error', errorMessage)
       }
     } catch (error) {
-      console.error('Erreur lors de l\'inscription:', error)
-      showNotification('error', 'Erreur d\'inscription. Veuillez réessayer.')
+      console.error('💥 Erreur lors de l\'inscription:', error)
+      
+      // Afficher un message d'erreur plus détaillé
+      let errorMessage = 'Erreur d\'inscription. Veuillez réessayer.'
+      
+      if (error.message) {
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Impossible de contacter le serveur. Vérifiez votre connexion internet.'
+        } else if (error.message.includes('indisponible')) {
+          errorMessage = 'Le serveur est temporairement indisponible. Réessayez dans quelques instants.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
+      showNotification('error', errorMessage)
     } finally {
       setIsLoading(false)
     }
