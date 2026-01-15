@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
-    "build": "SKIP_ENV_VALIDATION=true next build",
-    "build:vercel": "next build",
+    "build": "next build && next export",
     "start": "next start -p 3002",
-    "lint": "echo 'Linting disabled for production build'",
-    "lint:fix": "echo 'Linting disabled for production build'"
+    "lint": "echo 'Linting disabled'"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.5",
