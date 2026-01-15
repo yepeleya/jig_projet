@@ -45,12 +45,30 @@ app.use(addSecurityHeaders);
 app.use(optimizeFileResponse);
 
 // Configuration CORS complète pour le streaming vidéo
+const allowedOrigins = [
+  'http://localhost:3000',  // Interface jury
+  'http://localhost:3001',  // Interface admin
+  'http://localhost:3002',  // Interface participant
+  process.env.FRONTEND_URL,  // URL frontend depuis .env
+  process.env.DASHBOARD_URL,  // URL dashboard depuis .env
+  process.env.JURY_URL,  // URL jury depuis .env
+  'https://jig-projet-fa2u.vercel.app',  // Production Vercel
+  'https://jig-projet-fa2u-git-main-yepeleyas-projects.vercel.app',  // Vercel Git deployments
+].filter(Boolean);  // Retirer les valeurs undefined
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',  // Interface jury
-    'http://localhost:3001',  // Interface admin
-    'http://localhost:3002'   // Interface participant
-  ],
+  origin: function (origin, callback) {
+    // Permettre les requêtes sans origine (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Vérifier si l'origine est dans la liste ou correspond au pattern Vercel
+    if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      callback(null, true);
+    } else {
+      console.warn('❌ CORS blocked for origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   exposedHeaders: [
     'Content-Range', 
@@ -68,7 +86,7 @@ app.use(cors({
     'Authorization',
     'Cache-Control'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'],
   optionsSuccessStatus: 200
 }));
 
