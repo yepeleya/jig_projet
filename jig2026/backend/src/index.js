@@ -56,17 +56,31 @@ const allowedOrigins = [
   'https://jig-projet-fa2u-git-main-yepeleyas-projects.vercel.app',  // Vercel Git deployments
 ].filter(Boolean);  // Retirer les valeurs undefined
 
+console.log('✅ CORS - Origines autorisées:', allowedOrigins);
+
 app.use(cors({
   origin: function (origin, callback) {
-    // Permettre les requêtes sans origine (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
+    console.log('🔍 CORS - Requête depuis:', origin);
+    
+    // Permettre les requêtes sans origine (mobile apps, curl, Postman, etc.)
+    if (!origin) {
+      console.log('✅ CORS - Requête sans origine autorisée');
+      return callback(null, true);
+    }
     
     // Vérifier si l'origine est dans la liste ou correspond au pattern Vercel
     if (allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      console.log('✅ CORS - Origine autorisée:', origin);
       callback(null, true);
     } else {
-      console.warn('❌ CORS blocked for origin:', origin);
-      callback(new Error('Not allowed by CORS'));
+      console.warn('❌ CORS - Origine bloquée:', origin);
+      // TEMPORAIRE : Autoriser toutes les origines Vercel en production
+      if (process.env.NODE_ENV === 'production' && origin.includes('vercel.app')) {
+        console.log('⚠️ CORS - Origine Vercel autorisée temporairement:', origin);
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     }
   },
   credentials: true,
