@@ -2,7 +2,10 @@
   "name": "jig2026-platform",
   "version": "1.0.0",
   "description": "Plateforme de gestion des projets JIG 2026",
+  "main": "jig2026/backend/src/index.js",
   "scripts": {
+    "start": "cd jig2026/backend && npm install && npx prisma generate && npm start",
+    "build": "cd jig2026/backend && npm install && npx prisma generate",
     "install:all": "npm run install:backend && npm run install:dashboard && npm run install:frontend && npm run install:jury",
     "install:backend": "cd jig2026/backend && npm install",
     "install:dashboard": "cd dashboard && npm install", 
@@ -25,5 +28,21 @@
   },
   "keywords": ["jig2026", "innovation", "competition", "student-projects"],
   "author": "JIG 2026 Team",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "axios": "^1.13.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "prisma": "^6.18.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.12"
+  }
 }

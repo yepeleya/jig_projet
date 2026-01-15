@@ -1,0 +1,12 @@
+[build]
+builder = "nixpacks"
+
+[build.env]
+NODE_VERSION = "18"
+
+[deploy]
+startCommand = "npm start"
+
+[env]
+PORT = { default = "3000" }
+NODE_ENV = { default = "production" }

@@ -1,0 +1,1 @@
+web: cd jig2026/backend && npm install && npx prisma generate && npm start
