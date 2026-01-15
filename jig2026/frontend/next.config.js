@@ -11,9 +11,6 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {},
-  // Pas d'output export pour éviter les problèmes
-  // trailingSlash: true,
-  // distDir: 'out'
 };
 
 module.exports = nextConfig;
