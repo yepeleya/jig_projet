@@ -3,7 +3,12 @@
 import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
 
 // Configuration de l'API
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+
+// S'assurer que l'URL se termine par /api
+if (API_BASE_URL && !API_BASE_URL.endsWith('/api')) {
+  API_BASE_URL = `${API_BASE_URL}/api`
+}
 
 // Classe pour gérer les appels API
 class ApiService {
