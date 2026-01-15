@@ -45,6 +45,7 @@ export default function Header() {
     { name: 'Vote', href: '/voter' },
     { name: 'Classement', href: '/classement' },
     { name: 'Soumettre', href: '/soumettre' },
+    ...(isAuthenticated && user?.role === 'ETUDIANT' ? [{ name: 'Mes Projets', href: '/mes-projets' }] : []),
     ...(isAuthenticated ? [{ name: 'Mes Suivis', href: '/mes-suivis' }] : []),
     { name: 'Contact', href: '/contact' },
   ]
