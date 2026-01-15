@@ -11,8 +11,8 @@ const sizeClasses = {
 
 export default function Logo({ variant = 'red', size = 'md', className = '' }) {
   const logoSrc = variant === 'white' 
-    ? 'http://localhost:5000/uploads/logo/logo_blanc.png'
-    : 'http://localhost:5000/uploads/logo/logo_rouge.png'
+    ? '/logo/logo_blanc.png'
+    : '/logo/logo_rouge.png'
 
   return (
     <div className={`flex items-center ${className}`}>
