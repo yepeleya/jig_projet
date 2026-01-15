@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  swcMinify: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -12,9 +11,9 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {},
-  output: 'export',
-  trailingSlash: true,
-  distDir: 'out'
+  // Pas d'output export pour éviter les problèmes
+  // trailingSlash: true,
+  // distDir: 'out'
 };
 
 module.exports = nextConfig;
