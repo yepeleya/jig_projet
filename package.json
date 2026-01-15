@@ -1,0 +1,29 @@
+{
+  "name": "jig2026-platform",
+  "version": "1.0.0",
+  "description": "Plateforme de gestion des projets JIG 2026",
+  "scripts": {
+    "install:all": "npm run install:backend && npm run install:dashboard && npm run install:frontend && npm run install:jury",
+    "install:backend": "cd jig2026/backend && npm install",
+    "install:dashboard": "cd dashboard && npm install", 
+    "install:frontend": "cd jig2026/frontend && npm install",
+    "install:jury": "cd jig2026/jury && npm install",
+    "build:all": "npm run build:dashboard && npm run build:frontend && npm run build:jury",
+    "build:dashboard": "cd dashboard && npm run build",
+    "build:frontend": "cd jig2026/frontend && npm run build", 
+    "build:jury": "cd jig2026/jury && npm run build",
+    "start:backend": "cd jig2026/backend && npm start",
+    "start:dashboard": "cd dashboard && npm start",
+    "start:frontend": "cd jig2026/frontend && npm start",
+    "start:jury": "cd jig2026/jury && npm start",
+    "dev:backend": "cd jig2026/backend && npm run dev",
+    "dev:dashboard": "cd dashboard && npm run dev",
+    "dev:frontend": "cd jig2026/frontend && npm run dev",
+    "dev:jury": "cd jig2026/jury && npm run dev",
+    "db:setup": "cd jig2026/backend && npx prisma generate && npx prisma migrate deploy",
+    "db:clean": "cd jig2026/backend && node clean-database.js"
+  },
+  "keywords": ["jig2026", "innovation", "competition", "student-projects"],
+  "author": "JIG 2026 Team",
+  "license": "MIT"
+}

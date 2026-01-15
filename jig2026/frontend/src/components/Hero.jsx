@@ -1,0 +1,116 @@
+'use client'
+
+import { useEffect } from 'react'
+import Link from 'next/link'
+import AOS from 'aos'
+
+export default function Hero() {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+      easing: 'ease-out-cubic',
+    })
+  }, [])
+
+  // Fonction pour scroll fluide vers une section
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+  }
+
+  // Fonction pour scroll vers le bas de la page
+  const scrollDown = () => {
+    window.scrollBy({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    })
+  }
+
+  return (
+    <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-jig-primary via-red-600 to-jig-primary overflow-hidden">
+      
+      {/* Motifs décoratifs en arrière-plan */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-24 h-24 bg-white rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-lg animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      <div className="relative z-10 text-center text-white px-4 py-32">
+        
+        {/* Grand logo JIG centré */}
+        <div data-aos="fade-up" data-aos-delay="200" className="mb-8">
+          <div className="inline-flex items-center justify-center w-32 h-32 bg-white rounded-full shadow-2xl mb-6">
+            <span className="text-jig-primary font-black text-4xl">JIG</span>
+          </div>
+          <div className="text-6xl font-black mb-2 tracking-tight">
+            2026
+          </div>
+          <div className="text-xl font-light text-red-100 tracking-widest uppercase">
+            Journée de l&apos;Infographiste
+          </div>
+        </div>
+
+        {/* Titre principal */}
+        <div data-aos="fade-up" data-aos-delay="400" className="max-w-4xl mx-auto mb-8">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
+            Une journée riche en{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-red-200">
+              découvertes
+            </span>
+          </h1>
+          
+          {/* Sous-titre */}
+          <p className="text-xl md:text-2xl lg:text-3xl font-light text-red-100 leading-relaxed max-w-3xl mx-auto">
+            Photographie, PAO, Animations 2D et 3D, et plus encore
+          </p>
+        </div>
+
+        {/* Boutons d&apos;action */}
+        <div data-aos="fade-up" data-aos-delay="600" className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12">
+          <button 
+            onClick={() => scrollToSection('programme')}
+            className="bg-white text-jig-primary font-semibold px-8 py-4 rounded-full hover:bg-red-50 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 group"
+          >
+            <span className="mr-2">Découvrir le programme</span>
+            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </button>
+          
+          <Link href="/soumettre">
+            <button className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-jig-primary transition-all duration-300 shadow-lg">
+              Soumettre un projet
+            </button>
+          </Link>
+        </div>
+
+        {/* Indicateur de scroll */}
+        <div data-aos="fade-up" data-aos-delay="800" className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <button 
+            onClick={scrollDown}
+            className="flex flex-col items-center text-red-200 hover:text-white transition-colors cursor-pointer group"
+          >
+            <span className="text-sm mb-2 animate-pulse group-hover:animate-none">Faire défiler</span>
+            <div className="w-px h-8 bg-red-200 animate-bounce group-hover:bg-white"></div>
+          </button>
+        </div>
+
+      </div>
+
+      {/* Vague décorative en bas */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-16 fill-current text-gray-50">
+          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25"></path>
+          <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5"></path>
+          <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z"></path>
+        </svg>
+      </div>
+
+    </section>
+  )
+}

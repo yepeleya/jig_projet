@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  nom        String
+  prenom     String
+  email      String   @unique
+  motDePasse String
+  role       Role     @default(UTILISATEUR)
+  telephone  String?
+  ecole      String?
+  filiere    String?
+  niveau     String?
+  avatar     String?  // Chemin vers la photo de profil
+  projets    Projet[]
+  votes      Vote[]
+  messages   Contact[]
+  suiviProjets ProjetSuivi[] // Nouvelles actions de suivi
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Jury {
+  id         Int      @id @default(autoincrement())
+  nom        String
+  prenom     String
+  email      String   @unique
+  motDePasse String
+  specialite String?
+  bio        String?  @db.Text
+  photo      String?
+  commentaires Commentaire[]
+  votes        Vote[]
+  suiviProjets ProjetSuivi[] // Nouvelles actions de suivi par le jury
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Projet {
+  id          Int          @id @default(autoincrement())
+  titre       String
+  description String       @db.Text
+  categorie   String
+  fichier     String?
+  image       String?
+  statut      StatutProjet @default(EN_ATTENTE)
+  user        User?        @relation(fields: [userId], references: [id])
+  userId      Int?
+  votes       Vote[]
+  commentaires Commentaire[]
+  suiviActivites ProjetSuivi[] // Nouveau suivi des activités du projet
+  moyenneVote Float?       @default(0)
+  totalVotes  Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  valeur    Float
+  typeVote  TypeVote
+  projetId  Int
+  projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
+  userId    Int?
+  juryId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  jury      Jury?    @relation(fields: [juryId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([projetId, userId])
+  @@unique([projetId, juryId])
+}
+
+model Commentaire {
+  id        Int      @id @default(autoincrement())
+  contenu   String   @db.Text
+  projetId  Int
+  juryId    Int
+  projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
+  jury      Jury     @relation(fields: [juryId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Programme {
+  id          Int      @id @default(autoincrement())
+  titre       String
+  description String   @db.Text
+  dateDebut   DateTime
+  dateFin     DateTime
+  lieu        String
+  type        String
+  intervenant String?
+  image       String?
+  ordre       Int      @default(0)
+  actif       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Galerie {
+  id          Int      @id @default(autoincrement())
+  titre       String
+  description String?  @db.Text
+  image       String
+  categorie   String?
+  ordre       Int      @default(0)
+  actif       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  email     String
+  sujet     String
+  message   String   @db.Text
+  statut    StatutContact @default(NOUVEAU)
+  reponse   String?  @db.Text
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Configuration {
+  id    Int    @id @default(autoincrement())
+  cle   String @unique
+  valeur String @db.Text
+  type   String @default("string")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  type        TypeNotification
+  titre       String
+  message     String           @db.Text
+  isRead      Boolean          @default(false)
+  entityId    Int?             // ID de l'entité concernée (User, Projet, Vote, etc.)
+  entityType  String?          // Type d'entité ("user", "projet", "vote", etc.)
+  metadata    String?          @db.Text // JSON pour données supplémentaires
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+enum Role {
+  ADMIN
+  JURY
+  ETUDIANT
+  UTILISATEUR
+}
+
+enum TypeVote {
+  JURY
+  ETUDIANT
+  UTILISATEUR
+}
+
+enum StatutProjet {
+  EN_ATTENTE
+  EN_COURS
+  EVALUE
+  TERMINE
+  APPROUVE
+  REJETE
+  SUSPENDU
+}
+
+enum StatutContact {
+  NOUVEAU
+  EN_COURS
+  RESOLU
+  FERME
+}
+
+enum TypeNotification {
+  NOUVEAU_UTILISATEUR
+  NOUVEAU_JURY
+  NOUVEAU_PROJET
+  NOUVEAU_VOTE
+  PROJET_APPROUVE
+  PROJET_REJETE
+  NOUVEAU_COMMENTAIRE
+  NOUVEAU_CONTACT
+}
+
+// Nouvelle table pour le suivi des projets
+model ProjetSuivi {
+  id           Int           @id @default(autoincrement())
+  projetId     Int
+  userId       Int?          // L'utilisateur qui fait l'action (admin, jury, etc.)
+  juryId       Int?          // Si c'est un jury qui fait l'action
+  typeReaction TypeReaction
+  message      String        @db.Text
+  metadata     String?       @db.Text // JSON pour données supplémentaires (score, etc.)
+  visible      Boolean       @default(true) // Si visible pour l'étudiant
+  
+  // Relations
+  projet       Projet        @relation(fields: [projetId], references: [id], onDelete: Cascade)
+  user         User?         @relation(fields: [userId], references: [id])
+  jury         Jury?         @relation(fields: [juryId], references: [id])
+  
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("projet_suivi")
+}
+
+enum TypeReaction {
+  COMMENTAIRE
+  VOTE
+  MODIFICATION
+  AVIS_JURY
+  VALIDATION
+  REJET
+  DEMANDE_MODIFICATION
+  APPROBATION
+  NOTE_INTERNE
+}
+
+// Gestion du contenu dynamique du site
+model ContenuSite {
+  id          Int      @id @default(autoincrement())
+  cle         String   @unique // Identifiant unique (ex: "hero-title", "about-description")
+  titre       String   // Titre descriptif pour l'admin
+  contenu     String   @db.Text // Le contenu lui-même
+  type        TypeContenu @default(TEXT) // Type de contenu
+  page        String   // Page concernée (home, about, contact, etc.)
+  section     String   // Section de la page (hero, about, footer, etc.)
+  description String?  @db.Text // Description pour aider l'admin
+  ordre       Int      @default(0) // Ordre d'affichage
+  actif       Boolean  @default(true) // Si le contenu est activé
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contenu_site")
+}
+
+enum TypeContenu {
+  TEXT     // Texte simple
+  HTML     // HTML avec formatage
+  MARKDOWN // Markdown
+  IMAGE    // URL d'image
+  JSON     // Données structurées (ex: liste, config)
+}

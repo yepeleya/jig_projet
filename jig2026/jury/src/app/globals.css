@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Masquer les erreurs d'hydratation des extensions de navigateur en développement */
+[data-nextjs-hydration-overlay] {
+  display: none !important;
+}
+
+/* Masquer spécifiquement les messages d'erreur d'hydratation liés aux extensions */
+[data-overlay-portal] div[data-nextjs-dialog-overlay] {
+  display: none !important;
+}
+
+/* Masquer les erreurs de développement Next.js */
+[data-nextjs-toast-errors] {
+  display: none !important;
+}
+
+/* Styles pour éviter les décalages d'hydratation */
+* {
+  box-sizing: border-box;
+}
+
+/* Optimisation des polices pour éviter les problèmes d'hydratation */
+html {
+  font-display: swap;
+}
