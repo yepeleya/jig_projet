@@ -268,7 +268,11 @@ app.get('/health', (req, res) => {
     success: true,
     message: 'API JIG2026 is running',
     timestamp: new Date().toISOString(),
-    version: '2.0.0' // Version avec CORS amélioré
+    version: '2.0.1', // CORS fix for jig-projet-ea3m.vercel.app
+    cors: {
+      enabled: true,
+      allowedOrigins: ['jig-projet-ea3m.vercel.app', 'vercel.app wildcard']
+    }
   });
 });
 
