@@ -31,6 +31,14 @@ import { errorHandler, notFound } from "./middlewares/errorHandler.middleware.js
 
 dotenv.config();
 
+// Debug: Vérifier si DATABASE_URL est accessible
+console.log('🔍 DATABASE_URL présente:', !!process.env.DATABASE_URL);
+if (process.env.DATABASE_URL) {
+  console.log('✅ DATABASE_URL configurée (longueur:', process.env.DATABASE_URL.length, 'caractères)');
+} else {
+  console.error('❌ DATABASE_URL non trouvée dans les variables d\'environnement');
+}
+
 const app = express();
 
 // Middlewares de sécurité et utilitaires
