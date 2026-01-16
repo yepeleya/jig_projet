@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:ycSrmnSURYHCiUwNHXPvbrPGAKnDtYrV@metro.proxy.rlwy.net:49845/jig2026_db"
+  url      = "mysql://root:ycSrmnSURYHCiUwNHXPvbrPGAKnDtYrV@metro.proxy.rlwy.net:49845/railway"
 }
 
 model User {
@@ -25,6 +25,8 @@ model User {
   suiviProjets ProjetSuivi[] // Nouvelles actions de suivi
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  
+  @@map("user")
 }
 
 model Jury {
@@ -41,6 +43,8 @@ model Jury {
   suiviProjets ProjetSuivi[] // Nouvelles actions de suivi par le jury
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  
+  @@map("jury")
 }
 
 model Projet {
@@ -60,6 +64,8 @@ model Projet {
   totalVotes  Int          @default(0)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  
+  @@map("projet")
 }
 
 model Vote {
@@ -76,6 +82,7 @@ model Vote {
 
   @@unique([projetId, userId])
   @@unique([projetId, juryId])
+  @@map("vote")
 }
 
 model Commentaire {
@@ -86,6 +93,8 @@ model Commentaire {
   projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
   jury      Jury     @relation(fields: [juryId], references: [id])
   createdAt DateTime @default(now())
+  
+  @@map("commentaire")
 }
 
 model Programme {
@@ -102,6 +111,8 @@ model Programme {
   actif       Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  @@map("programme")
 }
 
 model Galerie {
@@ -114,6 +125,8 @@ model Galerie {
   actif       Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  @@map("galerie")
 }
 
 model Contact {
@@ -128,6 +141,8 @@ model Contact {
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@map("contact")
 }
 
 model Configuration {
@@ -137,6 +152,8 @@ model Configuration {
   type   String @default("string")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@map("configuration")
 }
 
 model Notification {
@@ -150,6 +167,8 @@ model Notification {
   metadata    String?          @db.Text // JSON pour données supplémentaires
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  
+  @@map("notification")
 }
 
 enum Role {
