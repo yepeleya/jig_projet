@@ -52,7 +52,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,  // URL frontend depuis .env
   process.env.DASHBOARD_URL,  // URL dashboard depuis .env
   process.env.JURY_URL,  // URL jury depuis .env
-  'https://jig-projet-fa2u.vercel.app',  // Production Vercel
+  'https://jig-projet-fa2u.vercel.app',  // Ancien Vercel
+  'https://jig-projet-ea3m.vercel.app',  // Nouveau Vercel
   'https://jig-projet-fa2u-git-main-yepeleyas-projects.vercel.app',  // Vercel Git deployments
 ].filter(Boolean);  // Retirer les valeurs undefined
 
@@ -103,6 +104,9 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'HEAD', 'PATCH'],
   optionsSuccessStatus: 200
 }));
+
+// Handler explicite pour preflight CORS (OPTIONS)
+app.options('*', cors());
 
 // Middleware global pour ajouter Accept-Ranges sur toutes les réponses
 app.use((req, res, next) => {
