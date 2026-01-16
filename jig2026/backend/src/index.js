@@ -105,9 +105,6 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// Handler explicite pour preflight CORS (OPTIONS)
-app.options('*', cors());
-
 // Middleware global pour ajouter Accept-Ranges sur toutes les réponses
 app.use((req, res, next) => {
   res.header('Accept-Ranges', 'bytes');
