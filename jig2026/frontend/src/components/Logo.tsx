@@ -27,32 +27,18 @@ export default function Logo({ variant = 'red', size = 'md', className = '' }: L
   }
 
   const logoSrc = variant === 'white' 
-    ? '/uploads/logo/logo_blanc.png'
-    : '/uploads/logo/logo_rouge.png'
-
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+    ? '/logo/logo_blanc.png'
+    : '/logo/logo_rouge.png'
 
   return (
     <div className={`flex items-center ${className}`}>
       <Image
-        src={`${backendUrl}${logoSrc}`}
+        src={logoSrc}
         alt="JIG 2026 - ISTC Polytechnique"
-        width={80}
-        height={80}
+        width={300}
+        height={120}
         className={`${sizeClasses[size]} object-contain`}
         priority
-        onError={(e) => {
-          // Fallback en cas d'erreur de chargement
-          const target = e.target as HTMLImageElement
-          target.style.display = 'none'
-          if (target.parentElement) {
-            target.parentElement.innerHTML = `
-              <div class="flex items-center justify-center ${sizeClasses[size]} bg-gradient-to-r from-red-600 to-red-800 text-white rounded-lg font-bold text-lg">
-                JIG
-              </div>
-            `
-          }
-        }}
       />
     </div>
   )
