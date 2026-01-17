@@ -178,7 +178,7 @@ export class AuthService extends ApiService {
   async login(credentials) {
     console.log('🔐 AuthService.login appelé avec:', credentials)
     try {
-      const response = await this.post('/api/auth/login', credentials)
+      const response = await this.post('/auth/login', credentials)
       console.log('📨 Réponse brute de l\'API:', response)
       
       if (response.success && response.data && response.data.token) {
@@ -197,7 +197,7 @@ export class AuthService extends ApiService {
   async register(userData) {
     console.log('🔐 AuthService.register appelé avec:', userData)
     try {
-      const response = await this.post('/api/auth/register', userData)
+      const response = await this.post('/auth/register', userData)
       console.log('📨 Réponse brute de l\'API:', response)
       return response
     } catch (error) {
@@ -216,11 +216,11 @@ export class AuthService extends ApiService {
   }
 
   async getProfile() {
-    return this.get('/api/auth/profile')
+    return this.get('/auth/profile')
   }
 
   async verifyToken() {
-    return this.get('/api/auth/verify')
+    return this.get('/auth/verify')
   }
 
   getCurrentUser() {
@@ -265,31 +265,31 @@ export class ProjetService extends ApiService {
   }
 
   async getProjetById(id) {
-    return this.get(`/api/projets/${id}`)
+    return this.get(`/projets/${id}`)
   }
 
   async createProjet(formData) {
-    return this.uploadFile('/api/projets', formData)
+    return this.uploadFile('/projets', formData)
   }
 
   async soumettreProjet(formData) {
-    return this.uploadFile('/api/projets/soumettre', formData)
+    return this.uploadFile('/projets/soumettre', formData)
   }
 
   async updateProjet(id, formData) {
-    return this.uploadFile(`/api/projets/${id}`, formData)
+    return this.uploadFile(`/projets/${id}`, formData)
   }
 
   async deleteProjet(id) {
-    return this.delete(`/api/projets/${id}`)
+    return this.delete(`/projets/${id}`)
   }
 
   async getProjetsByUser(userId) {
-    return this.get(`/api/projets/user/${userId}`)
+    return this.get(`/projets/user/${userId}`)
   }
 
   async getCategories() {
-    return this.get('/api/projets/categories')
+    return this.get('/projets/categories')
   }
 }
 
@@ -324,100 +324,100 @@ export class VoteService extends ApiService {
     }
 
     console.log('📨 Données de vote envoyées:', voteData)
-    return this.post('/api/votes', voteData)
+    return this.post('/votes', voteData)
   }
 
   async getVotesByProjet(projetId) {
-    return this.get(`/api/votes/${projetId}`)
+    return this.get(`/votes/${projetId}`)
   }
 
   async getMyVotes() {
-    return this.get('/api/votes/my-votes')
+    return this.get('/votes/my-votes')
   }
 
   async getClassement(categorie = null) {
-    const endpoint = categorie ? `/api/votes/classement?categorie=${categorie}` : '/api/votes/classement'
+    const endpoint = categorie ? `/votes/classement?categorie=${categorie}` : '/votes/classement'
     return this.get(endpoint)
   }
 
   async getResults() {
-    return this.get('/api/votes/results')
+    return this.get('/votes/results')
   }
 
   async getFinalResults() {
-    return this.get('/api/votes/final-results')
+    return this.get('/votes/final-results')
   }
 
   async getAllVotes() {
-    return this.get('/api/votes')
+    return this.get('/votes')
   }
 
   async getScores() {
-    return this.get('/api/votes/scores/all')
+    return this.get('/votes/scores/all')
   }
 
   async canVote(projetId) {
-    return this.get(`/api/votes/can-vote/${projetId}`)
+    return this.get(`/votes/can-vote/${projetId}`)
   }
 }
 
 export class CommentaireService extends ApiService {
   async addComment(projetId, contenu) {
-    return this.post('/api/commentaires', { projetId, contenu })
+    return this.post('/commentaires', { projetId, contenu })
   }
 
   async getCommentsByProjet(projetId) {
-    return this.get(`/api/commentaires/projet/${projetId}`)
+    return this.get(`/commentaires/projet/${projetId}`)
   }
 
   async updateComment(id, contenu) {
-    return this.patch(`/api/commentaires/${id}`, { contenu })
+    return this.patch(`/commentaires/${id}`, { contenu })
   }
 
   async deleteComment(id) {
-    return this.delete(`/api/commentaires/${id}`)
+    return this.delete(`/commentaires/${id}`)
   }
 }
 
 export class ContactService extends ApiService {
   async sendMessage(contactData) {
-    return this.post('/api/contact', contactData)
+    return this.post('/contact', contactData)
   }
 
   async getAllMessages() {
-    return this.get('/api/contact')
+    return this.get('/contact')
   }
 
   async updateMessage(id, data) {
-    return this.patch(`/api/contact/${id}`, data)
+    return this.patch(`/contact/${id}`, data)
   }
 }
 
 export class GalerieService extends ApiService {
   async getAllImages() {
-    return this.get('/api/galerie')
+    return this.get('/galerie')
   }
 
   async addImage(formData) {
-    return this.uploadFile('/api/galerie', formData)
+    return this.uploadFile('/galerie', formData)
   }
 
   async updateImage(id, data) {
-    return this.patch(`/api/galerie/${id}`, data)
+    return this.patch(`/galerie/${id}`, data)
   }
 
   async deleteImage(id) {
-    return this.delete(`/api/galerie/${id}`)
+    return this.delete(`/galerie/${id}`)
   }
 }
 
 export class AccessControlService extends ApiService {
   async canAccessPage(page) {
-    return this.get(`/api/access-control/can-access/${page}`)
+    return this.get(`/access-control/can-access/${page}`)
   }
 
   async getContestStatus() {
-    return this.get('/api/access-control/status')
+    return this.get('/access-control/status')
   }
 
   async validateRanking(token) {
@@ -426,7 +426,7 @@ export class AccessControlService extends ApiService {
     localStorage.setItem('jig2026_token', token)
     
     try {
-      return this.post('/api/access-control/validate-ranking', {})
+      return this.post('/access-control/validate-ranking', {})
     } finally {
       // Restaurer l'ancien token
       if (oldToken) {
@@ -440,46 +440,46 @@ export class AccessControlService extends ApiService {
 
 export class ProjetSuiviService extends ApiService {
   async getMesSuivis() {
-    return this.get('/api/projet-suivi/mes-suivis')
+    return this.get('/projet-suivi/mes-suivis')
   }
 
   async getSuiviProjet(projetId, includeHidden = false) {
     const params = includeHidden ? '?includeHidden=true' : ''
-    return this.get(`/api/projet-suivi/projet/${projetId}${params}`)
+    return this.get(`/projet-suivi/projet/${projetId}${params}`)
   }
 
   async ajouterRemarque(data) {
-    return this.post('/api/projet-suivi/ajouter', data)
+    return this.post('/projet-suivi/ajouter', data)
   }
 
   async masquerSuivi(suiviId) {
-    return this.patch(`/api/projet-suivi/${suiviId}/masquer`, {})
+    return this.patch(`/projet-suivi/${suiviId}/masquer`, {})
   }
 
   async supprimerSuivi(suiviId) {
-    return this.delete(`/api/projet-suivi/${suiviId}`)
+    return this.delete(`/projet-suivi/${suiviId}`)
   }
 }
 
 export class ProgrammeService extends ApiService {
   async getAllProgrammes() {
-    return this.get('/api/programmes')
+    return this.get('/programmes')
   }
 
   async getProgrammeById(id) {
-    return this.get(`/api/programmes/${id}`)
+    return this.get(`/programmes/${id}`)
   }
 
   async createProgramme(data) {
-    return this.post('/api/programmes', data)
+    return this.post('/programmes', data)
   }
 
   async updateProgramme(id, data) {
-    return this.patch(`/api/programmes/${id}`, data)
+    return this.patch(`/programmes/${id}`, data)
   }
 
   async deleteProgramme(id) {
-    return this.delete(`/api/programmes/${id}`)
+    return this.delete(`/programmes/${id}`)
   }
 }
 
