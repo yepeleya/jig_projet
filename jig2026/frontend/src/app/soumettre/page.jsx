@@ -287,11 +287,23 @@ export default function SoumettrePage() {
         
         console.log('❌ Erreur soumission:', {
           status: response.status,
-          result: result
+          result: result,
+          message: result.error || result.message,
+          code: result.code
         })
         
         // Gestion spécifique de l'expiration du token
         if (response.status === 403 || response.status === 401) {
+          console.log('❌ Erreur d\'autorisation:', result)
+          
+          // Si c'est une erreur de rôle, ne pas déconnecter
+          if (result.code === 'ROLE_FORBIDDEN') {
+            showNotification('error', result.error || 'Vous n\'avez pas les permissions nécessaires')
+            setIsSubmitting(false)
+            setUploadProgress(0)
+            return
+          }
+          
           console.log('Token expiré ou invalide, redirection vers la connexion')
           showNotification('error', 'Votre session a expiré. Redirection vers la page de connexion...')
           
