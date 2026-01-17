@@ -139,20 +139,22 @@ export class AuthService {
 
   // Générer un token JWT
   static generateToken(user) {
+    const secret = process.env.JWT_SECRET || 'jig2026_super_secret_key_production_railway_xyz123ABC'
     return jwt.sign(
       {
         id: user.id,
         email: user.email,
         role: user.role
       },
-      process.env.JWT_SECRET,
+      secret,
       { expiresIn: '7d' }
     )
   }
 
   // Vérifier un token
   static verifyToken(token) {
-    return jwt.verify(token, process.env.JWT_SECRET)
+    const secret = process.env.JWT_SECRET || 'jig2026_super_secret_key_production_railway_xyz123ABC'
+    return jwt.verify(token, secret)
   }
 
   // Changer le mot de passe

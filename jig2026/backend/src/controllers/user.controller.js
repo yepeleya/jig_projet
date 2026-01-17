@@ -22,7 +22,8 @@ export const connexion = async (req, res) => {
     if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
     const valid = await bcrypt.compare(motDePasse, user.motDePasse);
     if (!valid) return res.status(401).json({ message: "Mot de passe incorrect" });
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const secret = process.env.JWT_SECRET || 'jig2026_super_secret_key_production_railway_xyz123ABC';
+    const token = jwt.sign({ id: user.id, role: user.role }, secret, { expiresIn: "7d" });
     res.json({ token, user });
   } catch (error) {
     res.status(500).json({ error: error.message });
