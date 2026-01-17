@@ -240,8 +240,8 @@ export default function SoumettrePage() {
           reject(new Error('Erreur réseau lors de l\'upload'))
         })
         
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-        xhr.open('POST', `${apiUrl}/projets/soumettre`)
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+        xhr.open('POST', `${apiUrl}/api/projets/soumettre`)
         
         // Utiliser le service API pour récupérer le token
         const token = apiService.auth.getToken()

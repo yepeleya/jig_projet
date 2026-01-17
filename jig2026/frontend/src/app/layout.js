@@ -1,15 +1,18 @@
-import './globals.css'
+'use client'
 
-export const metadata = {
-  title: 'JIG 2026',
-  description: 'Concours Innovation et Génie Étudiant'
-}
+import './globals.css'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import AuthInitializer from '@/components/AuthInitializer'
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body suppressHydrationWarning={true}>
+        <AuthInitializer />
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   )

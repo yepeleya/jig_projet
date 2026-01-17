@@ -35,18 +35,38 @@ import projetSuiviRoutes from "./routes/projet-suivi.routes.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.middleware.js";
 
 // Vérifications critiques au démarrage
-if (!process.env.DATABASE_URL && !process.env.RAILWAY_ENVIRONMENT) {
-  console.error('❌ DATABASE_URL manquante (mode local uniquement)');
-}
-
-if (!process.env.JWT_SECRET && !process.env.RAILWAY_ENVIRONMENT) {
-  console.error('❌ JWT_SECRET manquante (mode local uniquement)');
-}
-
-// Debug: Vérifier les variables d'environnement
+console.log('🔍 =================================');
+console.log('🔍 VÉRIFICATION VARIABLES CRITIQUES');
+console.log('🔍 =================================');
 console.log('🔍 DATABASE_URL présente:', !!process.env.DATABASE_URL);
 console.log('🔍 JWT_SECRET présente:', !!process.env.JWT_SECRET);
 console.log('🔍 RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT || 'local');
+
+if (!process.env.DATABASE_URL) {
+  console.error('❌ =====================================================');
+  console.error('❌ ERREUR CRITIQUE : DATABASE_URL manquante !');
+  console.error('❌ =====================================================');
+  console.error('❌ Le backend ne peut PAS fonctionner sans BDD');
+  console.error('❌ Railway: Ajouter MySQL Plugin → Variables d\'env');
+  console.error('❌ Exemple: mysql://user:password@host:port/database');
+  console.error('❌ =====================================================');
+  
+  // En production, ne pas démarrer sans BDD
+  if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+    console.error('💥 ARRÊT FORCÉ - Impossible de continuer sans DATABASE_URL');
+    process.exit(1);
+  } else {
+    console.warn('⚠️  Mode local - Continuer sans BDD (tests uniquement)');
+  }
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET manquante');
+  if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+    console.error('💥 ARRÊT FORCÉ - Impossible de continuer sans JWT_SECRET');
+    process.exit(1);
+  }
+}
 
 const app = express();
 

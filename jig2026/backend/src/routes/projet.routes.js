@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import prisma from "../utils/prismaClient.js";
 import { soumettreProjet, getProjets, getProjetsPublics } from "../controllers/projet.controller.js";
 import { authenticateToken } from "../middlewares/auth.middleware.js";
 
@@ -99,6 +100,110 @@ router.get("/", authenticateToken, getProjets); // Protégé par authentificatio
 
 // Route publique pour les projets approuvés (pour le vote public)
 router.get("/public", getProjetsPublics); // Accès public aux projets approuvés uniquement
+
+// Route pour récupérer les projets d'un utilisateur spécifique
+// Support à la fois /user/:id ET /user/:userId pour compatibilité frontend
+router.get("/user/:userId", authenticateToken, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log('🔍 Récupération projets pour user ID:', userId);
+    
+    // Vérifier que l'utilisateur demande ses propres projets ou est admin
+    if (req.user.id !== parseInt(userId) && req.user.role !== 'ADMIN') {
+      console.log('❌ Accès refusé - User ID:', req.user.id, 'demandé:', userId);
+      return res.status(403).json({
+        success: false,
+        error: "Accès refusé"
+      });
+    }
+
+    const projets = await prisma.projet.findMany({
+      where: { userId: parseInt(userId) },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            role: true,
+            ecole: true,
+            filiere: true,
+            niveau: true
+          }
+        }
+      }
+    });
+
+    console.log(`✅ ${projets.length} projets trouvés pour user ${userId}`);
+
+    res.json({
+      success: true,
+      data: projets
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur récupération projets utilisateur:', error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de la récupération des projets"
+    });
+  }
+});
+
+// Route alternative pour compatibilité frontend (même logique)
+router.get("/user/:id", authenticateToken, async (req, res) => {
+  // Rediriger vers la route principale avec userId
+  req.params.userId = req.params.id;
+  // Réutiliser la même logique que ci-dessus
+  try {
+    const { id } = req.params;
+    console.log('🔍 Récupération projets pour user ID (route alternative):', id);
+    
+    // Vérifier que l'utilisateur demande ses propres projets ou est admin
+    if (req.user.id !== parseInt(id) && req.user.role !== 'ADMIN') {
+      console.log('❌ Accès refusé - User ID:', req.user.id, 'demandé:', id);
+      return res.status(403).json({
+        success: false,
+        error: "Accès refusé"
+      });
+    }
+
+    const projets = await prisma.projet.findMany({
+      where: { userId: parseInt(id) },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            role: true,
+            ecole: true,
+            filiere: true,
+            niveau: true
+          }
+        }
+      }
+    });
+
+    console.log(`✅ ${projets.length} projets trouvés pour user ${id}`);
+
+    res.json({
+      success: true,
+      data: projets
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur récupération projets utilisateur:', error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de la récupération des projets"
+    });
+  }
+});
 
 // Route pour mettre à jour le statut d'un projet
 router.patch("/:id/statut", authenticateToken, async (req, res) => {

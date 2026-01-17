@@ -378,17 +378,30 @@ export const getProjets = async (req, res) => {
 // Route publique pour les projets approuvés (utilisée pour le vote public)
 export const getProjetsPublics = async (req, res) => {
   try {
-    console.log('📋 Récupération des projets publics (approuvés)');
+    console.log('📋 Récupération des projets publics');
     
-    // Ajouter des filtres supplémentaires si fournis
     const { categorie } = req.query;
     const whereClause = {};
+    
     if (categorie) {
       whereClause.categorie = categorie;
+      console.log('🔍 Filtre par catégorie:', categorie);
     }
 
-    // SOLUTION TEMPORAIRE : retourner TOUS les projets pour débloquer la page
+    // DEBUG: Vérifier d'abord tous les projets
+    const totalProjets = await prisma.projet.count();
+    console.log(`🔍 Total projets en BDD:`, totalProjets);
+
+    // DEBUG: Vérifier les statuts présents
+    const statutsPresents = await prisma.projet.groupBy({
+      by: ['statut'],
+      _count: true
+    });
+    console.log('🔍 Statuts présents dans la BDD:', statutsPresents);
+
+    // Récupération SANS filtre de statut pour debug
     const projets = await prisma.projet.findMany({
+      where: whereClause,
       orderBy: {
         createdAt: 'desc'
       },
@@ -404,12 +417,28 @@ export const getProjetsPublics = async (req, res) => {
       }
     });
 
-    console.log(`✅ ${projets.length} projets publics trouvés`);
+    console.log(`✅ ${projets.length} projets publics trouvés (tous statuts confondus)`);
+    
+    if (projets.length > 0) {
+      console.log('🔍 Exemple de projet trouvé:', {
+        id: projets[0].id,
+        titre: projets[0].titre,
+        statut: projets[0].statut,
+        categorie: projets[0].categorie
+      });
+    }
 
-    // Enrichir avec les données utilisateur et les votes
     const projetsEnrichis = await enrichirProjets(projets);
 
-    res.json({ success: true, data: projetsEnrichis });
+    res.json({ 
+      success: true, 
+      data: projetsEnrichis,
+      debug: {
+        totalInDB: totalProjets,
+        found: projets.length,
+        statuts: statutsPresents
+      }
+    });
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des projets publics:', error);
     res.status(500).json({ success: false, error: error.message });
