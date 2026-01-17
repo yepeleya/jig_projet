@@ -98,7 +98,14 @@ export default function LoginPage() {
         // Sauvegarder dans le store Zustand
         setAuth(response.data.user, response.data.token)
         
-        // Redirection selon le rôle
+        // Vérifier que le store est bien mis à jour
+        console.log('✅ Store mis à jour, vérification...')
+        setTimeout(() => {
+          const stored = localStorage.getItem('jig-auth-storage')
+          console.log('📦 Store après setAuth:', stored)
+        }, 100)
+        
+        // Redirection selon le rôle avec délai suffisant pour persist
         setTimeout(() => {
           switch (response.data.user.role) {
             case 'ADMIN':
