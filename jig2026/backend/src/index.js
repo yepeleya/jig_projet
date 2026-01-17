@@ -39,6 +39,14 @@ if (process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL non trouvée dans les variables d\'environnement');
 }
 
+// Debug: Vérifier si JWT_SECRET est accessible
+console.log('🔍 JWT_SECRET présente:', !!process.env.JWT_SECRET);
+if (process.env.JWT_SECRET) {
+  console.log('✅ JWT_SECRET configurée (longueur:', process.env.JWT_SECRET.length, 'caractères)');
+} else {
+  console.error('❌ JWT_SECRET non trouvée dans les variables d\'environnement');
+}
+
 const app = express();
 
 // Middlewares de sécurité et utilitaires
