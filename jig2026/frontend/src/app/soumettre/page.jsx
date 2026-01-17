@@ -207,7 +207,12 @@ export default function SoumettrePage() {
 
       console.log('🚀 Données du formulaire:', data)
       console.log('📁 Fichier sélectionné:', selectedFile)
-      console.log('🔗 URL de soumission:', `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/projets/soumettre`)
+      
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const backendUrl = apiBaseUrl.replace('/api', '')
+      const submissionUrl = `${backendUrl}/api/projets/soumettre`
+      
+      console.log('🔗 URL de soumission:', submissionUrl)
       
       // Envoi à l'API backend avec gestion automatique du token et de l'expiration
       const response = await new Promise((resolve, reject) => {
@@ -241,8 +246,7 @@ export default function SoumettrePage() {
           reject(new Error('Erreur réseau lors de l\'upload'))
         })
         
-        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
-        xhr.open('POST', `${apiUrl}/api/projets/soumettre`)
+        xhr.open('POST', submissionUrl)
         
         // Utiliser le service API pour récupérer le token
         const token = apiService.auth.getToken()
