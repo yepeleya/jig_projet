@@ -9,6 +9,7 @@ interface User {
   email: string
   role: 'ADMIN' | 'JURY' | 'ETUDIANT'
   telephone?: string
+  ecole?: string
   filiere?: string
   niveau?: string
 }
@@ -17,6 +18,7 @@ interface AuthState {
   user: User | null
   token: string | null
   isAuthenticated: boolean
+  hasHydrated: boolean
   setAuth: (user: User, token: string) => void
   logout: () => void
   initAuth: () => void
@@ -28,6 +30,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
+      hasHydrated: false,
       
       setAuth: (user: User, token: string) => {
         // Sauvegarder dans le service API aussi
@@ -59,7 +62,10 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated
-      })
+      }),
+      onRehydrateStorage: () => () => {
+        useAuthStore.setState({ hasHydrated: true })
+      }
     }
   )
 )

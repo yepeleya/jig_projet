@@ -35,7 +35,7 @@ import apiServices from '@/services/api'
 const apiService = apiServices
 
 export default function SoumettrePage() {
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, hasHydrated } = useAuthStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -44,7 +44,6 @@ export default function SoumettrePage() {
   const [showPreview, setShowPreview] = useState(false)
   const [isDraft, setIsDraft] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [isHydrated, setIsHydrated] = useState(false)
   const { notification, showNotification, hideNotification } = useNotification()
 
   // Nouveau système de contrôle d'accès
@@ -53,13 +52,9 @@ export default function SoumettrePage() {
   // Vérification des permissions
   const canSubmit = canSubmitProject(user)
   
-  // Attendre l'hydratation du store avant de vérifier l'auth
   useEffect(() => {
-    setIsHydrated(true)
-  }, [])
-  
-  useEffect(() => {
-    if (!isHydrated) return // Ne rien faire avant hydratation
+    // Attendre que le store soit hydraté avant de vérifier l'auth
+    if (!hasHydrated) return
     
     if (!isAuthenticated) {
       showNotification('error', 'Vous devez être connecté pour soumettre un projet.')
@@ -70,7 +65,7 @@ export default function SoumettrePage() {
       showNotification('error', getPermissionMessage('submit_project'))
       return
     }
-  }, [isAuthenticated, canSubmit, showNotification, isHydrated])
+  }, [isAuthenticated, canSubmit, showNotification, hasHydrated])
 
   const {
     register,
