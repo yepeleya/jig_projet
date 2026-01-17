@@ -183,7 +183,7 @@ export default function SoumettrePage() {
     if (!isAuthenticated || !user) {
       showNotification('warning', 'Vous devez être connecté pour soumettre un projet.')
       setTimeout(() => {
-        window.location.href = '/connexion'
+        window.location.href = '/login'
       }, 2000)
       return
     }
@@ -277,6 +277,11 @@ export default function SoumettrePage() {
       } else {
         const result = await response.json()
         
+        console.log('❌ Erreur soumission:', {
+          status: response.status,
+          result: result
+        })
+        
         // Gestion spécifique de l'expiration du token
         if (response.status === 403 || response.status === 401) {
           console.log('Token expiré ou invalide, redirection vers la connexion')
@@ -288,7 +293,7 @@ export default function SoumettrePage() {
           
           // Rediriger vers la page de connexion après un délai
           setTimeout(() => {
-            window.location.href = '/connexion'
+            window.location.href = '/login'
           }, 2000)
           return
         }
@@ -317,7 +322,7 @@ export default function SoumettrePage() {
         logout()
         
         setTimeout(() => {
-          window.location.href = '/connexion'
+          window.location.href = '/login'
         }, 2000)
       } else if (error.message.includes('réseau') || error.message.includes('Network')) {
         showNotification('error', 'Erreur de connexion. Vérifiez votre connexion internet.')
