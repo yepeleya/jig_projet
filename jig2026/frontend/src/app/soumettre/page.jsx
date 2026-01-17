@@ -205,8 +205,9 @@ export default function SoumettrePage() {
       formData.append('categorie', data.category)
       formData.append('niveau', user?.niveau || 'Licence') // Utiliser le niveau de l'utilisateur ou par défaut
 
-      console.log('Données du formulaire:', data)
-      console.log('Fichier sélectionné:', selectedFile)
+      console.log('🚀 Données du formulaire:', data)
+      console.log('📁 Fichier sélectionné:', selectedFile)
+      console.log('🔗 URL de soumission:', `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/projets/soumettre`)
       
       // Envoi à l'API backend avec gestion automatique du token et de l'expiration
       const response = await new Promise((resolve, reject) => {
