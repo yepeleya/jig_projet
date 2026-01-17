@@ -6,6 +6,11 @@ import fs from "fs";
 import helmet from "helmet";
 import morgan from "morgan";
 
+// Charger dotenv uniquement en local (pas sur Railway)
+if (!process.env.RAILWAY_ENVIRONMENT) {
+  dotenv.config();
+}
+
 // Middlewares personnalisés
 import { handleStreamingErrors, addSecurityHeaders, optimizeFileResponse } from "./middlewares/streamingHandler.middleware.js";
 
@@ -29,23 +34,19 @@ import projetSuiviRoutes from "./routes/projet-suivi.routes.js";
 // Middlewares
 import { errorHandler, notFound } from "./middlewares/errorHandler.middleware.js";
 
-dotenv.config();
+// Vérifications critiques au démarrage
+if (!process.env.DATABASE_URL && !process.env.RAILWAY_ENVIRONMENT) {
+  console.error('❌ DATABASE_URL manquante (mode local uniquement)');
+}
 
-// Debug: Vérifier si DATABASE_URL est accessible
+if (!process.env.JWT_SECRET && !process.env.RAILWAY_ENVIRONMENT) {
+  console.error('❌ JWT_SECRET manquante (mode local uniquement)');
+}
+
+// Debug: Vérifier les variables d'environnement
 console.log('🔍 DATABASE_URL présente:', !!process.env.DATABASE_URL);
-if (process.env.DATABASE_URL) {
-  console.log('✅ DATABASE_URL configurée (longueur:', process.env.DATABASE_URL.length, 'caractères)');
-} else {
-  console.error('❌ DATABASE_URL non trouvée dans les variables d\'environnement');
-}
-
-// Debug: Vérifier si JWT_SECRET est accessible
 console.log('🔍 JWT_SECRET présente:', !!process.env.JWT_SECRET);
-if (process.env.JWT_SECRET) {
-  console.log('✅ JWT_SECRET configurée (longueur:', process.env.JWT_SECRET.length, 'caractères)');
-} else {
-  console.error('❌ JWT_SECRET non trouvée dans les variables d\'environnement');
-}
+console.log('🔍 RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT || 'local');
 
 const app = express();
 
