@@ -44,6 +44,7 @@ export default function SoumettrePage() {
   const [showPreview, setShowPreview] = useState(false)
   const [isDraft, setIsDraft] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [isHydrated, setIsHydrated] = useState(false)
   const { notification, showNotification, hideNotification } = useNotification()
 
   // Nouveau système de contrôle d'accès
@@ -52,7 +53,14 @@ export default function SoumettrePage() {
   // Vérification des permissions
   const canSubmit = canSubmitProject(user)
   
+  // Attendre l'hydratation du store avant de vérifier l'auth
   useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+  
+  useEffect(() => {
+    if (!isHydrated) return // Ne rien faire avant hydratation
+    
     if (!isAuthenticated) {
       showNotification('error', 'Vous devez être connecté pour soumettre un projet.')
       return
@@ -62,7 +70,7 @@ export default function SoumettrePage() {
       showNotification('error', getPermissionMessage('submit_project'))
       return
     }
-  }, [isAuthenticated, canSubmit, showNotification])
+  }, [isAuthenticated, canSubmit, showNotification, isHydrated])
 
   const {
     register,
