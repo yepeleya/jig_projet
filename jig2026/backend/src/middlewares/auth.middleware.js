@@ -16,7 +16,9 @@ export const authenticateToken = async (req, res, next) => {
       })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    // Utiliser le même secret que pour la génération (avec fallback)
+    const secret = process.env.JWT_SECRET || 'jig2026_super_secret_key_production_railway_xyz123ABC'
+    const decoded = jwt.verify(token, secret)
     
     // Exception pour les tokens d'admin dashboard (email admin@jig2026.com)
     if (decoded.email === 'admin@jig2026.com' && decoded.role === 'ADMIN') {
