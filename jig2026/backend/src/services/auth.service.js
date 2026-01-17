@@ -88,7 +88,11 @@ export class AuthService {
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
-      role: userType === 'jury' ? 'JURY' : (user.role || 'UTILISATEUR')
+      role: userType === 'jury' ? 'JURY' : (user.role || 'UTILISATEUR'),
+      telephone: user.telephone,
+      ecole: user.ecole,
+      filiere: user.filiere,
+      niveau: user.niveau
     }
 
     // Générer le token
