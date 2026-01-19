@@ -251,10 +251,32 @@ export default function SoumettrePage() {
         
         xhr.open('POST', submissionUrl)
         
-        // Utiliser le service API pour récupérer le token
-        const token = apiService.auth.getToken()
+        // Récupérer le token avec la même logique robuste qu'uploadFile()
+        let token = null;
+        
+        // 1. Essayer depuis le store Zustand persisté
+        try {
+          const persistedAuth = localStorage.getItem('jig-auth-storage')
+          if (persistedAuth) {
+            const authData = JSON.parse(persistedAuth)
+            token = authData?.state?.token
+          }
+        } catch (e) {
+          console.warn('Erreur lecture auth store:', e)
+        }
+        
+        // 2. Fallback vers les anciennes clés de localStorage
+        if (!token) {
+          token = localStorage.getItem('jig2026_token') || 
+                  localStorage.getItem('token') || 
+                  localStorage.getItem('authToken')
+        }
+        
         if (token) {
           xhr.setRequestHeader('Authorization', `Bearer ${token}`)
+          console.log('🔑 Token ajouté au header Authorization:', token.substring(0, 20) + '...')
+        } else {
+          console.warn('⚠️ Aucun token trouvé pour la soumission')
         }
         
         xhr.send(formData)

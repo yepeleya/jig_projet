@@ -158,18 +158,94 @@ class ApiService {
 
   // Méthode pour envoyer des fichiers
   async uploadFile(endpoint, formData) {
-    const token = this.getToken()
+    const url = `${this.baseURL}${endpoint}`
+    console.log('🌐 Upload Request:', 'POST', url)
+    
+    // Récupérer le token avec la même logique que request()
+    let token = null;
+    
+    // 1. Essayer depuis le store Zustand persisté
+    try {
+      const persistedAuth = localStorage.getItem('jig-auth-storage')
+      if (persistedAuth) {
+        const authData = JSON.parse(persistedAuth)
+        token = authData?.state?.token
+      }
+    } catch (e) {
+      console.warn('Erreur lecture auth store:', e)
+    }
+    
+    // 2. Fallback vers les anciennes clés de localStorage
+    if (!token) {
+      token = localStorage.getItem('jig2026_token') || 
+              localStorage.getItem('token') || 
+              localStorage.getItem('authToken')
+    }
+    
     const headers = {}
     
     if (token) {
       headers.Authorization = `Bearer ${token}`
+      console.log('🔑 Token ajouté aux headers upload:', token.substring(0, 20) + '...')
+    } else {
+      console.log('⚠️ Pas de token trouvé pour l\'upload')
     }
+    
+    console.log('📤 Envoi upload avec options:', { headers, method: 'POST' })
 
-    return this.request(endpoint, {
-      method: 'POST',
-      headers,
-      body: formData,
-    })
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: formData,
+      })
+
+      console.log('📥 Réponse upload reçue:', response.status)
+
+      let responseData = null
+      const contentType = response.headers.get('content-type')
+      
+      if (contentType && contentType.includes('application/json')) {
+        responseData = await response.json()
+        console.log('📊 Données upload reçues:', responseData)
+      } else {
+        responseData = await response.text()
+        console.log('📜 Texte upload reçu:', responseData)
+      }
+
+      // Si la réponse n'est pas OK, lancer une erreur avec plus de détails
+      if (!response.ok) {
+        const errorData = responseData || { message: `Erreur HTTP: ${response.status}` }
+        
+        // Gestion spécifique des codes d'erreur
+        if (response.status === 401) {
+          // Token expiré ou invalide
+          localStorage.removeItem('jig2026_token')
+          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+            // Rediriger vers la page de connexion si ce n'est pas déjà la page d'accueil
+            window.location.href = '/'
+          }
+          throw new Error(errorData.message || 'Session expirée, veuillez vous reconnecter')
+        } else if (response.status === 403) {
+          throw new Error(errorData.message || 'Accès refusé')
+        } else if (response.status === 500) {
+          throw new Error(errorData.message || 'Erreur serveur, réessayez plus tard')
+        } else {
+          throw new Error(errorData.message || `Erreur HTTP: ${response.status}`)
+        }
+      }
+
+      return responseData
+    } catch (error) {
+      console.error('❌ Erreur API upload:', error)
+      
+      // Gestion des erreurs réseau
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Le serveur est indisponible')
+      }
+      
+      throw error
+    }
   }
 }
 
