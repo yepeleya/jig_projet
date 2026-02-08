@@ -17,20 +17,20 @@ model User {
   role       Role     @default(VISITEUR)
   telephone  String?
   
-  // Champs pour étudiants/élèves
-  ecole      String?
-  filiere    String?
-  niveau     String?
+  // Champs pour étudiants/élèves - temporairement commentés pour compatibilité
+  // ecole      String?
+  // filiere    String?
+  // niveau     String?
   
-  // Champs pour jury/experts
-  specialite String?
-  bio        String?  
-  experience String?
+  // Champs pour jury/experts - temporairement commentés pour compatibilité  
+  // specialite String?
+  // bio        String?  
+  // experience String?
   
-  // Informations générales
-  avatar     String?
-  linkedin   String?
-  portfolio  String?
+  // Informations générales - temporairement commentés pour compatibilité
+  // avatar     String?
+  // linkedin   String?
+  // portfolio  String?
   
   // Relations
   projets          Projet[]
@@ -41,8 +41,6 @@ model User {
   inscription      Inscription?
   
   // Statut et validation
-  emailVerifie     Boolean  @default(false)
-  profileComplete  Boolean  @default(false)
   actif           Boolean  @default(true)
   
   createdAt  DateTime @default(now())
