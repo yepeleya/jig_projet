@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = "mysql://root:ycSrmnSURYHCiUwNHXPvbrPGAKnDtYrV@metro.proxy.rlwy.net:49845/railway"
 }
 
 model User {
@@ -18,11 +18,11 @@ model User {
   ecole      String?
   filiere    String?
   niveau     String?
-  avatar     String?  
+  avatar     String?  // Chemin vers la photo de profil
   projets    Projet[]
   votes      Vote[]
   messages   Contact[]
-  suiviProjets ProjetSuivi[]
+  suiviProjets ProjetSuivi[] // Nouvelles actions de suivi
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
@@ -36,11 +36,11 @@ model Jury {
   email      String   @unique
   motDePasse String
   specialite String?
-  bio        String?  
+  bio        String?  @db.Text
   photo      String?
   commentaires Commentaire[]
   votes        Vote[]
-  suiviProjets ProjetSuivi[]
+  suiviProjets ProjetSuivi[] // Nouvelles actions de suivi par le jury
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
@@ -50,7 +50,7 @@ model Jury {
 model Projet {
   id          Int          @id @default(autoincrement())
   titre       String
-  description String       
+  description String       @db.Text
   categorie   String
   fichier     String?
   image       String?
@@ -59,7 +59,7 @@ model Projet {
   userId      Int?
   votes       Vote[]
   commentaires Commentaire[]
-  suiviActivites ProjetSuivi[]
+  suiviActivites ProjetSuivi[] // Nouveau suivi des activités du projet
   moyenneVote Float?       @default(0)
   totalVotes  Int          @default(0)
   createdAt   DateTime     @default(now())
@@ -87,7 +87,7 @@ model Vote {
 
 model Commentaire {
   id        Int      @id @default(autoincrement())
-  contenu   String   
+  contenu   String   @db.Text
   projetId  Int
   juryId    Int
   projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
@@ -100,7 +100,7 @@ model Commentaire {
 model Programme {
   id          Int      @id @default(autoincrement())
   titre       String
-  description String   
+  description String   @db.Text
   dateDebut   DateTime
   dateFin     DateTime
   lieu        String
@@ -118,7 +118,7 @@ model Programme {
 model Galerie {
   id          Int      @id @default(autoincrement())
   titre       String
-  description String?  
+  description String?  @db.Text
   image       String
   categorie   String?
   ordre       Int      @default(0)
@@ -134,9 +134,9 @@ model Contact {
   nom       String
   email     String
   sujet     String
-  message   String   
+  message   String   @db.Text
   statut    StatutContact @default(NOUVEAU)
-  reponse   String?  
+  reponse   String?  @db.Text
   userId    Int?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
@@ -148,7 +148,7 @@ model Contact {
 model Configuration {
   id    Int    @id @default(autoincrement())
   cle   String @unique
-  valeur String 
+  valeur String @db.Text
   type   String @default("string")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,11 +160,11 @@ model Notification {
   id          Int              @id @default(autoincrement())
   type        TypeNotification
   titre       String
-  message     String           
+  message     String           @db.Text
   isRead      Boolean          @default(false)
-  entityId    Int?             
-  entityType  String?          
-  metadata    String?          
+  entityId    Int?             // ID de l'entité concernée (User, Projet, Vote, etc.)
+  entityType  String?          // Type d'entité ("user", "projet", "vote", etc.)
+  metadata    String?          @db.Text // JSON pour données supplémentaires
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   
@@ -212,16 +212,18 @@ enum TypeNotification {
   NOUVEAU_CONTACT
 }
 
+// Nouvelle table pour le suivi des projets
 model ProjetSuivi {
   id           Int           @id @default(autoincrement())
   projetId     Int
-  userId       Int?          
-  juryId       Int?          
+  userId       Int?          // L'utilisateur qui fait l'action (admin, jury, etc.)
+  juryId       Int?          // Si c'est un jury qui fait l'action
   typeReaction TypeReaction
-  message      String        
-  metadata     String?       
-  visible      Boolean       @default(true) 
+  message      String        @db.Text
+  metadata     String?       @db.Text // JSON pour données supplémentaires (score, etc.)
+  visible      Boolean       @default(true) // Si visible pour l'étudiant
   
+  // Relations
   projet       Projet        @relation(fields: [projetId], references: [id], onDelete: Cascade)
   user         User?         @relation(fields: [userId], references: [id])
   jury         Jury?         @relation(fields: [juryId], references: [id])
@@ -244,17 +246,18 @@ enum TypeReaction {
   NOTE_INTERNE
 }
 
+// Gestion du contenu dynamique du site
 model ContenuSite {
   id          Int      @id @default(autoincrement())
-  cle         String   @unique 
-  titre       String   
-  contenu     String   
-  type        TypeContenu @default(TEXT) 
-  page        String   
-  section     String   
-  description String?  
-  ordre       Int      @default(0) 
-  actif       Boolean  @default(true) 
+  cle         String   @unique // Identifiant unique (ex: "hero-title", "about-description")
+  titre       String   // Titre descriptif pour l'admin
+  contenu     String   @db.Text // Le contenu lui-même
+  type        TypeContenu @default(TEXT) // Type de contenu
+  page        String   // Page concernée (home, about, contact, etc.)
+  section     String   // Section de la page (hero, about, footer, etc.)
+  description String?  @db.Text // Description pour aider l'admin
+  ordre       Int      @default(0) // Ordre d'affichage
+  actif       Boolean  @default(true) // Si le contenu est activé
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -262,9 +265,9 @@ model ContenuSite {
 }
 
 enum TypeContenu {
-  TEXT     
-  HTML     
-  MARKDOWN 
-  IMAGE    
-  JSON     
+  TEXT     // Texte simple
+  HTML     // HTML avec formatage
+  MARKDOWN // Markdown
+  IMAGE    // URL d'image
+  JSON     // Données structurées (ex: liste, config)
 }
