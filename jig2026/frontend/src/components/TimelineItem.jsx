@@ -7,7 +7,7 @@ export default function TimelineItem({ time, title, description, isLeft = false,
     <div 
       className={`flex items-center mb-8 md:mb-12 ${
         isLeft ? 'md:flex-row-reverse flex-col' : 'md:flex-row flex-col'
-      }`}
+      } justify-center md:justify-start`}
       data-aos={isLeft ? "fade-left" : "fade-right"}
       data-aos-delay={delay}
     >
@@ -43,8 +43,8 @@ export default function TimelineItem({ time, title, description, isLeft = false,
         } w-0 h-0`}></div>
       </div>
 
-      {/* Point sur la ligne - centré sur mobile, sur la ligne sur desktop */}
-      <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-jig-primary to-red-600 rounded-full border-4 border-white shadow-lg z-10 relative mx-auto md:mx-0">
+      {/* Point sur la ligne - centré parfaitement sur mobile et desktop */}
+      <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-r from-jig-primary to-red-600 rounded-full border-4 border-white shadow-lg z-10 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-jig-primary to-red-600 rounded-full animate-ping opacity-75"></div>
       </div>
 

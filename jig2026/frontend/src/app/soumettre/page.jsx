@@ -431,12 +431,6 @@ export default function SoumettrePage() {
             <p className="text-xl md:text-2xl text-red-100 max-w-3xl mx-auto leading-relaxed">
               Partagez vos créations et participez à la JIG 2026 !
             </p>
-            {isDraft && (
-              <div className="mt-4 inline-flex items-center bg-yellow-500/20 text-yellow-100 px-4 py-2 rounded-full">
-                <FiSave className="w-4 h-4 mr-2" />
-                Brouillon disponible
-              </div>
-            )}
           </div>
         </div>
       </section>
