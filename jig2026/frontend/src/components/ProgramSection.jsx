@@ -2,16 +2,11 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 import TimelineItem from './TimelineItem'
 
 export default function ProgramSection() {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-    })
-  }, [])
+  useAOS()
 
   // Fonction pour télécharger le programme (génération PDF simulée)
   const downloadProgram = () => {

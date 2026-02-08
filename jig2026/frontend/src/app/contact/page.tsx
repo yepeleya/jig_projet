@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import { 
   FaMapMarkerAlt, 
@@ -19,7 +21,6 @@ import {
   FaEdit,
   FaComments
 } from 'react-icons/fa'
-import AOS from 'aos'
 import useAOS from '../../hooks/useAOS'
 import { contactService } from '@/services/api'
 

@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
@@ -23,7 +25,7 @@ import {
   FiAlertCircle,
   FiInfo
 } from 'react-icons/fi'
-import AOS from 'aos'
+import useAOS from '../../hooks/useAOS'
 import { useNotification } from '@/hooks/useNotification'
 import NotificationToast from '@/components/NotificationToast'
 import { useAuthStore } from '@/store/authStore'
@@ -80,13 +82,10 @@ export default function SoumettrePage() {
   // Surveiller les changements pour l'auto-sauvegarde
   const watchedFields = watch()
 
+  // Hook AOS pour les animations
+  useAOS()
+
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic',
-    })
-    
     // Charger le brouillon sauvegardé si disponible
     loadDraft()
   }, [])

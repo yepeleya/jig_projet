@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function AboutSection() {
@@ -43,12 +43,7 @@ export default function AboutSection() {
     }
   ]
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-    })
-  }, [])
+  useAOS()
 
   // Navigation du carrousel
   const nextImage = () => {

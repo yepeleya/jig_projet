@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 
 const intervenants = [
   {
@@ -66,13 +66,7 @@ const intervenants = [
 export default function IntervenantsSection() {
   const [selectedPanel, setSelectedPanel] = useState('Panel 1')
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic',
-    })
-  }, [])
+  useAOS()
 
   const filteredIntervenants = intervenants.filter(intervenant => intervenant.panel === selectedPanel)
 

@@ -1,11 +1,13 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect } from 'react'
 import Hero from '@/components/Hero'
 import AboutSection from '@/components/AboutSection'
 import ProgramSection from '@/components/ProgramSection'
 import GallerySection from '@/components/GallerySection'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 import 'aos/dist/aos.css'
 
 export default function HomePage() {

@@ -4,17 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 
 export default function GallerySection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-    })
-  }, [])
+  useAOS()
 
   // Images réelles de la galerie JIG
   const galleryImages = [

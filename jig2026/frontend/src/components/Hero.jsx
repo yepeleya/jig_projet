@@ -2,16 +2,10 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
-import AOS from 'aos'
+import useAOS from '../hooks/useAOS'
 
 export default function Hero() {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-      easing: 'ease-out-cubic',
-    })
-  }, [])
+  useAOS()
 
   // Fonction pour scroll fluide vers une section
   const scrollToSection = (sectionId) => {

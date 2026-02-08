@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { authService } from '@/services/api'
 
 interface User {
   id: number
@@ -33,27 +32,15 @@ export const useAuthStore = create<AuthState>()(
       hasHydrated: false,
       
       setAuth: (user: User, token: string) => {
-        // Sauvegarder dans le service API aussi
-        authService.setToken(token)
         set({ user, token, isAuthenticated: true })
       },
       
       logout: () => {
-        // Nettoyer d'abord le state local
         set({ user: null, token: null, isAuthenticated: false })
-        // Puis nettoyer le service API (qui ne fera plus d'appel réseau)
-        authService.logout()
       },
       
       initAuth: () => {
-        // Vérifier si l'utilisateur est déjà connecté via le service API
-        if (authService.isAuthenticated()) {
-          const user = authService.getCurrentUser()
-          const token = authService.getToken()
-          if (user && token) {
-            set({ user, token, isAuthenticated: true })
-          }
-        }
+        // Désactivé temporairement pour éviter les problèmes SSR
       }
     }),
     {
