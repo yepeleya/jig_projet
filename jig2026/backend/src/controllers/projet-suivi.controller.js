@@ -91,6 +91,36 @@ export const getMesSuivis = async (req, res) => {
   }
 }
 
+// Récupérer tous les suivis de tous les projets (admin/jury seulement)
+export const getAllSuivis = async (req, res) => {
+  try {
+    console.log('🔍 getAllSuivis appelé pour user:', req.user?.id, req.user?.role)
+    
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'JURY') {
+      return res.status(403).json({
+        success: false,
+        message: 'Accès non autorisé - réservé aux admins et jury'
+      })
+    }
+
+    const includeHidden = req.user.role === 'ADMIN'
+    const result = await ProjetSuiviService.getAllSuivis(includeHidden)
+    console.log('📊 Résultat getAllSuivis:', result)
+
+    if (result.success) {
+      res.json(result)
+    } else {
+      res.status(500).json(result)
+    }
+  } catch (error) {
+    console.error('Erreur dans getAllSuivis:', error)
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors de la récupération de tous les suivis'
+    })
+  }
+}
+
 // Masquer une entrée de suivi (admin seulement)
 export const masquerSuivi = async (req, res) => {
   try {

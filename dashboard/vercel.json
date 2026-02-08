@@ -1,0 +1,20 @@
+{
+  "name": "jig-dashboard-admin",
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://jig-projet-1.onrender.com",
+    "NEXT_PUBLIC_FRONTEND_URL": "https://jig-projet-ea3m.vercel.app"
+  },
+  "functions": {
+    "app/**": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["fra1"]
+}

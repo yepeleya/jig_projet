@@ -146,6 +146,52 @@ export class ProjetSuiviService {
     }
   }
 
+  // Récupérer tous les suivis de tous les projets (pour admin/jury)
+  static async getAllSuivis(includeHidden = false) {
+    try {
+      console.log('🔍 getAllSuivis - includeHidden:', includeHidden)
+      
+      const whereCondition = {}
+      if (!includeHidden) {
+        whereCondition.visible = true
+      }
+
+      const suivi = await prisma.projetSuivi.findMany({
+        where: whereCondition,
+        include: {
+          user: {
+            select: { nom: true, prenom: true, role: true }
+          },
+          jury: {
+            select: { nom: true, prenom: true, specialite: true }
+          },
+          projet: {
+            select: { titre: true, statut: true }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
+
+      console.log('📊 Tous les suivis trouvés:', suivi.length)
+      return {
+        success: true,
+        data: suivi.map(item => ({
+          ...item,
+          metadata: item.metadata ? JSON.parse(item.metadata) : null,
+          auteur: item.user || item.jury
+        }))
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de tous les suivis:', error)
+      return {
+        success: false,
+        message: 'Erreur lors de la récupération de tous les suivis'
+      }
+    }
+  }
+
   // Marquer une entrée comme non visible
   static async masquerSuivi(suiviId) {
     try {
