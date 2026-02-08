@@ -16,7 +16,7 @@ import {
   FaLock,
   FaExclamationTriangle
 } from 'react-icons/fa'
-import AOS from 'aos'
+import useAOS from '../../hooks/useAOS'
 
 export default function ClassementPage() {
   const [classement, setClassement] = useState([])

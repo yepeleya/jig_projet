@@ -20,6 +20,7 @@ import {
   FaComments
 } from 'react-icons/fa'
 import AOS from 'aos'
+import useAOS from '../../hooks/useAOS'
 import { contactService } from '@/services/api'
 
 interface FormData {
@@ -49,12 +50,9 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notification, setNotification] = useState<Notification>({ show: false, type: 'success', message: '' })
 
+  useAOS() // Hook NoSSR pour AOS
+
   useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic',
-    })
   }, [])
 
   // Gérer les changements du formulaire
