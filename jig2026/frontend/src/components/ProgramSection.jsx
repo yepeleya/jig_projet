@@ -125,6 +125,7 @@ export default function ProgramSection() {
           </p>
           <div className="mt-4">
             <p className="text-sm text-gray-500">Contact : <a href="mailto:jigeain@gmail.com" className="text-jig-primary hover:underline">jigeain@gmail.com</a></p>
+            <p className="text-sm text-gray-500">Téléphone : <a href="tel:+22578793501" className="text-jig-primary hover:underline">+225 78 79 35 01</a></p>
             <p className="text-sm text-gray-500">Instagram : <a href="https://instagram.com/_jig_2025" target="_blank" rel="noopener noreferrer" className="text-jig-primary hover:underline">@_jig_2025</a></p>
           </div>
         </div>

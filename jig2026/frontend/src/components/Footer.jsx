@@ -85,8 +85,8 @@ export default function Footer() {
               Téléphone
             </h4>
             <div className="space-y-2 text-red-100">
-              <a href="tel:+22507000000" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
-                +225 07 00 00 00
+              <a href="tel:+22578793501" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
+                +225 78 79 35 01
               </a>
               <a href="tel:+22501020304" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
                 +225 01 02 03 04

@@ -156,30 +156,6 @@ export default function IntervenantsSection() {
           ))}
         </div>
 
-        {/* Contact JIG */}
-        <div data-aos="fade-up" data-aos-delay="600" className="text-center mt-16 p-8 bg-white rounded-2xl shadow-lg">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">Contactez-nous</h3>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-600">
-            <a 
-              href="mailto:jigeain@gmail.com" 
-              className="flex items-center gap-2 hover:text-jig-primary transition-colors"
-            >
-              <span className="w-5 h-5">📧</span>
-              <span>jigeain@gmail.com</span>
-            </a>
-            <span className="hidden sm:inline">•</span>
-            <a 
-              href="https://instagram.com/_jig_2025" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-jig-primary transition-colors"
-            >
-              <span className="w-5 h-5">📷</span>
-              <span>@_jig_2025</span>
-            </a>
-          </div>
-        </div>
-
       </div>
     </section>
   )

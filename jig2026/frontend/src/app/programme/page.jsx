@@ -333,8 +333,8 @@ export default function ProgrammePage() {
                 <a href="mailto:jig@istc.edu" className="text-jig-primary hover:text-red-600 transition-colors">
                   📧 jig@istc.edu
                 </a>
-                <a href="tel:+22507000000" className="text-jig-primary hover:text-red-600 transition-colors">
-                  📞 +225 07 00 00 00
+                <a href="tel:+22578793501" className="text-jig-primary hover:text-red-600 transition-colors">
+                  📞 +225 78 79 35 01
                 </a>
               </div>
             </div>
