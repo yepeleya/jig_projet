@@ -13,7 +13,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'jig2026.up.railway.app',
+        hostname: 'jig-projet-1.onrender.com',
       },
       {
         protocol: 'http',
@@ -22,7 +22,7 @@ const nextConfig = {
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://jig2026.up.railway.app',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://jig-projet-1.onrender.com/api',
   },
   // Désactiver les features expérimentales
   experimental: {},

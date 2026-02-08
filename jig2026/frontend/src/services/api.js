@@ -2,17 +2,17 @@
 
 import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
 
-// Configuration de l'API - RENDER BACKEND ONLY
-let API_BASE_URL = 'https://jig-projet-1.onrender.com/api'
+// Configuration de l'API - RENDER BACKEND EXCLUSIVEMENT
+const RENDER_API_URL = 'https://jig-projet-1.onrender.com/api'
+let API_BASE_URL = RENDER_API_URL
 
-// Override uniquement si une variable d'environnement Render est définie
-if (process.env.NEXT_PUBLIC_API_URL && 
-    process.env.NEXT_PUBLIC_API_URL.includes('onrender.com')) {
-  API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
-}
-
-console.log('🔧 API_BASE_URL configuré:', API_BASE_URL)
-console.log('🔧 NEXT_PUBLIC_API_URL env:', process.env.NEXT_PUBLIC_API_URL)
+// Logs pour diagnostiquer le problème
+console.log('🎯 API_BASE_URL FORCÉ vers RENDER:', API_BASE_URL)
+console.log('🚫 Toute référence Railway est bloquée')
+console.log('🔧 Variables env disponibles:', {
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL
+})
 
 // 🎯 DÉTECTION AUTOMATIQUE VERCEL API
 // Si on est sur Vercel ET qu'aucune API_URL externe n'est définie,
