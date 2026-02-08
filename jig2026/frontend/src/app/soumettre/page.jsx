@@ -282,23 +282,28 @@ export default function SoumettrePage() {
         xhr.send(formData)
       })
       
-      // Si l'API n'existe pas encore, simuler un succès
-      if (!response.ok && response.status === 404) {
-        // Simulation de réussite
-        await new Promise(resolve => setTimeout(resolve, 2000))
+      // Traitement de la réponse API
+      if (response.ok) {
+        const result = await response.json()
         
-        setIsSuccess(true)
-        reset()
-        setSelectedFile(null)
-        setFilePreview(null)
-        localStorage.removeItem('jig2026_project_draft')
-        setIsDraft(false)
-        showNotification('success', 'Projet soumis avec succès ! Vous recevrez une confirmation par email.')
+        console.log('✅ Succès soumission:', result)
         
-        // Masquer le message de succès après 8 secondes
-        setTimeout(() => {
-          setIsSuccess(false)
-        }, 8000)
+        if (result.success) {
+          setIsSuccess(true)
+          reset()
+          setSelectedFile(null)
+          setFilePreview(null)
+          localStorage.removeItem('jig2026_project_draft')
+          setIsDraft(false)
+          showNotification('success', 'Projet soumis avec succès ! Vous recevrez une confirmation par email.')
+          
+          // Masquer le message de succès après 8 secondes
+          setTimeout(() => {
+            setIsSuccess(false)
+          }, 8000)
+        } else {
+          throw new Error(result.message || result.error || 'Erreur lors de la soumission')
+        }
       } else {
         const result = await response.json()
         
@@ -335,17 +340,13 @@ export default function SoumettrePage() {
           return
         }
         
-        if (result.success) {
-          setIsSuccess(true)
-          reset()
-          setSelectedFile(null)
-          setFilePreview(null)
-          localStorage.removeItem('jig2026_project_draft')
-          setIsDraft(false)
-          showNotification('success', 'Projet soumis avec succès !')
-        } else {
-          throw new Error(result.message || result.error || 'Erreur lors de la soumission')
+        // Pour les erreurs 404, afficher un message spécifique
+        if (response.status === 404) {
+          throw new Error('Service de soumission temporairement indisponible. Le backend est en cours de déploiement.')
         }
+        
+        throw new Error(result.message || result.error || `Erreur HTTP ${response.status}`)
+      }
       }
     } catch (error) {
       console.error('Erreur lors de la soumission:', error)
