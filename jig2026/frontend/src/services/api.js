@@ -2,8 +2,14 @@
 
 import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
 
-// Configuration de l'API
-let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jig-projet-1.onrender.com/api'
+// Configuration de l'API - RENDER BACKEND ONLY
+let API_BASE_URL = 'https://jig-projet-1.onrender.com/api'
+
+// Override uniquement si une variable d'environnement Render est définie
+if (process.env.NEXT_PUBLIC_API_URL && 
+    process.env.NEXT_PUBLIC_API_URL.includes('onrender.com')) {
+  API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+}
 
 console.log('🔧 API_BASE_URL configuré:', API_BASE_URL)
 console.log('🔧 NEXT_PUBLIC_API_URL env:', process.env.NEXT_PUBLIC_API_URL)
