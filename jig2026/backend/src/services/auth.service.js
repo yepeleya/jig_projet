@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 export class AuthService {
   // Inscription utilisateur
   static async register(userData) {
-    const { nom, prenom, email, motDePasse, role = 'UTILISATEUR', telephone, ecole, filiere, niveau } = userData
+    const { nom, prenom, email, password, role = 'UTILISATEUR', telephone, ecole, filiere, niveau } = userData
     
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
@@ -20,7 +20,7 @@ export class AuthService {
     }
 
     // Hacher le mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 12)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
     // Créer l'utilisateur
     const user = await prisma.user.create({
@@ -56,7 +56,7 @@ export class AuthService {
   }
 
   // Connexion utilisateur
-  static async login(email, motDePasse) {
+  static async login(email, password) {
     // Chercher dans les utilisateurs
     let user = await prisma.user.findUnique({
       where: { email }
@@ -77,7 +77,7 @@ export class AuthService {
     }
 
     // Vérifier le mot de passe
-    const isValidPassword = await bcrypt.compare(motDePasse, user.motDePasse)
+    const isValidPassword = await bcrypt.compare(password, user.motDePasse)
     if (!isValidPassword) {
       throw new Error('Email ou mot de passe incorrect')
     }
@@ -103,19 +103,19 @@ export class AuthService {
 
   // Créer un jury
   static async createJury(juryData) {
-    const { nom, prenom, email, motDePasse, specialite, bio } = juryData
+    const { nom, prenom, email, password, specialite, bio } = juryData
     
     // Vérifier si l'email existe déjà
-    const existingJury = await prisma.jury.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email }
     })
     
-    if (existingJury) {
+    if (existingUser) {
       throw new Error('Cet email est déjà utilisé')
     }
 
     // Hacher le mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 12)
+    const hashedPassword = await bcrypt.hash(password, 12)
 
     // Créer le jury
     const jury = await prisma.jury.create({
