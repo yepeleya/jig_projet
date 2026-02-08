@@ -1,13 +1,37 @@
 {
-  "name": "jig2026-emergency-backend",
+  "name": "backend",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node emergency.js",
-    "build": "echo 'Emergency build - no operation needed'"
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "start:full": "node src/index.js", 
+    "build": "npm install && npx prisma generate && echo 'Build completed'",
+    "seed": "node prisma/seed.js",
+    "db:reset": "npx prisma migrate reset --force",
+    "db:studio": "npx prisma studio"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "@prisma/client": "6.18.0",
+    "axios": "^1.13.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.1.10",
+    "prisma": "6.18.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.12"
   }
 }
