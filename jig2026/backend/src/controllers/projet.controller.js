@@ -381,7 +381,12 @@ export const getProjetsPublics = async (req, res) => {
     console.log('📋 Récupération des projets publics');
     
     const { categorie } = req.query;
-    const whereClause = {};
+    const whereClause = {
+      // CORRECTION : Filtrer uniquement les projets approuvés/terminés
+      statut: {
+        in: ['APPROUVE', 'TERMINE']
+      }
+    };
     
     if (categorie) {
       whereClause.categorie = categorie;
@@ -390,16 +395,16 @@ export const getProjetsPublics = async (req, res) => {
 
     // DEBUG: Vérifier d'abord tous les projets
     const totalProjets = await prisma.projet.count();
-    console.log(`🔍 Total projets en BDD:`, totalProjets);
-
-    // DEBUG: Vérifier les statuts présents
-    const statutsPresents = await prisma.projet.groupBy({
-      by: ['statut'],
-      _count: true
+    const projetsApprouves = await prisma.projet.count({
+      where: {
+        statut: {
+          in: ['APPROUVE', 'TERMINE']  
+        }
+      }
     });
-    console.log('🔍 Statuts présents dans la BDD:', statutsPresents);
+    console.log(`🔍 Total projets en BDD: ${totalProjets}, Approuvés: ${projetsApprouves}`);
 
-    // Récupération SANS filtre de statut pour debug
+    // Récupération avec filtre de statut pour vote public
     const projets = await prisma.projet.findMany({
       where: whereClause,
       orderBy: {
@@ -409,25 +414,26 @@ export const getProjetsPublics = async (req, res) => {
         user: {
           select: {
             id: true,
-            prenom: true,
+            prenom: true, 
             nom: true,
-            email: true
+            email: true,
+            ecole: true,
+            filiere: true,
+            niveau: true
+          }
+        },
+        votes: {
+          select: {
+            id: true,
+            valeur: true,
+            typeVote: true
           }
         }
       }
     });
 
-    console.log(`✅ ${projets.length} projets publics trouvés (tous statuts confondus)`);
+    console.log(`✅ ${projets.length} projets publics trouvés (APPROUVÉS/TERMINÉS)`);
     
-    if (projets.length > 0) {
-      console.log('🔍 Exemple de projet trouvé:', {
-        id: projets[0].id,
-        titre: projets[0].titre,
-        statut: projets[0].statut,
-        categorie: projets[0].categorie
-      });
-    }
-
     const projetsEnrichis = await enrichirProjets(projets);
 
     res.json({ 
@@ -435,8 +441,8 @@ export const getProjetsPublics = async (req, res) => {
       data: projetsEnrichis,
       debug: {
         totalInDB: totalProjets,
-        found: projets.length,
-        statuts: statutsPresents
+        approved: projetsApprouves,
+        returned: projets.length
       }
     });
   } catch (error) {

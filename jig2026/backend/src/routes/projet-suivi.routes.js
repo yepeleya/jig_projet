@@ -1,5 +1,5 @@
 import express from 'express'
-import verifyToken from '../middlewares/verifyToken.js'
+import { authenticateToken } from '../middlewares/auth.middleware.js' // CORRECTION
 import {
   ajouterSuivi,
   getSuiviProjet,
@@ -11,7 +11,7 @@ import {
 const router = express.Router()
 
 // Routes protégées (authentification requise)
-router.use(verifyToken)
+router.use(authenticateToken) // CORRECTION
 
 // POST /api/projet-suivi - Ajouter une nouvelle entrée de suivi (admin/jury seulement)
 router.post('/', ajouterSuivi)

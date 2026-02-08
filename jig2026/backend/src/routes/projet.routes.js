@@ -457,4 +457,32 @@ router.get("/video/:filename", (req, res) => {
   }
 });
 
+// 🚨 ROUTE TEMPORAIRE : Auto-approuver tous les projets EN_ATTENTE pour activer le vote
+router.post("/auto-approve-all", async (req, res) => {
+  try {
+    const projetsEnAttente = await prisma.projet.updateMany({
+      where: {
+        statut: 'EN_ATTENTE'
+      },
+      data: {
+        statut: 'APPROUVE'
+      }
+    });
+    
+    console.log(`✅ ${projetsEnAttente.count} projets auto-approuvés`);
+    
+    res.json({
+      success: true,
+      message: `${projetsEnAttente.count} projets ont été approuvés automatiquement`,
+      count: projetsEnAttente.count
+    });
+  } catch (error) {
+    console.error('Erreur auto-approbation:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 export default router;

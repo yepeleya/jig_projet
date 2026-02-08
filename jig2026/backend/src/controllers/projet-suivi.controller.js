@@ -1,5 +1,5 @@
 import ProjetSuiviService from '../services/projet-suivi.service.js'
-import verifyToken from '../middlewares/verifyToken.js'
+// Import corrigé - pas besoin d'importer le middleware ici
 
 // Ajouter une nouvelle entrée de suivi (admin/jury seulement)
 export const ajouterSuivi = async (req, res) => {
