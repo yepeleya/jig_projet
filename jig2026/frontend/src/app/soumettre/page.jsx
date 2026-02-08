@@ -588,10 +588,10 @@ export default function SoumettrePage() {
                           <input
                             type="email"
                             {...register('email', { 
-                              required: 'L'email est requis',
+                              required: "L'email est requis",
                               pattern: {
                                 value: /^\S+@\S+$/i,
-                                message: 'Format d'email invalide'
+                                message: "Format d'email invalide"
                               }
                             })}
                             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-jig-primary focus:border-transparent transition-all ${
@@ -635,7 +635,7 @@ export default function SoumettrePage() {
                           <FiBook className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                           <input
                             type="text"
-                            {...register('institution', { required: 'L'institution est requise' })}
+                            {...register('institution', { required: "L'institution est requise" })}
                             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-jig-primary focus:border-transparent transition-all ${
                               errors.institution ? 'border-red-500' : 'border-gray-300'
                             }`}

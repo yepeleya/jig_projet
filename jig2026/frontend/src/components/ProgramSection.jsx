@@ -126,7 +126,7 @@ export default function ProgramSection() {
           <div className="mt-4">
             <p className="text-sm text-gray-500">Contact : <a href="mailto:jigeain@gmail.com" className="text-jig-primary hover:underline">jigeain@gmail.com</a></p>
             <p className="text-sm text-gray-500">Instagram : <a href="https://instagram.com/_jig_2025" target="_blank" rel="noopener noreferrer" className="text-jig-primary hover:underline">@_jig_2025</a></p>
-          </p>
+          </div>
         </div>
 
         {/* Timeline container */}
