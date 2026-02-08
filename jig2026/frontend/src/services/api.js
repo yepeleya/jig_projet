@@ -3,7 +3,7 @@
 import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
 
 // Configuration de l'API
-let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://jig-projet-1.onrender.com/api'
 
 // 🎯 DÉTECTION AUTOMATIQUE VERCEL API
 // Si on est sur Vercel ET qu'aucune API_URL externe n'est définie,
