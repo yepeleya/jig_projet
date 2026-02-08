@@ -22,8 +22,7 @@ model User {
   filiere    String?
   niveau     String?
   
-  // Champs pour entreprises/professionnels
-  entreprise String?
+  // Champs pour professionnels
   poste      String?
   secteur    String?
   
