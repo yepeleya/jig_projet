@@ -383,6 +383,10 @@ export class ProjetService extends ApiService {
     return this.get(`/projets/user/${userId}`)
   }
 
+  async getMesProjets() {
+    return this.get('/projets/mes-projets')
+  }
+
   async getCategories() {
     return this.get('/projets/categories')
   }

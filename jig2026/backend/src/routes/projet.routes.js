@@ -101,6 +101,46 @@ router.get("/", authenticateToken, getProjets); // Protégé par authentificatio
 // Route publique pour les projets approuvés (pour le vote public)
 router.get("/public", getProjetsPublics); // Accès public aux projets approuvés uniquement
 
+// Route simplifiée pour récupérer MES projets (utilisateur connecté)
+router.get("/mes-projets", authenticateToken, async (req, res) => {
+  try {
+    console.log('🔍 Récupération MES projets pour user:', req.user.id, req.user.nom);
+    
+    const projets = await prisma.projet.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            email: true,
+            role: true,
+            ecole: true,
+            filiere: true,
+            niveau: true
+          }
+        }
+      }
+    });
+
+    console.log(`✅ ${projets.length} projets trouvés pour mes-projets`);
+
+    res.json({
+      success: true,
+      data: projets
+    });
+
+  } catch (error) {
+    console.error('❌ Erreur récupération mes projets:', error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de la récupération de vos projets"
+    });
+  }
+});
+
 // Route pour récupérer les projets d'un utilisateur spécifique
 // Support à la fois /user/:id ET /user/:userId pour compatibilité frontend
 router.get("/user/:userId", authenticateToken, async (req, res) => {

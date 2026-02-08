@@ -47,22 +47,25 @@ export default function MesProjetsPage() {
       setLoading(true)
       setError(null)
       
-      console.log('🔍 Chargement des projets de l\'utilisateur:', user?.id)
+      console.log('🔍 Chargement de MES projets pour utilisateur:', user?.nom, user?.id)
       
-      // Récupérer les projets de l'utilisateur connecté
-      const response = await projetService.getProjetsByUser(user?.id)
+      // Récupérer MES projets (utilisateur connecté)
+      const response = await projetService.getMesProjets()
       
-      console.log('📦 Projets reçus:', response)
+      console.log('📦 Mes projets reçus:', response)
       
       if (response && response.data) {
         setProjets(response.data)
+        console.log(`✅ ${response.data.length} projets chargés`)
       } else if (Array.isArray(response)) {
         setProjets(response)
+        console.log(`✅ ${response.length} projets chargés (array direct)`)
       } else {
         setProjets([])
+        console.log('⚠️ Aucun projet, tableau vide')
       }
     } catch (err) {
-      console.error('❌ Erreur chargement projets:', err)
+      console.error('❌ Erreur chargement mes projets:', err)
       setError(err.message || 'Erreur lors du chargement de vos projets')
     } finally {
       setLoading(false)
