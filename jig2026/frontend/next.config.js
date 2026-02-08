@@ -1,14 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  experimental: {
-    appDir: true,
-    ssr: false, // Désactiver SSR globalement
   },
   images: {
     remotePatterns: [

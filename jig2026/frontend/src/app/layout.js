@@ -2,6 +2,8 @@ import './globals.css'
 import RootLayoutClient from '@/components/RootLayoutClient'
 import { Analytics } from '@vercel/analytics/next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'JIG 2026',
   description: 'Concours Innovation et Génie Étudiant'
