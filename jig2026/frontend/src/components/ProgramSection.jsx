@@ -104,8 +104,8 @@ export default function ProgramSection() {
         {/* Timeline container */}
         <div className="relative max-w-4xl mx-auto">
           
-          {/* Ligne verticale centrale */}
-          <div className="absolute left-1/2 transform -translate-x-px top-0 bottom-0 w-0.5 bg-gradient-to-b from-jig-primary via-red-400 to-jig-primary"></div>
+          {/* Ligne verticale centrale - cachée sur mobile */}
+          <div className="absolute left-1/2 transform -translate-x-px top-0 bottom-0 w-0.5 bg-gradient-to-b from-jig-primary via-red-400 to-jig-primary hidden md:block"></div>
 
           {/* Timeline items */}
           <div className="space-y-0">

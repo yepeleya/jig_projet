@@ -1,16 +1,68 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import AOS from 'aos'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function AboutSection() {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+
+  // Images pour le carrousel de la JIG
+  const jigImages = [
+    {
+      src: "/galerie/MasterClasses.jpg",
+      title: "Master Classes",
+      description: "Sessions de formation avec experts"
+    },
+    {
+      src: "/galerie/Manifestation1.jpg", 
+      title: "Manifestation JIG",
+      description: "Événement principal de la journée"
+    },
+    {
+      src: "/galerie/remise de prix.jpg",
+      title: "Remise des Prix",
+      description: "Cérémonie de récompenses"
+    },
+    {
+      src: "/galerie/vrai master.jpg",
+      title: "Ateliers Pratiques",
+      description: "Formation hands-on"
+    },
+    {
+      src: "/galerie/trois.jpg",
+      title: "Projets Étudiants",
+      description: "Exposition des créations"
+    },
+    {
+      src: "/galerie/six.jpg",
+      title: "Networking",
+      description: "Échanges entre participants"
+    }
+  ]
+
   useEffect(() => {
     AOS.init({
       duration: 800,
       once: true,
     })
+  }, [])
+
+  // Navigation du carrousel
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % jigImages.length)
+  }
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + jigImages.length) % jigImages.length)
+  }
+
+  // Auto-play du carrousel
+  useEffect(() => {
+    const interval = setInterval(nextImage, 4000) // Change toutes les 4 secondes
+    return () => clearInterval(interval)
   }, [])
 
   // Fonction pour scroll vers le programme
@@ -87,27 +139,60 @@ export default function AboutSection() {
             </div>
           </div>
 
-          {/* Colonne visuelle */}
+          {/* Colonne visuelle - Carrousel d'images */}
           <div data-aos="fade-left" data-aos-delay="200" className="relative">
             
-            {/* Image principale */}
+            {/* Carrousel d'images */}
             <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-4 transform rotate-3 hover:rotate-0 transition-transform duration-500">
               <div className="aspect-square relative rounded-xl overflow-hidden">
+                {/* Image actuelle */}
                 <Image
-                  src="/galerie/MasterClasses.jpg"
-                  alt="JIG 2026 - Journée de l'Infographiste"
+                  src={jigImages[currentImageIndex].src}
+                  alt={jigImages[currentImageIndex].title}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-all duration-500"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
+                
+                {/* Overlay avec titre et animation */}
                 <div className="absolute inset-0 bg-gradient-to-br from-jig-primary/80 to-red-400/80 flex items-center justify-center">
                   <div className="text-center text-white">
                     <div className="text-6xl font-black mb-4">JIG</div>
                     <div className="text-xl font-light">2026</div>
                     <div className="w-16 h-px bg-white mx-auto mt-4 mb-2"></div>
-                    <div className="text-sm opacity-90">Journée de</div>
-                    <div className="text-sm opacity-90">l&apos;Infographiste</div>
+                    <div className="text-sm opacity-90">{jigImages[currentImageIndex].title}</div>
+                    <div className="text-xs opacity-80 mt-1">{jigImages[currentImageIndex].description}</div>
                   </div>
+                </div>
+
+                {/* Boutons de navigation */}
+                <button 
+                  onClick={prevImage}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 rounded-full p-2 transition-all duration-200"
+                >
+                  <ChevronLeft className="w-5 h-5 text-white" />
+                </button>
+                
+                <button 
+                  onClick={nextImage}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 rounded-full p-2 transition-all duration-200"
+                >
+                  <ChevronRight className="w-5 h-5 text-white" />
+                </button>
+
+                {/* Indicateurs */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+                  {jigImages.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        index === currentImageIndex 
+                          ? 'bg-white scale-125' 
+                          : 'bg-white/50 hover:bg-white/80'
+                      }`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

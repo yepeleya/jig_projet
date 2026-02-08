@@ -5,8 +5,18 @@ import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
 // Configuration de l'API
 let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
 
-// S'assurer que l'URL se termine par /api
-if (API_BASE_URL && !API_BASE_URL.endsWith('/api')) {
+// 🎯 DÉTECTION AUTOMATIQUE VERCEL API
+// Si on est sur Vercel ET qu'aucune API_URL externe n'est définie,
+// utiliser les API routes Vercel natives (/api/*)
+if (typeof window !== 'undefined' && 
+    window.location.hostname.includes('vercel.app') && 
+    !process.env.NEXT_PUBLIC_API_URL) {
+  API_BASE_URL = '/api' // Utiliser les API routes Vercel
+  console.log('🎯 Mode Vercel API détecté - utilisation des routes natives')
+}
+
+// S'assurer que l'URL se termine par /api pour les backends externes
+if (API_BASE_URL && !API_BASE_URL.startsWith('/api') && !API_BASE_URL.endsWith('/api')) {
   API_BASE_URL = `${API_BASE_URL}/api`
 }
 

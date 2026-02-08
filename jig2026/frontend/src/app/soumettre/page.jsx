@@ -524,12 +524,12 @@ export default function SoumettrePage() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   
                   {/* Barre d'actions en haut du formulaire */}
-                  <div className="flex flex-wrap gap-3 p-4 bg-gray-50 rounded-lg border">
+                  <div className="flex flex-wrap gap-3 p-4 bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 shadow-sm">
                     <button
                       type="button"
                       onClick={() => saveDraft(false)}
                       disabled={isSaving}
-                      className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+                      className="flex items-center px-6 py-3 bg-gradient-to-r from-jig-primary to-red-600 text-white rounded-full hover:from-red-600 hover:to-jig-primary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none"
                     >
                       {isSaving ? (
                         <FiLoader className="w-4 h-4 mr-2 animate-spin" />
@@ -542,7 +542,7 @@ export default function SoumettrePage() {
                     <button
                       type="button"
                       onClick={clearForm}
-                      className="flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      className="flex items-center px-6 py-3 border-2 border-jig-primary text-jig-primary rounded-full hover:bg-jig-primary hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                     >
                       <FiTrash2 className="w-4 h-4 mr-2" />
                       Effacer
