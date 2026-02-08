@@ -322,7 +322,7 @@ export default function VoterPage() {
             </div>
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-gray-800">Chargement des projets...</h2>
-              <p className="text-gray-600">Préparation de l&apos;expérience de vote</p>
+              <p className="text-gray-600">Préparation de l'expérience de vote</p>
             </div>
           </div>
         </div>

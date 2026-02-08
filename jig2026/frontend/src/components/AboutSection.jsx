@@ -105,15 +105,15 @@ export default function AboutSection() {
           {/* Colonne de texte */}
           <div data-aos="fade-right" className="space-y-6">
             <p className="text-lg text-gray-700 leading-relaxed">
-              La <strong className="text-jig-primary">Journée de l&apos;Infographiste (JIG)</strong> est un événement annuel 
-              qui célèbre la créativité et l&apos;innovation dans le domaine de l&apos;infographie et du design numérique. 
-              Organisée par l&apos;ISTC Polytechnique, cette journée unique rassemble étudiants, professionnels et passionnés 
-              autour de leur amour commun pour l&apos;art visuel et la technologie.
+              La <strong className="text-jig-primary">Journée de l'Infographiste (JIG)</strong> est un événement annuel 
+              qui célèbre la créativité et l'innovation dans le domaine de l'infographie et du design numérique. 
+              Organisée par l'ISTC Polytechnique, cette journée unique rassemble étudiants, professionnels et passionnés 
+              autour de leur amour commun pour l'art visuel et la technologie.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed">
               Au programme : <strong className="text-jig-primary">expositions de projets étudiants</strong>, 
-              ateliers pratiques, conférences inspirantes, et concours de créativité. C&apos;est l&apos;occasion parfaite 
+              ateliers pratiques, conférences inspirantes, et concours de créativité. C'est l'occasion parfaite 
               de découvrir les dernières tendances en photographie, PAO, animation 2D/3D, et bien plus encore. 
               Que vous soyez débutant ou expert, la JIG 2026 vous promet une expérience enrichissante et mémorable.
             </p>
@@ -130,7 +130,7 @@ export default function AboutSection() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-jig-primary mb-2">12h</div>
-                <div className="text-sm text-gray-600">D&apos;activités</div>
+                <div className="text-sm text-gray-600">D'activités</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-jig-primary mb-2">8</div>

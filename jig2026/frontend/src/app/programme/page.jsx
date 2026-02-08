@@ -10,9 +10,17 @@ import {
   FaTrophy,
   FaClock,
   FaMapMarkerAlt,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaHandshake,
+  FaMicrophone,
+  FaGraduationCap,
+  FaMusic,
+  FaBullhorn,
+  FaHeart,
+  FaChalkboardTeacher
 } from 'react-icons/fa'
 import AOS from 'aos'
+import IntervenantsSection from '../../components/IntervenantsSection'
 
 export default function ProgrammePage() {
   useEffect(() => {
@@ -26,48 +34,111 @@ export default function ProgrammePage() {
   const programmeEvents = [
     {
       id: 1,
-      time: "8h30 - 9h",
-      title: "Ouverture officielle",
-      description: "Cérémonie d&apos;ouverture et mot du Directeur Général de l&apos;ISTC Polytechnique.",
-      icon: FaAward,
+      time: "08h00 - 09h30",
+      title: "Accueil et installation des invités",
+      description: "Accueil des participants, invités et étudiants avec installation dans l'amphithéâtre.",
+      icon: FaHandshake,
       animation: "fade-right",
-      color: "from-red-500 to-red-600"
-    },
-    {
-      id: 2,
-      time: "9h - 12h",
-      title: "Démonstrations et Expositions",
-      description: "Présentation des travaux étudiants (PAO, Web, Animation, Photographie).",
-      icon: FaLaptopCode,
-      animation: "fade-left",
       color: "from-blue-500 to-blue-600"
     },
     {
-      id: 3,
-      time: "14h - 16h",
-      title: "Masterclasses",
-      description: "Ateliers techniques animés par des professionnels des arts et images numériques.",
-      icon: FaUsers,
-      animation: "fade-right",
-      color: "from-green-500 to-green-600"
+      id: 2,
+      time: "09h30 - 09h35",
+      title: "Allocution du PCO de la Journée",
+      description: "Mot d'ouverture et présentation du programme par le Président du Comité d'Organisation.",
+      icon: FaMicrophone,
+      animation: "fade-left",
+      color: "from-red-500 to-red-600"
     },
     {
-      id: 4,
-      time: "16h - 17h30",
-      title: "Panel de discussion",
-      description: "Échanges entre experts sur les métiers créatifs et les tendances du numérique.",
-      icon: FaComments,
-      animation: "fade-left",
+      id: 3,
+      time: "09h35 - 09h40",
+      title: "Allocution du Directeur de l'EAIN",
+      description: "Message d'accueil et de bienvenue par M. TA BI Gbamble, Directeur de l'École des Arts et Images Numériques.",
+      icon: FaAward,
+      animation: "fade-right",
       color: "from-purple-500 to-purple-600"
     },
     {
+      id: 4,
+      time: "09h40 - 09h45",
+      title: "Présentation des travaux des étudiants de l'EAIN",
+      description: "Mise en lumière des projets et réalisations des étudiants en Arts et Images Numériques.",
+      icon: FaLaptopCode,
+      animation: "fade-left",
+      color: "from-green-500 to-green-600"
+    },
+    {
       id: 5,
-      time: "17h30 - 18h",
-      title: "Remise de prix",
-      description: "Récompense des meilleurs projets étudiants.",
-      icon: FaTrophy,
+      time: "09h45 - 10h05",
+      title: "Remise de diplôme à la présidente sortante",
+      description: "Cérémonie officielle de remise de diplôme et reconnaissance des services rendus.",
+      icon: FaGraduationCap,
       animation: "fade-right",
       color: "from-yellow-500 to-yellow-600"
+    },
+    {
+      id: 6,
+      time: "10h05 - 10h35",
+      title: "Panel 1 : Se démarquer dans le monde créatif",
+      description: "Se démarquer dans le monde créatifs : survivre et réussir dans l'infographie aujourd'hui. Intervenants : Chafick Adibade (Enseignant), Bourama Junior (Directeur artistique), Hamdan Nasser (Directeur artistique), Adja Soro (Fondatrice de l'agence Kä)",
+      icon: FaComments,
+      animation: "fade-left",
+      color: "from-teal-500 to-teal-600"
+    },
+    {
+      id: 7,
+      time: "10h35 - 10h40",
+      title: "Slam",
+      description: "Performance artistique de slam poetry par des étudiants talentueux.",
+      icon: FaMusic,
+      animation: "fade-right",
+      color: "from-pink-500 to-pink-600"
+    },
+    {
+      id: 8,
+      time: "10h40 - 11h10",
+      title: "Panel 2 : Créer sans s'épuiser",
+      description: "Créer sans s'épuiser : la santé mentale dans les métiers créatifs. Intervenants : Maître Arthur Atta (Psychologue), Somey Amegnibo (Professeur de design), Nandy",
+      icon: FaHeart,
+      animation: "fade-left",
+      color: "from-orange-500 to-orange-600"
+    },
+    {
+      id: 9,
+      time: "11h10 - 11h15",
+      title: "5 minutes pour se vendre",
+      description: "Session de pitch rapide où les étudiants présentent leurs compétences et projets.",
+      icon: FaBullhorn,
+      animation: "fade-right",
+      color: "from-cyan-500 to-cyan-600"
+    },
+    {
+      id: 10,
+      time: "11h15 - 11h30",
+      title: "Parcours inspirant",
+      description: "Témoignage d'un professionnel sur son parcours dans l'industrie créative.",
+      icon: FaTrophy,
+      animation: "fade-left",
+      color: "from-indigo-500 to-indigo-600"
+    },
+    {
+      id: 11,
+      time: "11h30 - 11h40",
+      title: "Allocution du parrain",
+      description: "Message et conseils du parrain de la promotion aux futurs diplômés.",
+      icon: FaUsers,
+      animation: "fade-right",
+      color: "from-emerald-500 to-emerald-600"
+    },
+    {
+      id: 12,
+      time: "11h40 - 12h00",
+      title: "Masterclass",
+      description: "Atelier technique animé par un expert de l'industrie des arts numériques.",
+      icon: FaChalkboardTeacher,
+      animation: "fade-left",
+      color: "from-violet-500 to-violet-600"
     }
   ]
 
@@ -126,7 +197,7 @@ export default function ProgrammePage() {
               Déroulement de la journée
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              Une journée complète d&apos;activités enrichissantes pour découvrir et approfondir vos connaissances en infographie.
+              Une journée complète d'activités enrichissantes pour découvrir et approfondir vos connaissances en infographie.
             </p>
           </div>
 
@@ -220,8 +291,8 @@ export default function ProgrammePage() {
             </h2>
             
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Rejoignez-nous pour vivre une journée unique dédiée à la créativité et à l&apos;innovation visuelle. 
-              Une opportunité exceptionnelle de découvrir les métiers de l&apos;infographie et de rencontrer des professionnels passionnés.
+              Rejoignez-nous pour vivre une journée unique dédiée à la créativité et à l'innovation visuelle. 
+              Une opportunité exceptionnelle de découvrir les métiers de l'infographie et de rencontrer des professionnels passionnés.
             </p>
             
             {/* Statistiques */}
@@ -236,11 +307,11 @@ export default function ProgrammePage() {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-jig-primary mb-2">10h</div>
-                <div className="text-sm text-gray-600">D&apos;activités non-stop</div>
+                <div className="text-sm text-gray-600">D'activités non-stop</div>
               </div>
             </div>
             
-            {/* Boutons d&apos;action */}
+            {/* Boutons d'action */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/galerie">
                 <button className="bg-gradient-to-r from-jig-primary to-red-600 text-white font-semibold px-8 py-4 rounded-full hover:from-red-600 hover:to-jig-primary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
@@ -271,6 +342,9 @@ export default function ProgrammePage() {
         </div>
       </section>
 
+      {/* Section Intervenants */}
+      <IntervenantsSection />
+
       {/* Section informations pratiques */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
@@ -289,7 +363,7 @@ export default function ProgrammePage() {
               <p className="text-gray-600 mb-3">
                 ISTC Polytechnique<br />
                 Cité des Arts, Cocody<br />
-                Abidjan, Côte d&apos;Ivoire
+                Abidjan, Côte d'Ivoire
               </p>
               <p className="text-sm text-gray-500">
                 Parking gratuit disponible

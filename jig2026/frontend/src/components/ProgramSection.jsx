@@ -18,15 +18,19 @@ export default function ProgramSection() {
     // Simulation de téléchargement PDF
     const element = document.createElement('a')
     const file = new Blob([
-      `PROGRAMME JIG 2026 - Journée de l'Infographiste\n\n` +
-      `08h00 - 09h00 : Accueil et inscription\n` +
-      `09h00 - 10h30 : Cérémonie d'ouverture\n` +
-      `10h30 - 12h00 : Ateliers créatifs - Session 1\n` +
-      `12h00 - 13h30 : Pause déjeuner & Networking\n` +
-      `13h30 - 15h00 : Conférences inspirantes\n` +
-      `15h00 - 16h30 : Ateliers créatifs - Session 2\n` +
-      `16h30 - 17h30 : Concours de créativité\n` +
-      `17h30 - 18h30 : Remise des prix & Clôture\n\n` +
+      `PROGRAMME JIG 2026 - Journée Innovation et Génie Étudiant\n\n` +
+      `08h00 - 09h30 : Accueil et installation des invités\n` +
+      `09h30 - 09h35 : Allocution du PCO de la Journée\n` +
+      `09h35 - 09h40 : Allocution du Directeur de l'EAIN (M. TA BI Gbamble)\n` +
+      `09h40 - 09h45 : Présentation des travaux des étudiants de l'EAIN\n` +
+      `09h45 - 10h05 : Remise de diplôme à la présidente sortante\n` +
+      `10h05 - 10h35 : Panel 1 : Se démarquer dans le monde créatif\n` +
+      `10h35 - 10h40 : Slam\n` +
+      `10h40 - 11h10 : Panel 2 : Créer sans s'épuiser\n` +
+      `11h10 - 11h15 : 5 minutes pour se vendre\n` +
+      `11h15 - 11h30 : Parcours inspirant\n` +
+      `11h30 - 11h40 : Allocution du parrain\n` +
+      `11h40 - 12h00 : Masterclass\n\n` +
       `Pour plus d'informations : contact@jig2026.com`
     ], { type: 'text/plain' })
     
@@ -41,44 +45,64 @@ export default function ProgramSection() {
 
   const programData = [
     {
-      time: "08h00 - 09h00",
-      title: "Accueil et inscription",
-      description: "Arrivée des participants, remise des badges et présentation du programme de la journée. Petit-déjeuner de bienvenue offert."
+      time: "08h00 - 09h30",
+      title: "Accueil et installation des invités",
+      description: "Accueil des participants, invités et étudiants avec installation dans l'amphithéâtre."
     },
     {
-      time: "09h00 - 10h30",
-      title: "Cérémonie d'ouverture",
-      description: "Discours inaugural, présentation des invités d'honneur et lancement officiel de la JIG 2026 avec une performance artistique."
+      time: "09h30 - 09h35",
+      title: "Allocution du PCO de la Journée",
+      description: "Mot d'ouverture et présentation du programme par le Président du Comité d'Organisation."
     },
     {
-      time: "10h30 - 12h00",
-      title: "Ateliers créatifs - Session 1",
-      description: "Ateliers parallèles : Photographie professionnelle, Design graphique avancé, Animation 2D, et Modélisation 3D."
+      time: "09h35 - 09h40",
+      title: "Allocution du Directeur de l'EAIN",
+      description: "Message d'accueil et de bienvenue par M. TA BI Gbamble, Directeur de l'École des Arts et Images Numériques."
     },
     {
-      time: "12h00 - 13h30",
-      title: "Pause déjeuner & Networking",
-      description: "Déjeuner convivial et moment d'échange entre participants, étudiants et professionnels du secteur."
+      time: "09h40 - 09h45",
+      title: "Présentation des travaux des étudiants de l'EAIN",
+      description: "Mise en lumière des projets et réalisations des étudiants en Arts et Images Numériques."
     },
     {
-      time: "13h30 - 15h00",
-      title: "Conférences inspirantes",
-      description: "Interventions d'experts du secteur sur les tendances actuelles et futures de l'infographie et du design numérique."
+      time: "09h45 - 10h05",
+      title: "Remise de diplôme à la présidente sortante",
+      description: "Cérémonie officielle de remise de diplôme et reconnaissance des services rendus."
     },
     {
-      time: "15h00 - 16h30",
-      title: "Ateliers créatifs - Session 2",
-      description: "Suite des ateliers avec rotation : Motion design, Illustration numérique, UX/UI Design, et Réalité virtuelle."
+      time: "10h05 - 10h35",
+      title: "Panel 1 : Se démarquer dans le monde créatif",
+      description: "Se démarquer dans le monde créatifs : survivre et réussir dans l'infographie aujourd'hui. Intervenants : Chafick Adibade (Enseignant), Bourama Junior (Directeur artistique), Hamdan Nasser (Directeur artistique), Adja Soro (Fondatrice de l'agence Kä)"
     },
     {
-      time: "16h30 - 17h30",
-      title: "Concours de créativité",
-      description: "Challenge créatif en temps réel où les participants doivent créer une œuvre sur un thème imposé en 1 heure."
+      time: "10h35 - 10h40",
+      title: "Slam",
+      description: "Performance artistique de slam poetry par des étudiants talentueux."
     },
     {
-      time: "17h30 - 18h30",
-      title: "Remise des prix & Clôture",
-      description: "Annonce des résultats, remise des prix aux gagnants et clôture officielle de la JIG 2026."
+      time: "10h40 - 11h10",
+      title: "Panel 2 : Créer sans s'épuiser",
+      description: "Créer sans s'épuiser : la santé mentale dans les métiers créatifs. Intervenants : Maître Arthur Atta (Psychologue), Somey Amegnibo (Professeur de design), Nandy"
+    },
+    {
+      time: "11h10 - 11h15",
+      title: "5 minutes pour se vendre",
+      description: "Session de pitch rapide où les étudiants présentent leurs compétences et projets."
+    },
+    {
+      time: "11h15 - 11h30",
+      title: "Parcours inspirant",
+      description: "Témoignage d'un professionnel sur son parcours dans l'industrie créative."
+    },
+    {
+      time: "11h30 - 11h40",
+      title: "Allocution du parrain",
+      description: "Message et conseils du parrain de la promotion aux futurs diplômés."
+    },
+    {
+      time: "11h40 - 12h00",
+      title: "Masterclass",
+      description: "Atelier technique animé par un expert de l'industrie des arts numériques."
     }
   ]
 
@@ -97,7 +121,11 @@ export default function ProgramSection() {
             <h2 className="text-lg font-semibold">Programme de la journée</h2>
           </div>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Découvrez le programme complet de cette journée exceptionnelle dédiée à l&apos;infographie et à la créativité.
+            Découvrez le programme complet de cette journée exceptionnelle dédiée à l'innovation et au génie étudiant.
+          </p>
+          <div className="mt-4">
+            <p className="text-sm text-gray-500">Contact : <a href="mailto:jigeain@gmail.com" className="text-jig-primary hover:underline">jigeain@gmail.com</a></p>
+            <p className="text-sm text-gray-500">Instagram : <a href="https://instagram.com/_jig_2025" target="_blank" rel="noopener noreferrer" className="text-jig-primary hover:underline">@_jig_2025</a></p>
           </p>
         </div>
 

@@ -1,25 +1,25 @@
 import { VoteService } from '../services/vote.service.js'
 import { CommentaireService } from '../services/commentaire.service.js'
-
 import prisma from "../utils/prismaClient.js";
 
 export class JuryController {
-  // Récupérer les votes d'un jury
+  // Récupérer les votes d'un jury (maintenant tous les utilisateurs sont dans User)
   static async getMyVotes(req, res, next) {
     try {
-      // L'utilisateur connecté peut être un User avec role JURY ou un Jury
       const userId = req.user.id
       const userRole = req.user.role
       
-      let votes = []
-      
-      if (userRole === 'JURY') {
-        // Si c'est un User avec rôle JURY, chercher les votes avec userId
-        votes = await VoteService.getVotesByUserId(userId)
-      } else {
-        // Si c'est un Jury (table séparée), chercher les votes avec juryId  
-        votes = await VoteService.getVotesByJuryId(userId)
+      // Vérifier que l'utilisateur a des permissions de jury
+      const rolesJury = ['JURY', 'EXPERT', 'ORGANISATEUR', 'ADMIN']
+      if (!rolesJury.includes(userRole)) {
+        return res.status(403).json({
+          success: false,
+          error: "Accès refusé - permissions de jury requises"
+        })
       }
+      
+      // Tous les votes sont maintenant liés à userId dans la table User unifiée
+      const votes = await VoteService.getVotesByUserId(userId)
       
       res.json({
         success: true,
@@ -88,21 +88,23 @@ export class JuryController {
     }
   }
 
-  // Récupérer les commentaires d'un jury
+  // Récupérer les commentaires d'un jury (tous les utilisateurs sont maintenant dans User)
   static async getMyComments(req, res, next) {
     try {
       const userId = req.user.id
       const userRole = req.user.role
       
-      let comments = []
-      
-      if (userRole === 'JURY') {
-        // Si c'est un User avec rôle JURY, chercher les commentaires avec juryId = userId
-        comments = await CommentaireService.getCommentairesByJuryId(userId)
-      } else {
-        // Si c'est un Jury (table séparée), chercher les commentaires avec juryId
-        comments = await CommentaireService.getCommentairesByJuryId(userId)
+      // Vérifier que l'utilisateur a des permissions de jury
+      const rolesJury = ['JURY', 'EXPERT', 'ORGANISATEUR', 'ADMIN']
+      if (!rolesJury.includes(userRole)) {
+        return res.status(403).json({
+          success: false,
+          error: "Accès refusé - permissions de jury requises"
+        })
       }
+      
+      // Tous les commentaires sont maintenant liés à userId dans la table User unifiée
+      const comments = await CommentaireService.getCommentairesByUserId(userId)
       
       res.json({
         success: true,

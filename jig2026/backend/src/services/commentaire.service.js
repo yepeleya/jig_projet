@@ -4,9 +4,9 @@ const { PrismaClient } = pkg;
 const prisma = new PrismaClient()
 
 export class CommentaireService {
-  // Créer un commentaire
+  // Créer un commentaire (maintenant tous les utilisateurs sont dans User)
   static async createCommentaire(commentaireData) {
-    const { contenu, projetId, juryId } = commentaireData
+    const { contenu, projetId, userId } = commentaireData
     
     // Vérifier si le projet existe
     const projet = await prisma.projet.findUnique({
@@ -17,13 +17,13 @@ export class CommentaireService {
       throw new Error('Projet non trouvé')
     }
 
-    // Vérifier si le jury existe
-    const jury = await prisma.jury.findUnique({
-      where: { id: parseInt(juryId) }
+    // Vérifier si l'utilisateur existe et a les permissions appropriées
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) }
     })
     
-    if (!jury) {
-      throw new Error('Jury non trouvé')
+    if (!user) {
+      throw new Error('Utilisateur non trouvé')
     }
 
     // Créer le commentaire
@@ -31,7 +31,7 @@ export class CommentaireService {
       data: {
         contenu,
         projetId: parseInt(projetId),
-        juryId: parseInt(juryId)
+        userId: parseInt(userId)
       },
       include: {
         projet: {
@@ -40,11 +40,12 @@ export class CommentaireService {
             titre: true
           }
         },
-        jury: {
+        user: {
           select: {
             id: true,
             nom: true,
             prenom: true,
+            role: true,
             specialite: true
           }
         }
@@ -68,11 +69,12 @@ export class CommentaireService {
             titre: true
           }
         },
-        jury: {
+        user: {
           select: {
             id: true,
             nom: true,
             prenom: true,
+            role: true,
             specialite: true
           }
         }
@@ -84,7 +86,6 @@ export class CommentaireService {
 
   // Récupérer tous les commentaires
   static async getAllCommentaires() {
-    // Récupérer tous les commentaires sans forcer la relation jury
     const commentaires = await prisma.commentaire.findMany({
       include: {
         projet: {
@@ -93,39 +94,21 @@ export class CommentaireService {
             titre: true,
             categorie: true
           }
+        },
+        user: {
+          select: {
+            id: true,
+            nom: true,
+            prenom: true,
+            role: true,
+            specialite: true
+          }
         }
       },
       orderBy: { createdAt: 'desc' }
     })
 
-    // Ensuite, enrichir avec les données du jury si disponible
-    const commentairesEnrichis = await Promise.all(
-      commentaires.map(async (commentaire) => {
-        let jury = null
-        if (commentaire.juryId) {
-          try {
-            jury = await prisma.jury.findUnique({
-              where: { id: commentaire.juryId },
-              select: {
-                id: true,
-                nom: true,
-                prenom: true,
-                specialite: true
-              }
-            })
-          } catch (error) {
-            console.warn(`Jury ${commentaire.juryId} non trouvé`)
-          }
-        }
-        
-        return {
-          ...commentaire,
-          jury
-        }
-      })
-    )
-
-    return commentairesEnrichis
+    return commentaires
   }
 
   // Récupérer les commentaires d'un projet
@@ -133,11 +116,12 @@ export class CommentaireService {
     const commentaires = await prisma.commentaire.findMany({
       where: { projetId: parseInt(projetId) },
       include: {
-        jury: {
+        user: {
           select: {
             id: true,
             nom: true,
             prenom: true,
+            role: true,
             specialite: true
           }
         }
@@ -208,18 +192,42 @@ export class CommentaireService {
     return true
   }
 
-  // Vérifier si un jury peut commenter un projet
-  static async canJuryComment(projetId, juryId) {
-    // Pour l'instant, un jury peut faire plusieurs commentaires
-    // On pourrait ajouter des restrictions plus tard
+  // Vérifier si un utilisateur peut commenter un projet
+  static async canUserComment(projetId, userId) {
     const projet = await prisma.projet.findUnique({
       where: { id: parseInt(projetId) }
     })
 
-    const jury = await prisma.jury.findUnique({
-      where: { id: parseInt(juryId) }
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) }
     })
 
-    return !!(projet && jury)
+    // Tous les utilisateurs connectés peuvent commenter
+    // On pourrait ajouter des restrictions par rôle plus tard
+    return !!(projet && user)
+  }
+
+  // Méthode de compatibilité (ancienne API)
+  static async canJuryComment(projetId, userId) {
+    return this.canUserComment(projetId, userId)
+  }
+
+  // Récupérer les commentaires par utilisateur (remplace getCommentairesByJuryId)
+  static async getCommentairesByUserId(userId) {
+    const commentaires = await prisma.commentaire.findMany({
+      where: { userId: parseInt(userId) },
+      include: {
+        projet: {
+          select: {
+            id: true,
+            titre: true,
+            categorie: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return commentaires
   }
 }

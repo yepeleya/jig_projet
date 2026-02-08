@@ -4,12 +4,9 @@ const { PrismaClient } = pkg;
 const prisma = new PrismaClient()
 
 export class VoteService {
-  // Créer un vote
+  // Créer un vote (maintenant tous les utilisateurs sont dans User)
   static async createVote(voteData) {
-    const { projetId, valeur, userId, juryId } = voteData
-    
-    // Déterminer le type de vote
-    const typeVote = juryId ? 'JURY' : 'ETUDIANT'
+    const { projetId, valeur, userId, typeVote } = voteData
     
     // Vérifier si le projet existe
     const projet = await prisma.projet.findUnique({
@@ -24,8 +21,7 @@ export class VoteService {
     const existingVote = await prisma.vote.findFirst({
       where: {
         projetId: parseInt(projetId),
-        ...(userId && { userId: parseInt(userId) }),
-        ...(juryId && { juryId: parseInt(juryId) })
+        userId: parseInt(userId)
       }
     })
 
@@ -33,14 +29,40 @@ export class VoteService {
       throw new Error('Vous avez déjà voté pour ce projet')
     }
 
+    // Vérifier que l'utilisateur existe
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) }
+    })
+
+    if (!user) {
+      throw new Error('Utilisateur non trouvé')
+    }
+
+    // Déterminer le type de vote selon le rôle de l'utilisateur si non spécifié
+    let finalTypeVote = typeVote
+    if (!finalTypeVote) {
+      const rolesJury = ['JURY', 'EXPERT', 'ORGANISATEUR']
+      const rolesEtudiant = ['ETUDIANT_LICENCE', 'ETUDIANT_MASTER', 'ETUDIANT_DOCTORAT', 'ELEVE_LYCEE', 'ELEVE_COLLEGE']
+      const rolesProfessionnel = ['PROFESSIONNEL', 'ENTREPRISE', 'STARTUP', 'FREELANCE', 'ENSEIGNANT', 'CHERCHEUR']
+      
+      if (rolesJury.includes(user.role)) {
+        finalTypeVote = 'JURY_TECHNIQUE'
+      } else if (rolesEtudiant.includes(user.role)) {
+        finalTypeVote = 'ETUDIANT'
+      } else if (rolesProfessionnel.includes(user.role)) {
+        finalTypeVote = 'PROFESSIONNEL'
+      } else {
+        finalTypeVote = 'PUBLIC_GENERAL'
+      }
+    }
+
     // Créer le vote
     const vote = await prisma.vote.create({
       data: {
         projetId: parseInt(projetId),
         valeur: parseFloat(valeur),
-        typeVote,
-        ...(userId && { userId: parseInt(userId) }),
-        ...(juryId && { juryId: parseInt(juryId) })
+        typeVote: finalTypeVote,
+        userId: parseInt(userId)
       },
       include: {
         projet: {
@@ -179,26 +201,14 @@ export class VoteService {
     }
   }
 
-  // Récupérer les votes d'un utilisateur
-  static async getVotesByUser(userId, userType = 'user') {
+  // Récupérer les votes d'un utilisateur (maintenant tous dans User)
+  static async getVotesByUser(userId) {
     try {
-      // D'abord récupérer les votes sans inclusion des projets
-      const baseWhere = userType === 'jury' 
-        ? { juryId: parseInt(userId) }
-        : { userId: parseInt(userId) }
-
+      // Récupérer les votes de l'utilisateur
       const votes = await prisma.vote.findMany({
-        where: baseWhere,
-        orderBy: { createdAt: 'desc' }
-      })
-
-      // Ensuite récupérer les projets existants pour chaque vote
-      const votesWithProjects = []
-      
-      for (const vote of votes) {
-        try {
-          const projet = await prisma.projet.findUnique({
-            where: { id: vote.projetId },
+        where: { userId: parseInt(userId) },
+        include: {
+          projet: {
             select: {
               id: true,
               titre: true,
@@ -206,36 +216,33 @@ export class VoteService {
               categorie: true,
               image: true
             }
-          })
-          
-          if (projet) {
-            votesWithProjects.push({
-              ...vote,
-              projet
-            })
-          } else {
-            console.log(`Vote ${vote.id} référence un projet supprimé (${vote.projetId})`)
           }
-        } catch (err) {
-          console.log(`Erreur lors de la récupération du projet ${vote.projetId}:`, err.message)
-        }
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+
+      // Filtrer les votes dont les projets existent encore
+      const validVotes = votes.filter(vote => vote.projet !== null)
+      
+      if (validVotes.length !== votes.length) {
+        console.log(`${votes.length - validVotes.length} vote(s) référence(nt) des projets supprimés`)
       }
       
-      return votesWithProjects
+      return validVotes
     } catch (error) {
       console.error('Erreur lors de la récupération des votes utilisateur:', error)
       throw error
     }
   }
 
-  // Récupérer les votes par userId (utilisateurs avec rôle JURY)
+  // Récupérer les votes par userId (méthode simplifiée)
   static async getVotesByUserId(userId) {
-    return this.getVotesByUser(userId, 'user')
+    return this.getVotesByUser(userId)
   }
 
-  // Récupérer les votes par juryId (table Jury)
-  static async getVotesByJuryId(juryId) {
-    return this.getVotesByUser(juryId, 'jury')
+  // Méthode de compatibilité pour l'ancienne API jury
+  static async getVotesByJuryId(userId) {
+    return this.getVotesByUser(userId)
   }
 
   // Supprimer un vote

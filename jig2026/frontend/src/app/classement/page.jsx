@@ -148,7 +148,7 @@ export default function ClassementPage() {
                 Classement des Projets
               </h1>
               <p className="text-xl opacity-90 max-w-2xl mx-auto">
-                JIG 2026 - Concours d&apos;innovation
+                JIG 2026 - Concours d'innovation
               </p>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function ClassementPage() {
                 Classement non encore disponible
               </h2>
               <p className="text-gray-600 text-lg mb-6">
-                Le classement final n&apos;est pas encore disponible. Revenez après la clôture des votes.
+                Le classement final n'est pas encore disponible. Revenez après la clôture des votes.
               </p>
               
               {visibilityInfo?.dateLimiteVotes && (
@@ -196,7 +196,7 @@ export default function ClassementPage() {
                   href="/" 
                   className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors inline-flex items-center justify-center"
                 >
-                  Retour à l&apos;accueil
+                  Retour à l'accueil
                 </Link>
               </div>
             </div>
@@ -434,7 +434,7 @@ export default function ClassementPage() {
             <p className="text-gray-600">
               Le <strong>classement populaire</strong> est basé sur le nombre total de votes reçus par chaque projet.
                           <p className="text-gray-600">
-              Tous les votes comptent de manière égale, qu&apos;ils viennent du jury, des étudiants ou du public.
+              Tous les votes comptent de manière égale, qu'ils viennent du jury, des étudiants ou du public.
             </p>
             </p>
           ) : (
@@ -457,7 +457,7 @@ export default function ClassementPage() {
               Aucun résultat disponible
             </h3>
             <p className="text-gray-500">
-              Les votes n&apos;ont pas encore commencé ou aucun projet n&apos;a été soumis.
+              Les votes n'ont pas encore commencé ou aucun projet n'a été soumis.
             </p>
           </div>
         )}

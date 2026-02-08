@@ -7,44 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Modèle utilisateur unifié pour tous les types de participants (étudiants, entreprises, jury, grand public)
 model User {
   id         Int      @id @default(autoincrement())
   nom        String
   prenom     String
   email      String   @unique
   motDePasse String
-  role       Role     @default(UTILISATEUR)
+  role       Role     @default(VISITEUR)
   telephone  String?
+  
+  // Champs pour étudiants/élèves
   ecole      String?
   filiere    String?
   niveau     String?
-  avatar     String?  
-  projets    Projet[]
-  votes      Vote[]
-  messages   Contact[]
-  suiviProjets ProjetSuivi[]
+  
+  // Champs pour entreprises/professionnels
+  entreprise String?
+  poste      String?
+  secteur    String?
+  
+  // Champs pour jury/experts
+  specialite String?
+  bio        String?  
+  experience String?
+  
+  // Informations générales
+  avatar     String?
+  linkedin   String?
+  portfolio  String?
+  
+  // Relations
+  projets          Projet[]
+  votes            Vote[]
+  commentaires     Commentaire[]
+  messages         Contact[]
+  suiviProjets     ProjetSuivi[]
+  inscription      Inscription?
+  
+  // Statut et validation
+  emailVerifie     Boolean  @default(false)
+  profileComplete  Boolean  @default(false)
+  actif           Boolean  @default(true)
+  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
   @@map("user")
-}
-
-model Jury {
-  id         Int      @id @default(autoincrement())
-  nom        String
-  prenom     String
-  email      String   @unique
-  motDePasse String
-  specialite String?
-  bio        String?  
-  photo      String?
-  commentaires Commentaire[]
-  votes        Vote[]
-  suiviProjets ProjetSuivi[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
-  @@map("jury")
 }
 
 model Projet {
@@ -74,14 +83,11 @@ model Vote {
   typeVote  TypeVote
   projetId  Int
   projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
-  userId    Int?
-  juryId    Int?
-  user      User?    @relation(fields: [userId], references: [id])
-  jury      Jury?    @relation(fields: [juryId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 
   @@unique([projetId, userId])
-  @@unique([projetId, juryId])
   @@map("vote")
 }
 
@@ -89,9 +95,9 @@ model Commentaire {
   id        Int      @id @default(autoincrement())
   contenu   String   
   projetId  Int
-  juryId    Int
+  userId    Int
   projet    Projet   @relation(fields: [projetId], references: [id], onDelete: Cascade)
-  jury      Jury     @relation(fields: [juryId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   
   @@map("commentaire")
@@ -173,15 +179,31 @@ model Notification {
 
 enum Role {
   ADMIN
+  ORGANISATEUR
   JURY
-  ETUDIANT
-  UTILISATEUR
+  EXPERT
+  ETUDIANT_LICENCE
+  ETUDIANT_MASTER
+  ETUDIANT_DOCTORAT
+  ELEVE_LYCEE
+  ELEVE_COLLEGE
+  PROFESSIONNEL
+  ENTREPRISE
+  STARTUP
+  FREELANCE
+  ENSEIGNANT
+  CHERCHEUR
+  VISITEUR
 }
 
 enum TypeVote {
-  JURY
+  JURY_TECHNIQUE
+  JURY_CREATIVITE
+  JURY_INNOVATION
+  PUBLIC_GENERAL
   ETUDIANT
-  UTILISATEUR
+  PROFESSIONNEL
+  ENTREPRISE
 }
 
 enum StatutProjet {
@@ -203,28 +225,31 @@ enum StatutContact {
 
 enum TypeNotification {
   NOUVEAU_UTILISATEUR
-  NOUVEAU_JURY
+  NOUVEL_EXPERT
+  NOUVELLE_ENTREPRISE
   NOUVEAU_PROJET
   NOUVEAU_VOTE
   PROJET_APPROUVE
   PROJET_REJETE
   NOUVEAU_COMMENTAIRE
   NOUVEAU_CONTACT
+  INSCRIPTION_EVENEMENT
+  RAPPEL_EVENEMENT
+  PROGRAMME_MODIFIE
+  RESULTATS_CONCOURS
 }
 
 model ProjetSuivi {
   id           Int           @id @default(autoincrement())
   projetId     Int
-  userId       Int?          
-  juryId       Int?          
+  userId       Int          
   typeReaction TypeReaction
   message      String        
   metadata     String?       
   visible      Boolean       @default(true) 
   
   projet       Projet        @relation(fields: [projetId], references: [id], onDelete: Cascade)
-  user         User?         @relation(fields: [userId], references: [id])
-  jury         Jury?         @relation(fields: [juryId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
   
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -267,4 +292,43 @@ enum TypeContenu {
   MARKDOWN 
   IMAGE    
   JSON     
+  VIDEO
+  DOCUMENT
+}
+
+// Modèle pour l'inscription à l'événement (ouvert à tous)
+model Inscription {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  statut      StatutInscription @default(EN_ATTENTE)
+  typeParticipation TypeParticipation
+  motivations String?
+  besoinsSpeciaux String?
+  dietaireSpecial String?
+  newsletter  Boolean  @default(true)
+  confirme    Boolean  @default(false)
+  present     Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("inscription")
+}
+
+enum StatutInscription {
+  EN_ATTENTE
+  CONFIRME
+  ANNULE
+  PRESENT
+  ABSENT
+}
+
+enum TypeParticipation {
+  VISITEUR
+  PARTICIPANT_CONCOURS
+  INTERVENANT
+  PARTENAIRE
+  MEDIA
+  VIP
 }

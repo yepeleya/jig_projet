@@ -347,7 +347,6 @@ export default function SoumettrePage() {
         
         throw new Error(result.message || result.error || `Erreur HTTP ${response.status}`)
       }
-      }
     } catch (error) {
       console.error('Erreur lors de la soumission:', error)
       
@@ -450,7 +449,7 @@ export default function SoumettrePage() {
                     ✨ Étudiant EAIN - Soumission autorisée
                   </h3>
                   <p className="text-green-700 mb-2">
-                    Vous êtes étudiant à l&apos;<strong>EAIN (École des Arts et Images Numériques)</strong> de l&apos;<strong>ISTC Polytechnique</strong>.
+                    Vous êtes étudiant à l'<strong>EAIN (École des Arts et Images Numériques)</strong> de l'<strong>ISTC Polytechnique</strong>.
                   </p>
                   <p className="text-green-700 text-sm">
                     Vous pouvez soumettre votre projet au concours JIG 2026 !
@@ -470,10 +469,10 @@ export default function SoumettrePage() {
                     Accès restreint - Étudiants EAIN uniquement
                   </h3>
                   <p className="text-yellow-700 mb-2">
-                    La soumission de projets est réservée aux étudiants de l&apos;<strong>EAIN (École des Arts et Images Numériques)</strong> de l&apos;<strong>ISTC Polytechnique</strong>.
+                    La soumission de projets est réservée aux étudiants de l'<strong>EAIN (École des Arts et Images Numériques)</strong> de l'<strong>ISTC Polytechnique</strong>.
                   </p>
                   <p className="text-yellow-700 text-sm">
-                    Si vous êtes étudiant EAIN, assurez-vous d&apos;avoir sélectionné la bonne école et filière lors de votre inscription.
+                    Si vous êtes étudiant EAIN, assurez-vous d'avoir sélectionné la bonne école et filière lors de votre inscription.
                   </p>
                 </div>
               </div>
@@ -486,13 +485,13 @@ export default function SoumettrePage() {
                 <FiInfo className="w-6 h-6 text-blue-600 mr-3 mt-0.5" />
                 <div>
                   <h3 className="text-lg font-semibold text-blue-800 mb-2">
-                    Vous êtes connecté en tant qu&apos;utilisateur
+                    Vous êtes connecté en tant qu'utilisateur
                   </h3>
                   <p className="text-blue-700 mb-2">
                     Les utilisateurs peuvent voter et commenter les projets, mais ne peuvent pas en soumettre.
                   </p>
                   <p className="text-blue-700 text-sm">
-                    Seuls les étudiants de l&apos;EAIN (ISTC Polytechnique) peuvent participer au concours.
+                    Seuls les étudiants de l'EAIN (ISTC Polytechnique) peuvent participer au concours.
                   </p>
                 </div>
               </div>
@@ -589,10 +588,10 @@ export default function SoumettrePage() {
                           <input
                             type="email"
                             {...register('email', { 
-                              required: 'L&apos;email est requis',
+                              required: 'L'email est requis',
                               pattern: {
                                 value: /^\S+@\S+$/i,
-                                message: 'Format d&apos;email invalide'
+                                message: 'Format d'email invalide'
                               }
                             })}
                             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-jig-primary focus:border-transparent transition-all ${
@@ -636,7 +635,7 @@ export default function SoumettrePage() {
                           <FiBook className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                           <input
                             type="text"
-                            {...register('institution', { required: 'L&apos;institution est requise' })}
+                            {...register('institution', { required: 'L'institution est requise' })}
                             className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-jig-primary focus:border-transparent transition-all ${
                               errors.institution ? 'border-red-500' : 'border-gray-300'
                             }`}
@@ -909,7 +908,7 @@ export default function SoumettrePage() {
                     href="/"
                     className="inline-flex items-center text-jig-primary hover:text-red-600 font-medium transition-colors"
                   >
-                    ← Retour à l&apos;accueil
+                    ← Retour à l'accueil
                   </Link>
                 </div>
               </div>
@@ -935,7 +934,7 @@ export default function SoumettrePage() {
               <div className="text-3xl mb-4">📝</div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">Description claire</h3>
               <p className="text-gray-600 text-sm">
-                Expliquez votre processus créatif, les outils utilisés et l&apos;inspiration derrière votre projet.
+                Expliquez votre processus créatif, les outils utilisés et l'inspiration derrière votre projet.
               </p>
             </div>
 
@@ -951,14 +950,14 @@ export default function SoumettrePage() {
               <div className="text-3xl mb-4">🚀</div>
               <h3 className="text-lg font-bold text-gray-800 mb-2">Innovation</h3>
               <p className="text-gray-600 text-sm">
-                Mettez en avant l&apos;originalité et les aspects techniques innovants de votre travail.
+                Mettez en avant l'originalité et les aspects techniques innovants de votre travail.
               </p>
             </div>
           </div>
 
           {/* Contact support */}
           <div data-aos="fade-up" data-aos-delay="400" className="mt-12 text-center p-6 bg-gray-50 rounded-xl border">
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Besoin d&apos;aide ?</h3>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Besoin d'aide ?</h3>
             <p className="text-gray-600 mb-4">
               Notre équipe est là pour vous accompagner dans votre soumission
             </p>
