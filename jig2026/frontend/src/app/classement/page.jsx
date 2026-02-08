@@ -28,7 +28,7 @@ export default function ClassementPage() {
 
   const loadClassementPublic = useCallback(async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const apiUrl = 'https://jig-projet-1.onrender.com/api' // FORCE RENDER
       const response = await fetch(`${apiUrl}/classement/public?type=${activeTab}`)
       const result = await response.json()
       
@@ -49,7 +49,7 @@ export default function ClassementPage() {
       setError(null)
       
       // Vérifier d'abord si le classement est visible
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
+      const apiUrl = 'https://jig-projet-1.onrender.com/api' // FORCE RENDER
       const visibilityResponse = await fetch(`${apiUrl}/classement/visible`)
       const visibilityResult = await visibilityResponse.json()
       

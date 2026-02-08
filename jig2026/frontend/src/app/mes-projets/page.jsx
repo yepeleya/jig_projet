@@ -108,7 +108,7 @@ export default function MesProjetsPage() {
 
   const getFileUrl = (fileName) => {
     if (!fileName) return null
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'
+    const baseUrl = 'https://jig-projet-1.onrender.com' // FORCE RENDER
     return `${baseUrl}/uploads/${fileName}`
   }
 

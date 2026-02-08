@@ -211,11 +211,11 @@ export default function SoumettrePage() {
       console.log('🚀 Données du formulaire:', data)
       console.log('📁 Fichier sélectionné:', selectedFile)
       
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'
-      const backendUrl = apiBaseUrl.replace('/api', '')
-      const submissionUrl = `${backendUrl}/api/projets/soumettre`
+      // FORCE URL RENDER BACKEND - Plus de Railway !
+      const RENDER_BACKEND_URL = 'https://jig-projet-1.onrender.com'
+      const submissionUrl = `${RENDER_BACKEND_URL}/api/projets/soumettre`
       
-      console.log('🔗 URL de soumission:', submissionUrl)
+      console.log('🔗 URL de soumission (RENDER):', submissionUrl)
       
       // Envoi à l'API backend avec gestion automatique du token et de l'expiration
       const response = await new Promise((resolve, reject) => {

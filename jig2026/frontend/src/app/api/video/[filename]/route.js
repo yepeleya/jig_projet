@@ -5,7 +5,7 @@ export async function GET(request, { params }) {
     const { filename } = params;
     
     // URL du backend pour récupérer la vidéo
-    const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+    const backendBaseUrl = 'https://jig-projet-1.onrender.com' // FORCE RENDER
     const backendUrl = `${backendBaseUrl}/uploads/${filename}`;
     
     // Récupérer les headers de la requête client
@@ -68,7 +68,7 @@ export async function GET(request, { params }) {
 export async function HEAD(request, { params }) {
   try {
     const { filename } = params;
-    const backendBaseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+    const backendBaseUrl = 'https://jig-projet-1.onrender.com' // FORCE RENDER
     const backendUrl = `${backendBaseUrl}/uploads/${filename}`;
     
     const response = await fetch(backendUrl, {
