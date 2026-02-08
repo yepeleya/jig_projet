@@ -228,14 +228,6 @@ export const soumettreProjet = async (req, res) => {
         }
       });
 
-      // Mettre à jour le niveau de l'utilisateur si fourni (temporairement désactivé)
-      // if (donneesSanitisees.niveau && user.niveau !== donneesSanitisees.niveau) {
-        await tx.user.update({
-          where: { id: user.id },
-          data: { niveau: donneesSanitisees.niveau }
-        });
-      }
-
       return nouveauProjet;
     });
 
