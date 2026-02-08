@@ -7,6 +7,13 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  async generateBuildId() {
+    // Force un nouveau build ID pour éviter les cache
+    return 'jig2026-' + Date.now()
+  },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
   images: {
     remotePatterns: [
       {
