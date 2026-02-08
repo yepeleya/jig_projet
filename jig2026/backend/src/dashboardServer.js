@@ -39,10 +39,10 @@ const mockAuth = (req, res, next) => {
 
 // Route de connexion admin
 app.post('/api/auth/admin/login', async (req, res) => {
-  const { email, motDePasse } = req.body;
+  const { email, password } = req.body;
   
   // Simulation de connexion réussie pour tenenayeo@jig2026.ci
-  if (email === 'tenenayeo@jig2026.ci' && motDePasse === 'admin123') {
+  if (email === 'tenenayeo@jig2026.ci' && password === 'admin123') {
     res.json({
       success: true,
       data: {
@@ -410,7 +410,7 @@ app.put('/api/admin/users/:id', mockAuth, (req, res) => {
 });
 
 app.post('/api/admin/jury', mockAuth, (req, res) => {
-  const { nom, prenom, email, motDePasse, specialite, bio } = req.body;
+  const { nom, prenom, email, password, specialite, bio } = req.body;
   
   res.status(201).json({
     success: true,

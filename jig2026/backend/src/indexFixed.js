@@ -38,7 +38,7 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     console.log('📍 Tentative de connexion:', req.body);
     
-    const { email, motDePasse } = req.body;
+    const { email, password } = req.body;
     
     // Import dynamique de Prisma pour éviter les crashes
     let user = null;
@@ -58,7 +58,7 @@ app.post('/api/auth/login', async (req, res) => {
         
         // Vérification du mot de passe avec bcrypt
         const bcrypt = await import('bcryptjs');
-        const isValid = await bcrypt.default.compare(motDePasse, user.motDePasse);
+        const isValid = await bcrypt.default.compare(password, user.motDePasse);
         
         if (isValid && user.role === 'ADMIN') {
           const jwt = await import('jsonwebtoken');

@@ -297,7 +297,7 @@ export const updateUser = async (req, res) => {
 // Créer un membre du jury
 export const createJury = async (req, res) => {
   try {
-    const { nom, prenom, email, motDePasse, specialite, bio } = req.body;
+    const { nom, prenom, email, password, specialite, bio } = req.body;
 
     // Vérifier si l'email existe déjà
     const existingJury = await prisma.jury.findUnique({
@@ -312,7 +312,7 @@ export const createJury = async (req, res) => {
     }
 
     // Hacher le mot de passe
-    const hashedPassword = await bcrypt.hash(motDePasse, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const jury = await prisma.jury.create({
       data: {
