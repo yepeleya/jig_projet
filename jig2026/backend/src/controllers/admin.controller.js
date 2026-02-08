@@ -812,8 +812,8 @@ export const exportData = async (req, res) => {
           `${projet.user.prenom} ${projet.user.nom}`,
           projet.user.email,
           projet.user.ecole || 'Non spécifié',
-          projet.user.filiere || 'Non spécifié',
-          projet.user.niveau || 'Non spécifié',
+          'Non spécifié', // filiere non disponible
+          'Non spécifié', // niveau non disponible
           projet._count.votes,
           projet._count.commentaires,
           new Date(projet.createdAt).toLocaleDateString('fr-FR')
@@ -841,8 +841,8 @@ export const exportData = async (req, res) => {
           user.role,
           user.telephone || 'Non spécifié',
           user.ecole || 'Non spécifié',
-          user.filiere || 'Non spécifié',
-          user.niveau || 'Non spécifié',
+          'Non spécifié', // filiere non disponible
+          'Non spécifié', // niveau non disponible
           new Date(user.createdAt).toLocaleDateString('fr-FR')
         ]);
         fileName = 'utilisateurs_export';

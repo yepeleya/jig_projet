@@ -33,19 +33,18 @@ export class ProjetService {
             nom: true,
             prenom: true,
             email: true,
-            filiere: true,
-            niveau: true
+            role: true
           }
         },
         votes: true,
         commentaires: {
           include: {
-            jury: {
+            user: {
               select: {
                 id: true,
                 nom: true,
                 prenom: true,
-                specialite: true
+                role: true
               }
             }
           }
@@ -78,19 +77,18 @@ export class ProjetService {
               nom: true,
               prenom: true,
               email: true,
-              filiere: true,
-              niveau: true
+              role: true
             }
           },
           votes: true,
           commentaires: {
             include: {
-              jury: {
+              user: {
                 select: {
                   id: true,
                   nom: true,
                   prenom: true,
-                  specialite: true
+                  role: true
                 }
               }
             }
@@ -102,7 +100,7 @@ export class ProjetService {
             }
           }
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { id: 'desc' },
         skip,
         take: parseInt(limit)
       }),
@@ -142,8 +140,7 @@ export class ProjetService {
             nom: true,
             prenom: true,
             email: true,
-            filiere: true,
-            niveau: true
+            role: true
           }
         },
         votes: {
@@ -155,28 +152,28 @@ export class ProjetService {
                 prenom: true
               }
             },
-            jury: {
+            user: {
               select: {
                 id: true,
                 nom: true,
                 prenom: true,
-                specialite: true
+                role: true
               }
             }
           }
         },
         commentaires: {
           include: {
-            jury: {
+            user: {
               select: {
                 id: true,
                 nom: true,
                 prenom: true,
-                specialite: true
+                role: true
               }
             }
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { id: 'desc' }
         }
       }
     })
@@ -223,19 +220,18 @@ export class ProjetService {
             nom: true,
             prenom: true,
             email: true,
-            filiere: true,
-            niveau: true
+            role: true
           }
         },
         votes: true,
         commentaires: {
           include: {
-            jury: {
+            user: {
               select: {
                 id: true,
                 nom: true,
                 prenom: true,
-                specialite: true
+                role: true
               }
             }
           }

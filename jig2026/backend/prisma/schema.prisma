@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modèle utilisateur unifié pour tous les types de participants (étudiants, entreprises, jury, grand public)
+// Modèle utilisateur MINIMAL - Uniquement champs existants en DB
 model User {
   id         Int      @id @default(autoincrement())
   nom        String
@@ -15,36 +15,14 @@ model User {
   email      String   @unique
   motDePasse String
   role       Role     @default(VISITEUR)
-  telephone  String?
   
-  // Champs pour étudiants/élèves - temporairement commentés pour compatibilité
-  // ecole      String?
-  // filiere    String?
-  // niveau     String?
-  
-  // Champs pour jury/experts - temporairement commentés pour compatibilité  
-  // specialite String?
-  // bio        String?  
-  // experience String?
-  
-  // Informations générales - temporairement commentés pour compatibilité
-  // avatar     String?
-  // linkedin   String?
-  // portfolio  String?
-  
-  // Relations
+  // Relations de base uniquement  
   projets          Projet[]
   votes            Vote[]
   commentaires     Commentaire[]
   messages         Contact[]
   suiviProjets     ProjetSuivi[]
   inscription      Inscription?
-  
-  // Statut et validation
-  actif           Boolean  @default(true)
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
   
   @@map("user")
 }

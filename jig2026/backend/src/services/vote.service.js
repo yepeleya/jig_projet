@@ -81,12 +81,12 @@ export class VoteService {
           }
         }),
         ...(juryId && {
-          jury: {
+          user: {
             select: {
               id: true,
               nom: true,
               prenom: true,
-              specialite: true
+              role: true
             }
           }
         })
@@ -149,19 +149,11 @@ export class VoteService {
             id: true,
             nom: true,
             prenom: true,
-            filiere: true
-          }
-        },
-        jury: {
-          select: {
-            id: true,
-            nom: true,
-            prenom: true,
-            specialite: true
+            role: true
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { id: 'desc' }
     })
 
     return votes
@@ -177,19 +169,11 @@ export class VoteService {
             id: true,
             nom: true,
             prenom: true,
-            filiere: true
-          }
-        },
-        jury: {
-          select: {
-            id: true,
-            nom: true,
-            prenom: true,
-            specialite: true
+            role: true
           }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { id: 'desc' }
     })
 
     // Calculer les statistiques
@@ -350,7 +334,7 @@ export class VoteService {
             id: true,
             nom: true,
             prenom: true,
-            filiere: true
+            role: true
           }
         },
         _count: {

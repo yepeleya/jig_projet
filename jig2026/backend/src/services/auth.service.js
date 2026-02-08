@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 export class AuthService {
   // Inscription utilisateur
   static async register(userData) {
-    const { nom, prenom, email, password, role = 'UTILISATEUR', telephone, ecole, filiere, niveau } = userData
+    const { nom, prenom, email, password, role = 'VISITEUR' } = userData
     
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
@@ -22,30 +22,21 @@ export class AuthService {
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Créer l'utilisateur
+    // Créer l'utilisateur avec champs de base uniquement
     const user = await prisma.user.create({
       data: {
         nom,
         prenom,
         email,
         motDePasse: hashedPassword,
-        role,
-        telephone,
-        ecole,
-        filiere,
-        niveau
+        role
       },
       select: {
         id: true,
         nom: true,
         prenom: true,
         email: true,
-        role: true,
-        telephone: true,
-        ecole: true,
-        filiere: true,
-        niveau: true,
-        createdAt: true
+        role: true
       }
     })
 
@@ -57,20 +48,10 @@ export class AuthService {
 
   // Connexion utilisateur
   static async login(email, password) {
-    // Chercher dans les utilisateurs
-    let user = await prisma.user.findUnique({
+    // Chercher l'utilisateur (tous types confondus via le rôle)
+    const user = await prisma.user.findUnique({
       where: { email }
     })
-
-    let userType = 'user'
-
-    // Si pas trouvé, chercher dans les jurys
-    if (!user) {
-      user = await prisma.jury.findUnique({
-        where: { email }
-      })
-      userType = 'jury'
-    }
 
     if (!user) {
       throw new Error('Email ou mot de passe incorrect')
@@ -88,11 +69,7 @@ export class AuthService {
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
-      role: userType === 'jury' ? 'JURY' : (user.role || 'UTILISATEUR'),
-      telephone: user.telephone,
-      ecole: user.ecole,
-      filiere: user.filiere,
-      niveau: user.niveau
+      role: user.role || 'VISITEUR'
     }
 
     // Générer le token
@@ -101,9 +78,9 @@ export class AuthService {
     return { user: userData, token }
   }
 
-  // Créer un jury
+  // Créer un jury - utilise le modèle User avec role=JURY
   static async createJury(juryData) {
-    const { nom, prenom, email, password, specialite, bio } = juryData
+    const { nom, prenom, email, password } = juryData
     
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
@@ -117,24 +94,20 @@ export class AuthService {
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Créer le jury
-    const jury = await prisma.jury.create({
+    // Créer l'utilisateur avec rôle JURY
+    const jury = await prisma.user.create({
       data: {
         nom,
         prenom,
         email,
         motDePasse: hashedPassword,
-        specialite,
-        bio
+        role: 'JURY'
       },
       select: {
         id: true,
         nom: true,
         prenom: true,
-        email: true,
-        specialite: true,
-        bio: true,
-        createdAt: true
+        email: true
       }
     })
 
@@ -162,10 +135,8 @@ export class AuthService {
   }
 
   // Changer le mot de passe
-  static async changePassword(userId, oldPassword, newPassword, userType = 'user') {
-    const table = userType === 'jury' ? prisma.jury : prisma.user
-    
-    const user = await table.findUnique({
+  static async changePassword(userId, oldPassword, newPassword) {
+    const user = await prisma.user.findUnique({
       where: { id: userId }
     })
 
@@ -183,7 +154,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 12)
 
     // Mettre à jour
-    await table.update({
+    await prisma.user.update({
       where: { id: userId },
       data: { motDePasse: hashedPassword }
     })
@@ -192,20 +163,21 @@ export class AuthService {
   }
 
   // Mettre à jour le profil
-  static async updateProfile(userId, profileData, userType = 'user') {
-    const table = userType === 'jury' ? prisma.jury : prisma.user
-    
+  static async updateProfile(userId, profileData) {
     // Nettoyer les données (enlever les champs vides)
     const cleanData = {}
     Object.keys(profileData).forEach(key => {
       if (profileData[key] !== undefined && profileData[key] !== null && profileData[key] !== '') {
-        cleanData[key] = profileData[key]
+        // Ne garder que les champs existants dans le modèle
+        if (['nom', 'prenom', 'email'].includes(key)) {
+          cleanData[key] = profileData[key]
+        }
       }
     })
 
     // Si email changé, vérifier qu'il n'existe pas déjà
     if (cleanData.email) {
-      const existingUser = await table.findFirst({
+      const existingUser = await prisma.user.findFirst({
         where: {
           email: cleanData.email,
           id: { not: userId }
@@ -218,30 +190,15 @@ export class AuthService {
     }
 
     // Mettre à jour le profil
-    const updatedUser = await table.update({
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: cleanData,
-      select: userType === 'jury' ? {
+      select: {
         id: true,
         nom: true,
         prenom: true,
         email: true,
-        specialite: true,
-        bio: true,
-        createdAt: true,
-        updatedAt: true
-      } : {
-        id: true,
-        nom: true,
-        prenom: true,
-        email: true,
-        role: true,
-        telephone: true,
-        ecole: true,
-        filiere: true,
-        niveau: true,
-        createdAt: true,
-        updatedAt: true
+        role: true
       }
     })
 
