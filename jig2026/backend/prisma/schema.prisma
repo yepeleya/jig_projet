@@ -23,7 +23,6 @@ model User {
   niveau     String?
   
   // Champs pour professionnels
-  poste      String?
   secteur    String?
   
   // Champs pour jury/experts
