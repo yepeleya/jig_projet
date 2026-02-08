@@ -75,6 +75,7 @@ const allowedOrigins = [
   process.env.JURY_URL,  // URL jury depuis .env
   'https://jig-projet-fa2u.vercel.app',  // Ancien Vercel
   'https://jig-projet-ea3m.vercel.app',  // Nouveau Vercel
+  'https://jig-projet-ea3m-iml4jao7u-yepeleyas-projects.vercel.app', // Nouveau déploiement Vercel
   'https://jig-projet-fa2u-git-main-yepeleyas-projects.vercel.app',  // Vercel Git deployments
 ].filter(Boolean);  // Retirer les valeurs undefined
 
