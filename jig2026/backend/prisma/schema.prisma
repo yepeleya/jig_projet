@@ -177,6 +177,7 @@ enum Role {
   ORGANISATEUR
   JURY
   EXPERT
+  ETUDIANT          // Temporaire - pour compatibilité base existante
   ETUDIANT_LICENCE
   ETUDIANT_MASTER
   ETUDIANT_DOCTORAT
