@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "build": "npx prisma generate && npx prisma migrate deploy",
+    "build": "node build.mjs",
+    "build:safe": "npx prisma generate || echo 'Prisma generation failed'",
     "seed": "node prisma/seed.js",
     "db:reset": "npx prisma migrate reset --force",
     "db:studio": "npx prisma studio"

@@ -6,8 +6,11 @@ import fs from "fs";
 import helmet from "helmet";
 import morgan from "morgan";
 
-// Charger dotenv uniquement en local (pas sur Railway)
-if (!process.env.RAILWAY_ENVIRONMENT) {
+// Charger config Render d'urgence AVANT tout le reste
+import { validateRenderEnvironment, createHealthCheck, renderConfig } from "./config/render.config.js";
+
+// Charger dotenv uniquement en local
+if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
@@ -34,38 +37,10 @@ import projetSuiviRoutes from "./routes/projet-suivi.routes.js";
 // Middlewares
 import { errorHandler, notFound } from "./middlewares/errorHandler.middleware.js";
 
-// Vérifications critiques au démarrage
-console.log('🔍 =================================');
-console.log('🔍 VÉRIFICATION VARIABLES CRITIQUES');
-console.log('🔍 =================================');
-console.log('🔍 DATABASE_URL présente:', !!process.env.DATABASE_URL);
-console.log('🔍 JWT_SECRET présente:', !!process.env.JWT_SECRET);
-console.log('🔍 RAILWAY_ENVIRONMENT:', process.env.RAILWAY_ENVIRONMENT || 'local');
-
-if (!process.env.DATABASE_URL) {
-  console.error('❌ =====================================================');
-  console.error('❌ ERREUR CRITIQUE : DATABASE_URL manquante !');
-  console.error('❌ =====================================================');
-  console.error('❌ Le backend ne peut PAS fonctionner sans BDD');
-  console.error('❌ Railway: Ajouter MySQL Plugin → Variables d\'env');
-  console.error('❌ Exemple: mysql://user:password@host:port/database');
-  console.error('❌ =====================================================');
-  
-  // En production, ne pas démarrer sans BDD
-  if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
-    console.error('💥 ARRÊT FORCÉ - Impossible de continuer sans DATABASE_URL');
-    process.exit(1);
-  } else {
-    console.warn('⚠️  Mode local - Continuer sans BDD (tests uniquement)');
-  }
-}
-
-if (!process.env.JWT_SECRET) {
-  console.error('❌ JWT_SECRET manquante');
-  if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
-    console.error('💥 ARRÊT FORCÉ - Impossible de continuer sans JWT_SECRET');
-    process.exit(1);
-  }
+// Validation Render obligatoire
+if (!validateRenderEnvironment()) {
+  console.error('💥 ÉCHEC VALIDATION RENDER - Arrêt');
+  process.exit(1);
 }
 
 const app = express();
@@ -296,19 +271,8 @@ app.use("/uploads", (req, res, next) => {
   next();
 }, express.static(path.join(process.cwd(), "src/uploads")));
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'API JIG2026 is running',
-    timestamp: new Date().toISOString(),
-    version: '2.0.1', // CORS fix for jig-projet-ea3m.vercel.app
-    cors: {
-      enabled: true,
-      allowedOrigins: ['jig-projet-ea3m.vercel.app', 'vercel.app wildcard']
-    }
-  });
-});
+// Health check optimisé pour Render
+createHealthCheck(app);
 
 // Routes API
 app.use("/api/auth", authRoutes);
@@ -331,7 +295,7 @@ app.use("/api/projet-suivi", projetSuiviRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = renderConfig.port;
 
 // Gestionnaires d'erreurs globaux
 process.on('uncaughtException', (error) => {
