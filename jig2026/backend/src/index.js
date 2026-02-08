@@ -6,10 +6,7 @@ import fs from "fs";
 import helmet from "helmet";
 import morgan from "morgan";
 
-// Charger config Render d'urgence AVANT tout le reste
-import { validateRenderEnvironment, createHealthCheck, renderConfig } from "./config/render.config.js";
-
-// Charger dotenv uniquement en local
+// Charger dotenv
 if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
@@ -37,10 +34,22 @@ import projetSuiviRoutes from "./routes/projet-suivi.routes.js";
 // Middlewares
 import { errorHandler, notFound } from "./middlewares/errorHandler.middleware.js";
 
-// Validation Render obligatoire
-if (!validateRenderEnvironment()) {
-  console.error('💥 ÉCHEC VALIDATION RENDER - Arrêt');
-  process.exit(1);
+// Vérifications critiques
+console.log('🔍 DATABASE_URL:', !!process.env.DATABASE_URL);
+console.log('🔍 JWT_SECRET:', !!process.env.JWT_SECRET);
+
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL manquante !');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET manquante !');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 }
 
 const app = express();
@@ -271,8 +280,22 @@ app.use("/uploads", (req, res, next) => {
   next();
 }, express.static(path.join(process.cwd(), "src/uploads")));
 
-// Health check optimisé pour Render
-createHealthCheck(app);
+// Health check simple
+app.get('/', (req, res) => {
+  res.json({
+    status: 'JIG2026 Backend Online',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0'
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API JIG2026 is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Routes API
 app.use("/api/auth", authRoutes);
@@ -295,7 +318,7 @@ app.use("/api/projet-suivi", projetSuiviRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = renderConfig.port;
+const PORT = process.env.PORT || 10000;
 
 // Gestionnaires d'erreurs globaux
 process.on('uncaughtException', (error) => {
