@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "build": "npx prisma generate",
+    "start": "node src/index-minimal.js",
+    "start:full": "node src/index.js", 
+    "build": "node diagnostic.js",
     "seed": "node prisma/seed.js",
     "db:reset": "npx prisma migrate reset --force",
     "db:studio": "npx prisma studio"

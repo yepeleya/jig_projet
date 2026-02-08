@@ -2,8 +2,9 @@ services:
   - type: web
     name: jig2026-backend
     env: node
-    buildCommand: npm install
+    buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
@@ -11,7 +12,3 @@ services:
         generateValue: true
       - key: PORT
         value: 10000
-databases:
-  - name: jig2026-db
-    databaseName: jig2026
-    user: jig2026user
