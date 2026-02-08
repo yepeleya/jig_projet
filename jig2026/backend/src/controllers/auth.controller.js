@@ -17,7 +17,7 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
-  motDePasse: z.string().min(1, 'Mot de passe requis')
+  password: z.string().min(1, 'Mot de passe requis')
 })
 
 const jurySchema = z.object({
@@ -53,9 +53,9 @@ export class AuthController {
   // Connexion
   static async login(req, res, next) {
     try {
-      const { email, motDePasse } = loginSchema.parse(req.body)
+      const { email, password } = loginSchema.parse(req.body)
       
-      const result = await AuthService.login(email, motDePasse)
+      const result = await AuthService.login(email, password)
       
       res.json({
         success: true,

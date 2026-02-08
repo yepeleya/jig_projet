@@ -22,9 +22,6 @@ model User {
   filiere    String?
   niveau     String?
   
-  // Champs pour professionnels
-  secteur    String?
-  
   // Champs pour jury/experts
   specialite String?
   bio        String?  
