@@ -1,5 +1,6 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 
 interface NoSSRProps {
@@ -7,21 +8,21 @@ interface NoSSRProps {
   fallback?: React.ReactNode
 }
 
-export default function NoSSR({ children, fallback = null }: NoSSRProps) {
-  const [isClient, setIsClient] = useState(false)
+const NoSSR = ({ children, fallback = null }: NoSSRProps) => {
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    // Utiliser un timeout pour éviter les problèmes d'hydratation
-    const timeout = setTimeout(() => {
-      setIsClient(true)
-    }, 0)
-    
-    return () => clearTimeout(timeout)
+    setIsMounted(true)
   }, [])
 
-  if (!isClient) {
+  if (!isMounted) {
     return <>{fallback}</>
   }
 
   return <>{children}</>
 }
+
+// Exporter comme composant dynamique pour éviter complètement SSR
+export default dynamic(() => Promise.resolve(NoSSR), {
+  ssr: false
+})

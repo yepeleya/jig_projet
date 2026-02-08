@@ -1,17 +1,18 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { ReactNode, useEffect, useState } from 'react'
 
 interface ClientOnlyProps {
   children: ReactNode
+  fallback?: ReactNode
 }
 
-export default function ClientOnly({ children }: ClientOnlyProps) {
+const ClientOnlyInternal = ({ children }: ClientOnlyProps) => {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setHasMounted(true), 0)
-    return () => clearTimeout(timer)
+    setHasMounted(true)
   }, [])
 
   if (!hasMounted) {
@@ -20,3 +21,9 @@ export default function ClientOnly({ children }: ClientOnlyProps) {
 
   return <>{children}</>
 }
+
+// Exporter en tant que composant dynamique sans SSR
+export default dynamic(() => Promise.resolve(ClientOnlyInternal), {
+  ssr: false,
+  loading: () => null
+})

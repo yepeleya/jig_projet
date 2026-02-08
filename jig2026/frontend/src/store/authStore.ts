@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 interface User {
   id: number
@@ -23,36 +22,21 @@ interface AuthState {
   initAuth: () => void
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      hasHydrated: false,
-      
-      setAuth: (user: User, token: string) => {
-        set({ user, token, isAuthenticated: true })
-      },
-      
-      logout: () => {
-        set({ user: null, token: null, isAuthenticated: false })
-      },
-      
-      initAuth: () => {
-        // Désactivé temporairement pour éviter les problèmes SSR
-      }
-    }),
-    {
-      name: 'jig-auth-storage',
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated
-      }),
-      onRehydrateStorage: () => () => {
-        useAuthStore.setState({ hasHydrated: true })
-      }
-    }
-  )
-)
+export const useAuthStore = create<AuthState>()((set) => ({
+  user: null,
+  token: null,
+  isAuthenticated: false,
+  hasHydrated: true, // Désactivé pendant debug SSR
+  
+  setAuth: (user: User, token: string) => {
+    set({ user, token, isAuthenticated: true })
+  },
+  
+  logout: () => {
+    set({ user: null, token: null, isAuthenticated: false })
+  },
+  
+  initAuth: () => {
+    // Désactivé pour éviter problèmes SSR
+  }
+}))

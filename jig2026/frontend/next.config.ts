@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
-  output: 'export',
   // Configuration pour éviter TOUS les problèmes de build sur Vercel
   eslint: {
     ignoreDuringBuilds: true,
