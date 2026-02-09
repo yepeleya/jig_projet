@@ -328,15 +328,7 @@ export default function ProgrammePage() {
             
             {/* Contact rapide */}
             <div className="mt-8 pt-6 border-t border-gray-200">
-              <p className="text-sm text-gray-500 mb-2">Des questions ? Contactez-nous :</p>
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm">
-                <a href="mailto:jig@istc.edu" className="text-jig-primary hover:text-red-600 transition-colors">
-                  📧 jig@istc.edu
-                </a>
-                <a href="tel:+22578793501" className="text-jig-primary hover:text-red-600 transition-colors">
-                  📞 +225 78 79 35 01
-                </a>
-              </div>
+              <p className="text-sm text-gray-500 mb-2">Des questions sur le programme ?</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 /**
- * 🔧 FORMULAIRE D'INSCRIPTION SIMPLIFIÉ - COMPATIBLE BACKEND
- * Envoie seulement les champs acceptés par le schéma Prisma
+ * 🎨 FORMULAIRE D'INSCRIPTION STYLE SPLIT-SCREEN - COMPATIBLE BACKEND
+ * Design moderne avec split-screen et champs compatibles Prisma
  */
 
 'use client'
@@ -8,15 +8,17 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { 
   FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaExclamationTriangle,
-  FaGraduationCap, FaArrowLeft, FaSpinner
+  FaGraduationCap, FaArrowLeft, FaSpinner, FaCheck, FaUsers, FaTrophy
 } from 'react-icons/fa'
-import authService from '@/services/api'
+import { authService } from '@/services/api'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import Logo from '@/components/Logo'
 
-export default function RegisterPageFixed() {
+export default function RegisterPage() {
   // State simplifié - Seulement les champs du schéma Prisma
   const [formData, setFormData] = useState({
     nom: '',
@@ -162,48 +164,162 @@ export default function RegisterPageFixed() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Notification */}
       {notification.show && (
-        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md ${
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl max-w-sm ${
           notification.type === 'success' 
-            ? 'bg-green-500 text-white' 
-            : 'bg-red-500 text-white'
+            ? 'bg-green-500 text-white border border-green-600' 
+            : 'bg-red-500 text-white border border-red-600'
         }`}>
           <div className="flex items-center">
-            {notification.type === 'error' && <FaExclamationTriangle className="mr-2" />}
-            <p>{notification.message}</p>
+            {notification.type === 'success' ? (
+              <FaCheck className="mr-2 flex-shrink-0" />
+            ) : (
+              <FaExclamationTriangle className="mr-2 flex-shrink-0" />
+            )}
+            <p className="text-sm font-medium">{notification.message}</p>
           </div>
         </div>
       )}
 
-      {/* Header avec retour */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <Link 
-            href="/login" 
-            className="inline-flex items-center text-gray-600 hover:text-red-600 transition-colors"
-          >
-            <FaArrowLeft className="mr-2" />
-            Retour à la connexion
-          </Link>
+      {/* Partie gauche - Information JIG 2026 */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-red-600 via-red-700 to-red-800 p-12 flex-col justify-center relative overflow-hidden">
+        {/* Motifs de fond */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-64 h-64 bg-white rounded-full"></div>
+          <div className="absolute bottom-32 right-16 w-48 h-48 bg-white rounded-full"></div>
+          <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-white rounded-full"></div>
         </div>
+
+        {/* Contenu principal */}
+        <motion.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1 }}
+          className="relative z-10"
+        >
+          
+          {/* Logo et titre */}
+          <div className="mb-8">
+            <Logo size="2xl" variant="white" className="mb-6" />
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+              Rejoignez le
+              <span className="block text-yellow-300">JIG 2026</span>
+            </h1>
+            <p className="text-xl text-red-100 leading-relaxed max-w-md">
+              Participez à la plus grande compétition d'infographie de Côte d'Ivoire
+            </p>
+          </div>
+
+          {/* Points forts */}
+          <div className="space-y-6">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex items-center space-x-4"
+            >
+              <div className="bg-white bg-opacity-20 p-3 rounded-full">
+                <FaUsers className="text-white text-xl" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Communauté créative</h3>
+                <p className="text-red-100">Rejoignez plus de 500 infographistes passionnés</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="flex items-center space-x-4"
+            >
+              <div className="bg-white bg-opacity-20 p-3 rounded-full">
+                <FaTrophy className="text-white text-xl" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Prix attractifs</h3>
+                <p className="text-red-100">Plus de 2 millions FCFA de prix à gagner</p>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex items-center space-x-4"
+            >
+              <div className="bg-white bg-opacity-20 p-3 rounded-full">
+                <FaGraduationCap className="text-white text-xl" />
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold text-white">Apprentissage</h3>
+                <p className="text-red-100">Rencontrez des professionnels et développez vos compétences</p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* CTA secondaire */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-12 pt-8 border-t border-white border-opacity-20"
+          >
+            <div className="flex items-center justify-between text-white">
+              <div>
+                <p className="text-sm text-red-100 mb-2">Déjà inscrit ?</p>
+                <Link href="/login" className="text-lg font-medium hover:text-yellow-300 transition-colors flex items-center">
+                  <FaArrowLeft className="mr-2" />
+                  Se connecter
+                </Link>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold">2026</div>
+                <div className="text-sm text-red-100">Edition</div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
 
-      <div className="flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md">
+      {/* Partie droite - Formulaire d'inscription */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
+        
+        {/* Bouton retour mobile */}
+        <div className="lg:hidden absolute top-4 left-4 z-10">
+          <Link href="/login" className="flex items-center text-gray-600 hover:text-red-600 transition-colors">
+            <FaArrowLeft className="mr-2" />
+            Retour
+          </Link>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="w-full max-w-md"
+        >
           
-          {/* Titre */}
-          <div data-aos="fade-down" className="text-center mb-8">
-            <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaGraduationCap className="text-white text-2xl" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Créer un compte</h1>
+          {/* Header mobile */}
+          <div className="lg:hidden text-center mb-8">
+            <Logo size="lg" variant="red" className="mb-4 justify-center" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Créer un compte</h2>
             <p className="text-gray-600">Rejoignez le JIG 2026</p>
           </div>
 
+          {/* Header desktop */}
+          <div className="hidden lg:block text-center mb-8" data-aos="fade-down">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+              <FaGraduationCap className="text-red-600 text-2xl" />
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Inscription</h2>
+            <p className="text-gray-600">Créez votre compte participant</p>
+          </div>
+
           {/* Formulaire */}
-          <div data-aos="fade-up" className="bg-white rounded-xl shadow-lg p-8">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {/* Nom */}
@@ -221,17 +337,21 @@ export default function RegisterPageFixed() {
                     type="text"
                     value={formData.nom}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.nom ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
-                    placeholder="Votre nom"
+                    placeholder="Votre nom de famille"
                   />
                 </div>
                 {errors.nom && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-sm mt-2 flex items-center"
+                  >
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.nom}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
@@ -250,17 +370,21 @@ export default function RegisterPageFixed() {
                     type="text"
                     value={formData.prenom}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.prenom ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
                     placeholder="Votre prénom"
                   />
                 </div>
                 {errors.prenom && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-sm mt-2 flex items-center"
+                  >
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.prenom}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
@@ -279,17 +403,21 @@ export default function RegisterPageFixed() {
                     type="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
                     placeholder="votre@email.com"
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-sm mt-2 flex items-center"
+                  >
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.email}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
@@ -308,10 +436,10 @@ export default function RegisterPageFixed() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
-                    placeholder="Votre mot de passe"
+                    placeholder="Au moins 6 caractères"
                   />
                   <button
                     type="button"
@@ -322,10 +450,14 @@ export default function RegisterPageFixed() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-sm mt-2 flex items-center"
+                  >
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.password}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
@@ -344,7 +476,7 @@ export default function RegisterPageFixed() {
                     type={showConfirmPassword ? 'text' : 'password'}
                     value={formData.confirmerPassword}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                    className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.confirmerPassword ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
                     placeholder="Confirmez votre mot de passe"
@@ -358,49 +490,65 @@ export default function RegisterPageFixed() {
                   </button>
                 </div>
                 {errors.confirmerPassword && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center">
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-500 text-sm mt-2 flex items-center"
+                  >
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.confirmerPassword}
-                  </p>
+                  </motion.p>
                 )}
               </div>
 
               {/* Information */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>ℹ️ Information :</strong> Votre compte sera créé avec le rôle étudiant. 
-                  Vous pourrez vous connecter et participer au concours immédiatement après validation.
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-sm text-blue-800 flex items-start">
+                  <FaGraduationCap className="mr-2 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong className="font-medium">Inscription étudiante :</strong> Votre compte sera créé avec le statut étudiant. 
+                    Vous pourrez participer au concours dès validation de votre profil.
+                  </span>
                 </p>
               </div>
 
               {/* Bouton de soumission */}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isLoading || Object.keys(errors).length > 0}
-                className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className={`w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-xl font-medium shadow-lg transition-all duration-200 flex items-center justify-center ${
+                  isLoading || Object.keys(errors).length > 0
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:from-red-700 hover:to-red-800 hover:shadow-xl transform hover:-translate-y-0.5'
+                }`}
               >
                 {isLoading ? (
                   <>
-                    <FaSpinner className="animate-spin mr-2" />
-                    Création du compte...
+                    <FaSpinner className="animate-spin mr-3" />
+                    Création en cours...
                   </>
                 ) : (
-                  'Créer mon compte'
+                  <>
+                    <FaGraduationCap className="mr-3" />
+                    Créer mon compte JIG 2026
+                  </>
                 )}
-              </button>
+              </motion.button>
 
               {/* Lien de connexion */}
-              <div className="text-center">
-                <p className="text-gray-600">
-                  Déjà un compte ?{' '}
+              <div className="text-center pt-4 border-t border-gray-100">
+                <p className="text-gray-600 text-sm">
+                  Déjà membre ?{' '}
                   <Link href="/login" className="text-red-600 hover:text-red-700 font-medium transition-colors">
-                    Se connecter
+                    Connectez-vous ici
                   </Link>
                 </p>
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )

@@ -24,7 +24,7 @@ import Logo from '@/components/Logo'
 export default function LoginPage() {
   const [formData, setFormData] = useState({
     email: '',
-    motDePasse: ''
+    password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -69,10 +69,10 @@ export default function LoginPage() {
       newErrors.email = 'Format d\'email invalide'
     }
     
-    if (!formData.motDePasse.trim()) {
-      newErrors.motDePasse = 'Le mot de passe est requis'
-    } else if (formData.motDePasse.length < 6) {
-      newErrors.motDePasse = 'Le mot de passe doit contenir au moins 6 caractères'
+    if (!formData.password.trim()) {
+      newErrors.password = 'Le mot de passe est requis'
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères'
     }
     
     setErrors(newErrors)
@@ -238,7 +238,7 @@ export default function LoginPage() {
 
             {/* Mot de passe */}
             <div>
-              <label htmlFor="motDePasse" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Mot de passe
               </label>
               <div className="relative">
@@ -246,13 +246,13 @@ export default function LoginPage() {
                   <FaLock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  id="motDePasse"
-                  name="motDePasse"
+                  id="password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
-                  value={formData.motDePasse}
+                  value={formData.password}
                   onChange={handleInputChange}
                   className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-jig-primary focus:border-transparent transition-all duration-200 ${
-                    errors.motDePasse ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                    errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                   }`}
                   placeholder="Votre mot de passe"
                 />
@@ -264,13 +264,13 @@ export default function LoginPage() {
                   {showPassword ? <FaEyeSlash className="h-5 w-5" /> : <FaEye className="h-5 w-5" />}
                 </button>
               </div>
-              {errors.motDePasse && (
+              {errors.password && (
                 <motion.p 
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-sm mt-1"
                 >
-                  {errors.motDePasse}
+                  {errors.password}
                 </motion.p>
               )}
             </div>
