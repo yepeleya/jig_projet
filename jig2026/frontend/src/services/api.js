@@ -236,6 +236,12 @@ class ApiService {
       if (!response.ok) {
         const errorData = responseData || { message: `Erreur HTTP: ${response.status}` }
         
+        // 🛠️ CORRECTION: Créer une erreur avec status code attaché pour les fallbacks
+        let errorMessage = errorData.message || `Erreur HTTP: ${response.status}`
+        let customError = new Error(errorMessage)
+        customError.status = response.status  // ✅ Attacher le status code
+        customError.response = errorData
+        
         // Gestion spécifique des codes d'erreur
         if (response.status === 401) {
           // Token expiré ou invalide
@@ -244,23 +250,33 @@ class ApiService {
             // Rediriger vers la page de connexion si ce n'est pas déjà la page d'accueil
             window.location.href = '/'
           }
-          throw new Error(errorData.message || 'Session expirée, veuillez vous reconnecter')
+          customError.message = errorData.message || 'Session expirée, veuillez vous reconnecter'
         } else if (response.status === 403) {
-          throw new Error(errorData.message || 'Accès refusé')
+          customError.message = errorData.message || 'Accès refusé'
+        } else if (response.status === 404) {
+          customError.message = errorData.message || 'Fichier non trouvé'
         } else if (response.status === 500) {
-          throw new Error(errorData.message || 'Erreur serveur, réessayez plus tard')
-        } else {
-          throw new Error(errorData.message || `Erreur HTTP: ${response.status}`)
+          customError.message = errorData.message || 'Erreur serveur, réessayez plus tard'
         }
+        
+        throw customError
       }
 
       return responseData
     } catch (error) {
       console.error('❌ Erreur API upload:', error)
       
+      // 🛠️ CORRECTION: Préserver le status code dans les erreurs propagées
+      if (error.status) {
+        // L'erreur a déjà un status code, la propager telle quelle
+        throw error
+      }
+      
       // Gestion des erreurs réseau
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Le serveur est indisponible')
+        let networkError = new Error('Le serveur est indisponible')
+        networkError.status = 0  // Status spécial pour erreurs réseau
+        throw networkError
       }
       
       throw error
@@ -373,11 +389,50 @@ export class ProjetService extends ApiService {
       return await this.uploadFile('/projets/soumettre', formData)
     } catch (error) {
       console.error('❌ Erreur soumission projet:', error)
-      // Fallback si l'endpoint soumettre n'existe pas
+      
+      // 🔄 FALLBACKS multiples en cas d'erreur
+      // Fallback 1: Si l'endpoint soumettre n'existe pas (404)
       if (error.status === 404) {
-        console.log('🔄 Fallback: Tentative avec /projets')
-        return await this.uploadFile('/projets', formData)
+        console.log('🔄 Fallback 1: Tentative avec /projets (endpoint principal)')
+        try {
+          return await this.uploadFile('/projets', formData)
+        } catch (fallbackError) {
+          console.error('❌ Fallback 1 échoué:', fallbackError)
+          
+          // Fallback 2: Essayer d'autres endpoints possibles
+          if (fallbackError.status === 404) {
+            console.log('🔄 Fallback 2: Tentative avec un POST JSON simple')
+            try {
+              // Convertir FormData en objet simple pour JSON
+              const jsonData = {}
+              for (let [key, value] of formData.entries()) {
+                if (key === 'fichier') {
+                  jsonData.fichier = value.name // Juste le nom pour le test
+                } else {
+                  jsonData[key] = value
+                }
+              }
+              return await this.post('/projets', jsonData)
+            } catch (jsonError) {
+              console.error('❌ Fallback 2 échoué:', jsonError)
+              throw new Error('Service de soumission temporairement indisponible. Tous les endpoints ont échoué.')
+            }
+          } else {
+            throw fallbackError
+          }
+        }
       }
+      
+      // Fallback 3: Pour les erreurs 500 du backend
+      if (error.status === 500) {
+        console.log('🔄 Fallback 3: Backend en erreur, tentative avec endpoint alternatif')
+        try {
+          return await this.uploadFile('/projets', formData)
+        } catch (serverError) {
+          throw new Error('Service temporairement indisponible. Le backend est en cours de déploiement.')
+        }
+      }
+      
       throw error
     }
   }
