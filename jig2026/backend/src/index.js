@@ -298,6 +298,42 @@ app.get('/health', (req, res) => {
   });
 });
 
+// 📊 MIDDLEWARE DE LOGGING DÉTAILLÉ POUR DEBUGGING FRONTEND/BACKEND
+app.use('/api', (req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const origin = req.get('Origin') || req.get('Referer') || 'Direct';
+  const userAgent = req.get('User-Agent');
+  const authorization = req.get('Authorization');
+  
+  console.log(`📡 [${timestamp}] API Request:`, {
+    method: req.method,
+    url: req.url,
+    origin: origin,
+    userAgent: userAgent?.substring(0, 100) + '...',
+    hasAuth: !!authorization,
+    authType: authorization ? authorization.split(' ')[0] : 'None',
+    contentType: req.get('Content-Type'),
+    bodySize: req.get('Content-Length') || 'Unknown',
+    body: req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH' ? 
+          JSON.stringify(req.body)?.substring(0, 200) + '...' : 'N/A'
+  });
+  
+  // Intercepter la réponse pour logger aussi les retours
+  const originalSend = res.send;
+  res.send = function(data) {
+    console.log(`📤 [${timestamp}] API Response:`, {
+      status: res.statusCode,
+      url: req.url,
+      responseSize: data.length,
+      responsePreview: typeof data === 'string' ? 
+                      data.substring(0, 200) + '...' : 'Binary'
+    });
+    originalSend.call(this, data);
+  };
+  
+  next();
+});
+
 // Routes API
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

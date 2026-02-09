@@ -20,10 +20,6 @@ const validateProjectData = (data) => {
     errors.push("La catégorie est obligatoire");
   }
   
-  if (!data.niveau || data.niveau.trim().length === 0) {
-    errors.push("Le niveau d'études est obligatoire");
-  }
-  
   return errors;
 };
 
@@ -31,8 +27,7 @@ const sanitizeData = (data) => {
   return {
     titre: data.titre?.trim().substring(0, 200) || '',
     description: data.description?.trim().substring(0, 2000) || '',
-    categorie: data.categorie?.trim().substring(0, 100) || '',
-    niveau: data.niveau?.trim().substring(0, 50) || ''
+    categorie: data.categorie?.trim().substring(0, 100) || ''
   };
 };
 
@@ -86,7 +81,7 @@ export const soumettreProjet = async (req, res) => {
       userPresent: !!req.user
     });
     
-    const { titre, description, categorie, niveau } = req.body;
+    const { titre, description, categorie } = req.body;
     const fichier = req.file;
     const user = req.user;
 
@@ -140,7 +135,7 @@ export const soumettreProjet = async (req, res) => {
     }
 
     // 🛡️ VALIDATION DE SÉCURITÉ NIVEAU 5 : Validation des données
-    const donneesSanitisees = sanitizeData({ titre, description, categorie, niveau });
+    const donneesSanitisees = sanitizeData({ titre, description, categorie });
     const erreursValidation = validateProjectData(donneesSanitisees);
     
     if (erreursValidation.length > 0) {
@@ -219,10 +214,7 @@ export const soumettreProjet = async (req, res) => {
               nom: true,
               prenom: true,
               email: true,
-              role: true,
-              ecole: true,
-              filiere: true,
-              niveau: true
+              role: true
             }
           }
         }

@@ -15,8 +15,7 @@ export class NotificationService {
         'user',
         {
           userRole: user.role,
-          userEmail: user.email,
-          userEcole: user.ecole
+          userEmail: user.email
         }
       );
 

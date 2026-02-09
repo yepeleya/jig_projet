@@ -116,10 +116,7 @@ router.get("/mes-projets", authenticateToken, async (req, res) => {
             nom: true,
             prenom: true,
             email: true,
-            role: true,
-            ecole: true,
-            filiere: true,
-            niveau: true
+            role: true
           }
         }
       }
