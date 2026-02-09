@@ -88,7 +88,22 @@ const handleMulterError = (err, req, res, next) => {
   next(err);
 };
 
-// Routes
+// Routes de diagnostic
+router.get("/health", (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'Routes projets actives',
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      'GET /api/projets/health',
+      'POST /api/projets/soumettre', 
+      'GET /api/projets/public',
+      'GET /api/projets/mes-projets'
+    ]
+  });
+});
+
+// Routes principales
 router.post("/soumettre", 
   authenticateToken, 
   upload.single("fichier"), 
@@ -96,10 +111,35 @@ router.post("/soumettre",
   soumettreProjet
 );
 
-router.get("/", authenticateToken, getProjets); // Protégé par authentification
+router.get("/", authenticateToken, async (req, res) => {
+  // Route de secours si le controller principal échoue
+  try {
+    return await getProjets(req, res);
+  } catch (error) {
+    console.error('❌ Erreur route /api/projets/', error);
+    res.status(503).json({
+      success: false,
+      error: 'Service temporairement indisponible',
+      message: 'Problème de chargement des projets'
+    });
+  }
+}); // Protégé par authentification
 
 // Route publique pour les projets approuvés (pour le vote public)
-router.get("/public", getProjetsPublics); // Accès public aux projets approuvés uniquement
+router.get("/public", async (req, res) => {
+  // Route de secours si le controller principal échoue
+  try {
+    return await getProjetsPublics(req, res);
+  } catch (error) {
+    console.error('❌ Erreur route /api/projets/public', error);
+    res.status(503).json({
+      success: false,
+      error: 'Service temporairement indisponible',
+      data: [], // Données vides pour éviter crash frontend
+      fallback: true
+    });
+  }
+}); // Accès public aux projets approuvés uniquement
 
 // Route simplifiée pour récupérer MES projets (utilisateur connecté)
 router.get("/mes-projets", authenticateToken, async (req, res) => {

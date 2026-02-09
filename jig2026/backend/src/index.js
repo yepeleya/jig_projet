@@ -345,22 +345,45 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
-// Routes API
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/projets", projetRoutes);
-app.use("/api/votes", voteRoutes);
-app.use("/api/commentaires", commentaireRoutes);
-app.use("/api/galerie", galerieRoutes);
-app.use("/api/programmes", programmeRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/classement", classementRoutes);
-app.use("/api/access-control", accessControlRoutes);
-app.use("/api/content", contentRoutes);
-app.use("/api/jury", juryRoutes);
-app.use("/api/projet-suivi", projetSuiviRoutes);
+// Routes API avec gestion d'erreurs
+try {
+  app.use("/api/auth", authRoutes);
+  app.use("/api/users", userRoutes);
+  app.use("/api/projets", projetRoutes);
+  app.use("/api/votes", voteRoutes);
+  app.use("/api/commentaires", commentaireRoutes);
+  app.use("/api/galerie", galerieRoutes);
+  app.use("/api/programmes", programmeRoutes);
+  app.use("/api/contact", contactRoutes);
+  app.use("/api/admin", adminRoutes);
+  app.use("/api/notifications", notificationRoutes);
+  app.use("/api/classement", classementRoutes);
+  app.use("/api/access-control", accessControlRoutes);
+  app.use("/api/content", contentRoutes);
+  app.use("/api/jury", juryRoutes);
+  app.use("/api/projet-suivi", projetSuiviRoutes);
+  
+  console.log('✅ Toutes les routes chargées avec succès');
+} catch (error) {
+  console.error('❌ Erreur chargement routes:', error);
+  
+  // Routes de secours pour éviter les 404 totales
+  app.use("/api/projets", (req, res) => {
+    res.status(503).json({
+      success: false,
+      message: 'Service projets temporairement indisponible',
+      error: 'Route loading failed'
+    });
+  });
+  
+  app.use("/api/*", (req, res) => {
+    res.status(503).json({
+      success: false,
+      message: 'Service temporairement indisponible',
+      requested: req.originalUrl
+    });
+  });
+}
 
 // Middleware de gestion des erreurs
 app.use(notFound);

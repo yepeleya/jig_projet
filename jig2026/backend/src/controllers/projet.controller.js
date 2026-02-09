@@ -1,4 +1,21 @@
-import prisma from "../utils/prismaClient.js";
+// Imports sécurisés avec gestion d'erreur
+let prisma = null;
+try {
+  const prismaModule = await import("../utils/prismaClient.js");
+  prisma = prismaModule.default;
+  console.log('✅ Prisma client chargé avec succès dans projet.controller');
+} catch (error) {
+  console.error('❌ CRÍTICO: Erreur chargement Prisma dans projet.controller:', error.message);
+  // Fallback: essayer import direct
+  try {
+    prisma = (await import("@prisma/client")).PrismaClient;
+    prisma = new prisma();
+    console.log('✅ Fallback: Prisma client direct chargé');
+  } catch (fallbackError) {
+    console.error('❌ Fallback Prisma échec:', fallbackError.message);
+  }
+}
+
 import { NotificationService } from "../services/notification.service.js";
 import { ConfigurationService } from "../services/configuration.service.js";
 import path from "path";
@@ -73,7 +90,18 @@ const validateFileType = (file) => {
   return { valid: true };
 };
 
+// Route de soumission de projet avec protection Prisma
 export const soumettreProjet = async (req, res) => {
+  // 🛡️ PROTECTION: Vérifier que Prisma est disponible
+  if (!prisma) {
+    console.error('❌ CRÍTICO: Prisma indisponible pour soumettreProjet');
+    return res.status(503).json({
+      success: false,
+      error: "Service de base de données temporairement indisponible",
+      code: 'PRISMA_UNAVAILABLE'
+    });
+  }
+
   try {
     console.log('🚀 Début soumission projet:', {
       body: req.body,
@@ -359,6 +387,17 @@ export const getProjets = async (req, res) => {
 
 // Route publique pour les projets approuvés (utilisée pour le vote public)
 export const getProjetsPublics = async (req, res) => {
+  // 🛡️ PROTECTION: Vérifier que Prisma est disponible
+  if (!prisma) {
+    console.error('❌ Prisma indisponible pour getProjetsPublics');
+    return res.status(503).json({
+      success: false,
+      error: "Service de base de données temporairement indisponible",
+      debug: { prismaStatus: 'unavailable' },
+      fallbackData: [] // Données vides pour éviter le crash frontend
+    });
+  }
+
   try {
     console.log('📋 Récupération des projets publics');
     
