@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 export class AuthService {
   // Inscription utilisateur
   static async register(userData) {
-    const { nom, prenom, email, password, role = 'VISITEUR' } = userData
+    const { nom, prenom, email, password, role = 'ETUDIANT' } = userData
     
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
@@ -69,7 +69,7 @@ export class AuthService {
       nom: user.nom,
       prenom: user.prenom,
       email: user.email,
-      role: user.role || 'VISITEUR'
+      role: user.role || 'ETUDIANT'
     }
 
     // Générer le token
