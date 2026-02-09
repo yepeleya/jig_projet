@@ -385,37 +385,23 @@ export class ProjetService extends ApiService {
 
   async soumettreProjet(formData) {
     try {
-      console.log('📤 Soumission projet via uploadFile /projets/soumettre')
-      
-      // 🚀 CACHE BUSTER: Ajouter timestamp pour forcer refresh
-      const timestamp = Date.now()
-      const cacheBypassEndpoint = `/projets/soumettre?_t=${timestamp}`
-      
-      console.log('🔄 Cache bypass avec timestamp:', timestamp)
-      return await this.uploadFile(cacheBypassEndpoint, formData)
+      console.log('📤 Soumission projet via /projets/soumettre')
+      return await this.uploadFile('/projets/soumettre', formData)
     } catch (error) {
       console.error('❌ Erreur soumission projet:', error)
       
-      // 🎯 Si toujours 404 avec cache bypass, test route alternative
-      if (error.status === 404) {
-        console.log('🔄 Fallback: Test POST /projets (sans /soumettre)')
-        try {
-          const timestamp = Date.now()
-          return await this.uploadFile(`/projets?_t=${timestamp}`, formData)
-        } catch (fallbackError) {
-          console.error('❌ Fallback POST /projets échoué:', fallbackError)
-          throw new Error('Service temporairement indisponible. Cache en cours de mise à jour.')
-        }
-      }
-      
+      // 🎯 GES"TION D'ERREUR PROPRE - Plus de fallbacks
       if (error.status === 401 || error.status === 403) {
         throw new Error('Session expirée. Veuillez vous reconnecter.')
       }
       if (error.status === 400) {
         throw new Error(error.message || 'Données de projet invalides.')
       }
+      if (error.status === 404) {
+        throw new Error('Service de soumission non disponible.')
+      }
       if (error.status >= 500) {
-        throw new Error('Service temporairement indisponible. Réessayez dans quelques minutes.')
+        throw new Error('Erreur serveur. Réessayez plus tard.')
       }
       
       // Pour toute autre erreur
