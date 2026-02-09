@@ -60,6 +60,17 @@ app.use(helmet({
 }));
 app.use(morgan('combined'));
 
+// 🔍 MIDDLEWARE DE LOGGING POUR DEBUG VERCEL→RENDER
+app.use((req, res, next) => {
+  console.log(`\n🌐 [${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`📡 Origin: ${req.get('Origin') || 'NONE'}`);
+  console.log(`🌍 User-Agent: ${req.get('User-Agent')?.substring(0, 100) || 'NONE'}`);
+  console.log(`📨 Content-Type: ${req.get('Content-Type') || 'NONE'}`);
+  console.log(`📊 Body Preview:`, JSON.stringify(req.body)?.substring(0, 200) || 'EMPTY');
+  console.log(`🔑 Auth Header: ${req.get('Authorization') ? 'PRÉSENT' : 'ABSENT'}`);
+  next();
+});
+
 // Middlewares pour gérer les erreurs de streaming et les téléchargements
 app.use(handleStreamingErrors);
 app.use(addSecurityHeaders);
