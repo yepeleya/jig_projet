@@ -97,19 +97,59 @@ router.get("/health", (req, res) => {
     endpoints: [
       'GET /api/projets/health',
       'POST /api/projets/soumettre', 
+      'POST /api/projets (simple test)',
       'GET /api/projets/public',
       'GET /api/projets/mes-projets'
     ]
   });
 });
 
-// Routes principales
-router.post("/soumettre", 
-  authenticateToken, 
-  upload.single("fichier"), 
-  handleMulterError,
-  soumettreProjet
-);
+// 🧪 ROUTE TEST SIMPLE - Pour vérifier que POST fonctionne
+router.post("/", (req, res) => {
+  console.log('🧪 Route POST /api/projets appelée');
+  res.json({
+    success: true,
+    message: 'Route POST /api/projets fonctionne !',
+    timestamp: new Date().toISOString(),
+    body: req.body
+  });
+});
+
+// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - Sans middlewares complexes
+router.post("/soumettre", (req, res) => {
+  try {
+    console.log('🚀 Route POST /api/projets/soumettre appelée !');
+    console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
+    console.log('Body:', req.body);
+    
+    // Réponse test immédiate
+    res.json({
+      success: true,
+      message: 'Route /soumettre accessible !',
+      timestamp: new Date().toISOString(),
+      received: {
+        hasAuth: !!req.headers.authorization,
+        bodyKeys: Object.keys(req.body || {}),
+        method: req.method
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur route soumettre:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur route soumettre'
+    });
+  }
+});
+
+// Routes principales AVEC middlewares (pour plus tard)
+// router.post("/soumettre", 
+//   authenticateToken, 
+//   upload.single("fichier"), 
+//   handleMulterError,
+//   soumettreProjet
+// );
 
 // 🔄 ROUTE FALLBACK: POST /api/projets → redirige vers /soumettre
 router.post("/", 
