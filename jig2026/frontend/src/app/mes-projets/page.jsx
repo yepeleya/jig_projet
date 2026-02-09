@@ -49,7 +49,26 @@ export default function MesProjetsPage() {
       
       console.log('🔍 Chargement de MES projets pour utilisateur:', user?.nom, user?.id)
       
-      // Récupérer MES projets (utilisateur connecté)
+      // 🛠️ PROTECTION: Vérifier que projetService existe et a la méthode requise
+      if (!projetService) {
+        throw new Error('Service projet non disponible')
+      }
+
+      if (typeof projetService.getMesProjets !== 'function') {
+        console.warn('⚠️ getMesProjets method not found, using fallback')
+        
+        // Fallback: utiliser getProjetsByUser avec l'ID utilisateur
+        if (!user?.id) {
+          throw new Error('Utilisateur non identifié')
+        }
+        
+        const response = await projetService.getProjetsByUser(user.id)
+        setProjets(response.data || response || [])
+        console.log('✅ Projets chargés via fallback getProjetsByUser')
+        return
+      }
+      
+      // Récupérer MES projets (utilisateur connecté) - appel normal
       const response = await projetService.getMesProjets()
       
       console.log('📦 Mes projets reçus:', response)
@@ -66,6 +85,20 @@ export default function MesProjetsPage() {
       }
     } catch (err) {
       console.error('❌ Erreur chargement mes projets:', err)
+      
+      // 🔄 RETRY: Tentative de fallback en cas d'erreur
+      try {
+        console.log('🔄 Tentative de fallback après erreur...')
+        if (user?.id && projetService.getProjetsByUser) {
+          const fallbackResponse = await projetService.getProjetsByUser(user.id)
+          setProjets(fallbackResponse.data || fallbackResponse || [])
+          console.log('✅ Projets récupérés via fallback après erreur')
+          return
+        }
+      } catch (fallbackErr) {
+        console.error('❌ Fallback également en erreur:', fallbackErr)
+      }
+      
       setError(err.message || 'Erreur lors du chargement de vos projets')
     } finally {
       setLoading(false)

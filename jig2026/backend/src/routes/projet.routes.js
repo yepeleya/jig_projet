@@ -164,10 +164,8 @@ router.get("/user/:userId", authenticateToken, async (req, res) => {
             nom: true,
             prenom: true,
             email: true,
-            role: true,
-            ecole: true,
-            filiere: true,
-            niveau: true
+            role: true
+            // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
           }
         }
       }
@@ -217,10 +215,8 @@ router.get("/user/:id", authenticateToken, async (req, res) => {
             nom: true,
             prenom: true,
             email: true,
-            role: true,
-            ecole: true,
-            filiere: true,
-            niveau: true
+            role: true
+            // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
           }
         }
       }

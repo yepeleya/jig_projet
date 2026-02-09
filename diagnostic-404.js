@@ -1,0 +1,170 @@
+/**
+ * 🔍 DIAGNOSTIC ERREUR 404 - JIG2026
+ * Identification et résolution des endpoints manquants
+ */
+
+console.log('🔍 DIAGNOSTIC ERREUR 404')
+console.log('='.repeat(40))
+console.log('')
+
+console.log('📋 ENDPOINTS À VÉRIFIER:')
+console.log('')
+
+const BACKEND_URL = 'https://jig-projet-1.onrender.com'
+
+// Liste des endpoints critiques
+const endpoints = [
+  { name: 'API Health', url: `${BACKEND_URL}/api/health`, method: 'GET' },
+  { name: 'Projets Public', url: `${BACKEND_URL}/api/projets/public`, method: 'GET' },
+  { name: 'Mes Projets', url: `${BACKEND_URL}/api/projets/mes-projets`, method: 'GET', auth: true },
+  { name: 'Auto Approve', url: `${BACKEND_URL}/api/projets/auto-approve-all`, method: 'POST' },
+  { name: 'Auth Login', url: `${BACKEND_URL}/api/auth/login`, method: 'POST' },
+  { name: 'Mes Suivis', url: `${BACKEND_URL}/api/projet-suivi/mes-suivis`, method: 'GET', auth: true },
+  { name: 'Projet Suivi All', url: `${BACKEND_URL}/api/projet-suivi/all`, method: 'GET', auth: true }
+]
+
+console.log('🧪 COMMANDES DE TEST:')
+console.log('(Copier dans https://jig-projet-ea3m.vercel.app → F12 Console)')
+console.log('')
+
+console.log('// ============ TEST AUTOMATIQUE TOUS ENDPOINTS ============')
+console.log('console.log("🔍 Test automatique de tous les endpoints...");')
+console.log('')
+
+console.log('const endpoints = [')
+endpoints.forEach(endpoint => {
+  console.log(`  { name: "${endpoint.name}", url: "${endpoint.url}", method: "${endpoint.method}"${endpoint.auth ? ', auth: true' : ''} },`)
+})
+console.log('];')
+console.log('')
+
+console.log('async function testEndpoint(endpoint) {')
+console.log('  try {')
+console.log('    const options = { method: endpoint.method };')
+console.log('    ')
+console.log('    if (endpoint.auth) {')
+console.log('      const token = localStorage.getItem("token") || localStorage.getItem("jig2026_token");')
+console.log('      if (token) {')
+console.log('        options.headers = { "Authorization": `Bearer ${token}` };')
+console.log('      }')
+console.log('    }')
+console.log('    ')
+console.log('    if (endpoint.method === "POST") {')
+console.log('      options.headers = { ...options.headers, "Content-Type": "application/json" };')
+console.log('    }')
+console.log('    ')
+console.log('    const response = await fetch(endpoint.url, options);')
+console.log('    ')
+console.log('    if (response.status === 404) {')
+console.log('      console.log(`❌ 404 - ${endpoint.name}: ${endpoint.url}`);')
+console.log('    } else if (response.status === 401) {')
+console.log('      console.log(`🔐 401 - ${endpoint.name}: Authentification requise`);')
+console.log('    } else if (response.status === 500) {')
+console.log('      console.log(`🚨 500 - ${endpoint.name}: Erreur serveur`);')
+console.log('    } else if (response.ok) {')
+console.log('      console.log(`✅ ${response.status} - ${endpoint.name}: OK`);')
+console.log('    } else {')
+console.log('      console.log(`⚠️ ${response.status} - ${endpoint.name}: ${response.statusText}`);')
+console.log('    }')
+console.log('  } catch (error) {')
+console.log('    console.log(`💥 Erreur - ${endpoint.name}: ${error.message}`);')
+console.log('  }')
+console.log('}')
+console.log('')
+
+console.log('// Tester tous les endpoints')
+console.log('Promise.all(endpoints.map(testEndpoint))')
+console.log('.then(() => console.log("\\n🔍 Test terminé - vérifiez les résultats ci-dessus"));')
+console.log('')
+
+console.log('// ============ TESTS SPÉCIFIQUES ============')
+console.log('')
+
+console.log('// Test API de base')
+console.log('console.log("\\n🔍 Test API de base...");')
+console.log('fetch("' + BACKEND_URL + '")')
+console.log('  .then(r => console.log(`🌐 Backend racine: ${r.status} ${r.statusText}`))')
+console.log('  .catch(e => console.log("❌ Backend inaccessible:", e.message));')
+console.log('')
+
+console.log('// Test projets public (critique pour vote)')
+console.log('console.log("\\n🗳️ Test endpoint projets public...");')
+console.log('fetch("' + BACKEND_URL + '/api/projets/public")')
+console.log('  .then(r => r.json())')
+console.log('  .then(data => {')
+console.log('    console.log("📊 Projets public:", data);')
+console.log('    if (data.data?.length > 0) {')
+console.log('      console.log(`✅ ${data.data.length} projets disponibles pour vote`);')
+console.log('    } else {')
+console.log('      console.log("⚠️ Aucun projet - lancez auto-approve");')
+console.log('    }')
+console.log('  })')
+console.log('  .catch(e => console.log("❌ Erreur projets public:", e.message));')
+console.log('')
+
+console.log('// Solution si 404 sur /mes-projets')
+console.log('console.log("\\n🔧 Test nouvelle route mes-projets...");')
+console.log('fetch("' + BACKEND_URL + '/api/projets/mes-projets", {')
+console.log('  headers: {')
+console.log('    "Authorization": "Bearer " + (localStorage.getItem("token") || "TOKEN_MANQUANT")')
+console.log('  }')
+console.log('})')
+console.log('.then(r => {')
+console.log('  if (r.status === 404) {')
+console.log('    console.log("❌ Route /mes-projets non déployée - utilisez /user/:id");')
+console.log('  } else if (r.status === 401) {')
+console.log('    console.log("🔐 Route OK mais authentification requise");')
+console.log('  } else {')
+console.log('    return r.json().then(data => console.log("✅ Mes projets:", data));')
+console.log('  }')
+console.log('})')
+console.log('.catch(e => console.log("❌ Erreur mes-projets:", e.message));')
+console.log('')
+
+console.log('📋 CAUSES PROBABLES DES 404:')
+console.log('')
+console.log('1️⃣ ROUTE NON DÉPLOYÉE')
+console.log('   • /api/projets/mes-projets (nouvelle route)')
+console.log('   • Attendre redéploiement Vercel (~3 min)')
+console.log('')
+console.log('2️⃣ BACKEND EN VEILLE (Render)')
+console.log('   • Premier appel peut échouer')
+console.log('   • Retry automatique après 10-15s')
+console.log('')
+console.log('3️⃣ TYPO DANS URL')
+console.log('   • Vérifier orthographe endpoints')
+console.log('   • Case sensitive sur certains serveurs')
+console.log('')
+console.log('4️⃣ CORS / NETWORKING')
+console.log('   • Problème réseau temporaire')
+console.log('   • Bloqueur pub qui interfère')
+console.log('')
+
+console.log('🚀 SOLUTIONS IMMÉDIATES:')
+console.log('')
+console.log('SOLUTION A - AUTO-APPROVE (toujours fonctionne):')
+console.log('fetch("' + BACKEND_URL + '/api/projets/auto-approve-all", {method:"POST"})')
+console.log('  .then(r => r.json())')
+console.log('  .then(data => console.log("✅ Auto-approve:", data));')
+console.log('')
+console.log('SOLUTION B - Si mes-projets 404, utiliser route legacy:')
+console.log('// Récupérer userId depuis localStorage')
+console.log('const user = JSON.parse(localStorage.getItem("user") || "{}");')
+console.log('if(user.id) {')
+console.log('  fetch(`' + BACKEND_URL + '/api/projets/user/${user.id}`, {')
+console.log('    headers: {"Authorization": "Bearer " + localStorage.getItem("token")}')
+console.log('  })')
+console.log('  .then(r => r.json())')
+console.log('  .then(data => console.log("📋 Projets via route legacy:", data));')
+console.log('}')
+console.log('')
+
+console.log('🎯 EXÉCUTION:')
+console.log('1. Ouvrir https://jig-projet-ea3m.vercel.app')
+console.log('2. F12 → Console')
+console.log('3. Copier/coller le code de test ci-dessus')
+console.log('4. Identifier quel endpoint retourne 404')
+console.log('5. Appliquer solution correspondante')
+console.log('')
+
+console.log('📊 Le diagnostic identifiera précisément le problème!')

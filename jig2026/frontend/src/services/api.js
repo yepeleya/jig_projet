@@ -368,7 +368,18 @@ export class ProjetService extends ApiService {
   }
 
   async soumettreProjet(formData) {
-    return this.uploadFile('/projets/soumettre', formData)
+    try {
+      console.log('📤 Soumission projet via uploadFile /projets/soumettre')
+      return await this.uploadFile('/projets/soumettre', formData)
+    } catch (error) {
+      console.error('❌ Erreur soumission projet:', error)
+      // Fallback si l'endpoint soumettre n'existe pas
+      if (error.status === 404) {
+        console.log('🔄 Fallback: Tentative avec /projets')
+        return await this.uploadFile('/projets', formData)
+      }
+      throw error
+    }
   }
 
   async updateProjet(id, formData) {
@@ -383,8 +394,35 @@ export class ProjetService extends ApiService {
     return this.get(`/projets/user/${userId}`)
   }
 
+  // 🛠️ CORRECTION: Méthode getMesProjets robuste avec fallbacks
   async getMesProjets() {
-    return this.get('/projets/mes-projets')
+    try {
+      console.log('🔍 getMesProjets: Tentative route /projets/mes-projets')
+      const response = await this.get('/projets/mes-projets')
+      console.log('✅ getMesProjets: Succès avec /projets/mes-projets')
+      return response
+    } catch (error) {
+      console.warn('⚠️ getMesProjets: Échec route directe, tentative fallback')
+      
+      // Fallback: utiliser l'ID utilisateur depuis le token
+      try {
+        // Récupérer l'utilisateur depuis le localStorage ou le store
+        const userFromStorage = JSON.parse(localStorage.getItem('jig2026_user') || '{}')
+        const authData = JSON.parse(localStorage.getItem('jig-auth-storage') || '{}')
+        
+        const userId = userFromStorage?.id || authData?.state?.user?.id
+        
+        if (userId) {
+          console.log('🔄 getMesProjets: Fallback avec /projets/user/' + userId)
+          return await this.get(`/projets/user/${userId}`)
+        } else {
+          throw new Error('Utilisateur non identifié pour récupérer ses projets')
+        }
+      } catch (fallbackError) {
+        console.error('❌ getMesProjets: Échec total:', fallbackError)
+        throw new Error('Service temporairement indisponible. Veuillez réessayer.')
+      }
+    }
   }
 
   async getCategories() {
@@ -582,7 +620,7 @@ export class ProgrammeService extends ApiService {
   }
 }
 
-// Instances des services
+// Instances des services avec vérification d'initialisation
 export const authService = new AuthService()
 export const projetService = new ProjetService()
 export const voteService = new VoteService()
@@ -592,6 +630,25 @@ export const galerieService = new GalerieService()
 export const programmeService = new ProgrammeService()
 export const accessControlService = new AccessControlService()
 export const projetSuiviService = new ProjetSuiviService()
+
+// 🛠️ GUARDS: Vérification que tous les services ont les méthodes requises
+if (typeof projetService.getMesProjets !== 'function') {
+  console.error('❌ CRITICAL: projetService.getMesProjets not found!')
+  // Ajouter la méthode manuellement si elle manque
+  projetService.getMesProjets = async function() {
+    console.log('🔄 Fallback getMesProjets appelé')
+    try {
+      const userFromStorage = JSON.parse(localStorage.getItem('jig2026_user') || '{}')
+      const userId = userFromStorage?.id
+      if (userId) {
+        return await this.get(`/projets/user/${userId}`)
+      }
+      throw new Error('Utilisateur non connecté')
+    } catch (error) {
+      throw new Error('Service temporairement indisponible')
+    }
+  }
+}
 
 const apiServices = {
   auth: authService,
@@ -604,5 +661,15 @@ const apiServices = {
   accessControl: accessControlService,
   projetSuivi: projetSuiviService,
 }
+
+// Log pour vérifier l'initialisation
+console.log('✅ Services API initialisés:', {
+  authService: !!authService,
+  projetService: !!projetService,
+  projetServiceMethods: {
+    getMesProjets: typeof projetService.getMesProjets,
+    soumettreProjet: typeof projetService.soumettreProjet
+  }
+})
 
 export default apiServices

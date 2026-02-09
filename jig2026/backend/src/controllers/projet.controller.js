@@ -288,10 +288,8 @@ const enrichirProjets = async (projets) => {
           id: true,
           nom: true,
           prenom: true,
-          email: true,
-          ecole: true,
-          filiere: true,
-          niveau: true
+          email: true
+          // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
         }
       });
     }
@@ -400,10 +398,9 @@ export const getProjetsPublics = async (req, res) => {
             id: true,
             prenom: true, 
             nom: true,
-            email: true,
-            ecole: true,
-            filiere: true,
-            niveau: true
+            email: true
+            // ❌ CORRECTION: Suppression des champs inexistants dans le schema Prisma
+            // ecole, filiere, niveau n'existent pas dans le modèle User
           }
         },
         votes: {

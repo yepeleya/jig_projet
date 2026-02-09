@@ -206,146 +206,32 @@ export default function SoumettrePage() {
       formData.append('titre', data.projectTitle)
       formData.append('description', data.description)
       formData.append('categorie', data.category)
-      // Note: niveau supprimé car n'existe pas dans le schema backend
 
       console.log('🚀 Données du formulaire:', data)
       console.log('📁 Fichier sélectionné:', selectedFile)
       
-      // FORCE URL RENDER BACKEND - Plus de Railway !
-      const RENDER_BACKEND_URL = 'https://jig-projet-1.onrender.com'
-      const submissionUrl = `${RENDER_BACKEND_URL}/api/projets/soumettre`
+      // 🛠️ CORRECTION: Utiliser le service API corrigé avec fallbacks
+      console.log('📤 Utilisation du projetService.soumettreProjet() avec fallbacks...')
       
-      console.log('🔗 URL de soumission (RENDER):', submissionUrl)
+      const response = await apiService.projets.soumettreProjet(formData)
       
-      // Envoi à l'API backend avec gestion automatique du token et de l'expiration
-      const response = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest()
-        
-        // Suivi de progression de l'upload
-        xhr.upload.addEventListener('progress', (event) => {
-          if (event.lengthComputable) {
-            const progress = Math.round((event.loaded / event.total) * 100)
-            setUploadProgress(progress)
-          }
-        })
-        
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve({
-              ok: true,
-              status: xhr.status,
-              json: () => Promise.resolve(JSON.parse(xhr.responseText))
-            })
-          } else {
-            resolve({
-              ok: false,
-              status: xhr.status,
-              json: () => Promise.resolve(JSON.parse(xhr.responseText || '{}'))
-            })
-          }
-        })
-        
-        xhr.addEventListener('error', () => {
-          reject(new Error('Erreur réseau lors de l\'upload'))
-        })
-        
-        xhr.open('POST', submissionUrl)
-        
-        // Récupérer le token avec la même logique robuste qu'uploadFile()
-        let token = null;
-        
-        // 1. Essayer depuis le store Zustand persisté
-        try {
-          const persistedAuth = localStorage.getItem('jig-auth-storage')
-          if (persistedAuth) {
-            const authData = JSON.parse(persistedAuth)
-            token = authData?.state?.token
-          }
-        } catch (e) {
-          console.warn('Erreur lecture auth store:', e)
-        }
-        
-        // 2. Fallback vers les anciennes clés de localStorage
-        if (!token) {
-          token = localStorage.getItem('jig2026_token') || 
-                  localStorage.getItem('token') || 
-                  localStorage.getItem('authToken')
-        }
-        
-        if (token) {
-          xhr.setRequestHeader('Authorization', `Bearer ${token}`)
-          console.log('🔑 Token ajouté au header Authorization:', token.substring(0, 20) + '...')
-        } else {
-          console.warn('⚠️ Aucun token trouvé pour la soumission')
-        }
-        
-        xhr.send(formData)
-      })
+      console.log('✅ Succès soumission:', response)
       
-      // Traitement de la réponse API
-      if (response.ok) {
-        const result = await response.json()
+      if (response.success || response.data || response.id) {
+        setIsSuccess(true)
+        reset()
+        setSelectedFile(null)
+        setFilePreview(null)
+        localStorage.removeItem('jig2026_project_draft')
+        setIsDraft(false)
+        showNotification('success', 'Projet soumis avec succès ! Vous recevrez une confirmation par email.')
         
-        console.log('✅ Succès soumission:', result)
-        
-        if (result.success) {
-          setIsSuccess(true)
-          reset()
-          setSelectedFile(null)
-          setFilePreview(null)
-          localStorage.removeItem('jig2026_project_draft')
-          setIsDraft(false)
-          showNotification('success', 'Projet soumis avec succès ! Vous recevrez une confirmation par email.')
-          
-          // Masquer le message de succès après 8 secondes
-          setTimeout(() => {
-            setIsSuccess(false)
-          }, 8000)
-        } else {
-          throw new Error(result.message || result.error || 'Erreur lors de la soumission')
-        }
+        // Masquer le message de succès après 8 secondes
+        setTimeout(() => {
+          setIsSuccess(false)
+        }, 8000)
       } else {
-        const result = await response.json()
-        
-        console.log('❌ Erreur soumission:', {
-          status: response.status,
-          result: result,
-          message: result.error || result.message,
-          code: result.code
-        })
-        
-        // Gestion spécifique de l'expiration du token
-        if (response.status === 403 || response.status === 401) {
-          console.log('❌ Erreur d\'autorisation:', result)
-          
-          // Si c'est une erreur de rôle, ne pas déconnecter
-          if (result.code === 'ROLE_FORBIDDEN') {
-            showNotification('error', result.error || 'Vous n\'avez pas les permissions nécessaires')
-            setIsSubmitting(false)
-            setUploadProgress(0)
-            return
-          }
-          
-          console.log('Token expiré ou invalide, redirection vers la connexion')
-          showNotification('error', 'Votre session a expiré. Redirection vers la page de connexion...')
-          
-          // Nettoyer le store auth
-          const { logout } = useAuthStore.getState()
-          logout()
-          
-          // Rediriger vers la page de connexion après un délai
-          setTimeout(() => {
-            window.location.href = '/login'
-          }, 2000)
-          return
-        }
-        
-        // Pour les erreurs 404, afficher un message spécifique
-        if (response.status === 404) {
-          throw new Error('Service de soumission temporairement indisponible. Le backend est en cours de déploiement.')
-        }
-        
-        throw new Error(result.message || result.error || `Erreur HTTP ${response.status}`)
+        throw new Error(response.message || response.error || 'Erreur lors de la soumission')
       }
     } catch (error) {
       console.error('Erreur lors de la soumission:', error)

@@ -34,12 +34,10 @@ export const getAllUsers = async (req, res) => {
         prenom: true,
         email: true,
         role: true,
-        telephone: true,
-        ecole: true,
-        filiere: true,
-        niveau: true,
         createdAt: true,
         updatedAt: true
+        // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
+        // ❌ CORRECTION: suppression duplication createdAt
       }
     });
 
@@ -79,10 +77,8 @@ export const getAllProjects = async (req, res) => {
             id: true,
             nom: true,
             prenom: true,
-            email: true,
-            ecole: true,
-            filiere: true,
-            niveau: true
+            email: true
+            // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
           }
         },
         votes: {
@@ -277,10 +273,8 @@ export const updateUser = async (req, res) => {
         email: true,
         role: true,
         telephone: true,
-        ecole: true,
-        filiere: true,
-        niveau: true,
         updatedAt: true
+        // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
       }
     });
 
@@ -778,10 +772,8 @@ export const exportData = async (req, res) => {
               select: {
                 nom: true,
                 prenom: true,
-                email: true,
-                ecole: true,
-                filiere: true,
-                niveau: true
+                email: true
+                // ❌ CORRECTION: ecole, filiere, niveau n'existent pas dans le schema
               }
             },
             _count: {
@@ -798,8 +790,8 @@ export const exportData = async (req, res) => {
 
         headers = [
           'ID', 'Titre', 'Description', 'Catégorie', 'Statut', 'Fichier',
-          'Auteur', 'Email', 'École', 'Filière', 'Niveau', 
-          'Nombre de votes', 'Nombre de commentaires', 'Date de soumission'
+          'Auteur', 'Email', 'Nombre de votes', 'Nombre de commentaires', 'Date de soumission'
+          // ❌ CORRECTION: École, Filière, Niveau supprimés (champs inexistants)
         ];
 
         data = projets.map(projet => [
@@ -811,9 +803,7 @@ export const exportData = async (req, res) => {
           projet.fichier || 'Aucun',
           `${projet.user.prenom} ${projet.user.nom}`,
           projet.user.email,
-          projet.user.ecole || 'Non spécifié',
-          'Non spécifié', // filiere non disponible
-          'Non spécifié', // niveau non disponible
+          // ❌ CORRECTION: École, filière, niveau supprimés (champs inexistants)
           projet._count.votes,
           projet._count.commentaires,
           new Date(projet.createdAt).toLocaleDateString('fr-FR')
@@ -829,8 +819,8 @@ export const exportData = async (req, res) => {
         });
 
         headers = [
-          'ID', 'Nom', 'Prénom', 'Email', 'Rôle', 'Téléphone',
-          'École', 'Filière', 'Niveau', 'Date d\'inscription'
+          'ID', 'Nom', 'Prénom', 'Email', 'Rôle', 'Téléphone', 'Date d\'inscription'
+          // ❌ CORRECTION: École, Filière, Niveau supprimés (champs inexistants)
         ];
 
         data = users.map(user => [
@@ -840,9 +830,7 @@ export const exportData = async (req, res) => {
           user.email,
           user.role,
           user.telephone || 'Non spécifié',
-          user.ecole || 'Non spécifié',
-          'Non spécifié', // filiere non disponible
-          'Non spécifié', // niveau non disponible
+          // ❌ CORRECTION: École, filière, niveau supprimés (champs inexistants)
           new Date(user.createdAt).toLocaleDateString('fr-FR')
         ]);
         fileName = 'utilisateurs_export';

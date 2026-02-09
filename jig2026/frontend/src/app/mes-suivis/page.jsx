@@ -29,6 +29,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 import apiServices from '@/services/api'
+import { projetService, projetSuiviService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 import { useNotification } from '@/hooks/useNotification'
 import NotificationToast from '@/components/NotificationToast'
@@ -79,10 +80,12 @@ export default function SuiviPage() {
         onlyMyProjects 
       })
 
-      // Récupérer les suivis
+      // Récupérer les suivis avec protection
       let suivisData = []
       if (onlyMyProjects || user?.role === 'ETUDIANT') {
-        const suivisResponse = await apiServices.projetSuivi.getMesSuivis()
+        console.log('🔍 Récupération MES suivis via projetSuiviService...')
+        // 🛠️ PROTECTION: Utiliser directement projetSuiviService
+        const suivisResponse = await projetSuiviService.getMesSuivis()
         if (suivisResponse.success) {
           suivisData = suivisResponse.data || []
         }
@@ -96,17 +99,37 @@ export default function SuiviPage() {
 
       setSuivis(suivisData)
 
-      // Récupérer les projets pour les filtres
+      // Récupérer les projets pour les filtres avec protection
       let projetsData = []
       if (user?.role === 'ADMIN' || user?.role === 'JURY') {
-        const projetsResponse = await apiServices.projet.getAll()
-        if (projetsResponse.success) {
-          projetsData = projetsResponse.data || []
+        // Pour admin/jury : tous les projets
+        try {
+          const projetsResponse = await apiServices.projets.getAllProjets()
+          projetsData = projetsResponse.data || projetsResponse || []
+        } catch (error) {
+          console.warn('⚠️ Fallback: Utilisation projetService direct pour admin')
+          const projetsResponse = await projetService.getAllProjets()
+          projetsData = projetsResponse.data || projetsResponse || []
         }
       } else {
-        const projetsResponse = await apiServices.projet.getMesProjets()
-        if (projetsResponse.success) {
-          projetsData = projetsResponse.data || []
+        // Pour utilisateur normal : ses projets seulement
+        try {
+          console.log('🔍 Récupération des projets utilisateur via projetService...')
+          // 🛠️ PROTECTION: Utiliser directement projetService au lieu d'apiServices.projet
+          if (typeof projetService?.getMesProjets === 'function') {
+            const projetsResponse = await projetService.getMesProjets()
+            projetsData = projetsResponse.data || projetsResponse || []
+          } else if (user?.id && typeof projetService?.getProjetsByUser === 'function') {
+            console.log('🔄 Fallback: Utilisation getProjetsByUser pour user ID:', user.id)
+            const projetsResponse = await projetService.getProjetsByUser(user.id)
+            projetsData = projetsResponse.data || projetsResponse || []
+          } else {
+            console.error('❌ Aucune méthode disponible pour récupérer les projets utilisateur')
+            projetsData = []
+          }
+        } catch (error) {
+          console.error('❌ Erreur récupération projets utilisateur:', error)
+          projetsData = []
         }
       }
 
