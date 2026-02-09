@@ -386,15 +386,28 @@ export class ProjetService extends ApiService {
   async soumettreProjet(formData) {
     try {
       console.log('📤 Soumission projet via uploadFile /projets/soumettre')
-      return await this.uploadFile('/projets/soumettre', formData)
+      
+      // 🚀 CACHE BUSTER: Ajouter timestamp pour forcer refresh
+      const timestamp = Date.now()
+      const cacheBypassEndpoint = `/projets/soumettre?_t=${timestamp}`
+      
+      console.log('🔄 Cache bypass avec timestamp:', timestamp)
+      return await this.uploadFile(cacheBypassEndpoint, formData)
     } catch (error) {
       console.error('❌ Erreur soumission projet:', error)
       
-      // 🎯 ENDPOINT UNIQUE - Plus de fallbacks complexes
-      // Si la route principale échoue, c'est un vrai problème à résoudre
+      // 🎯 Si toujours 404 avec cache bypass, test route alternative
       if (error.status === 404) {
-        throw new Error('Route de soumission non trouvée. Vérifiez que le backend est déployé.')
+        console.log('🔄 Fallback: Test POST /projets (sans /soumettre)')
+        try {
+          const timestamp = Date.now()
+          return await this.uploadFile(`/projets?_t=${timestamp}`, formData)
+        } catch (fallbackError) {
+          console.error('❌ Fallback POST /projets échoué:', fallbackError)
+          throw new Error('Service temporairement indisponible. Cache en cours de mise à jour.')
+        }
       }
+      
       if (error.status === 401 || error.status === 403) {
         throw new Error('Session expirée. Veuillez vous reconnecter.')
       }
