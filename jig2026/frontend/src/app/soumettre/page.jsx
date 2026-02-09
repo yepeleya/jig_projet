@@ -598,8 +598,8 @@ export default function SoumettrePage() {
                           {...register('description', { 
                             required: 'La description est requise',
                             minLength: {
-                              value: 50,
-                              message: 'La description doit contenir au moins 50 caractères'
+                              value: 20,
+                              message: 'La description doit contenir au moins 20 caractères'
                             }
                           })}
                           rows={6}

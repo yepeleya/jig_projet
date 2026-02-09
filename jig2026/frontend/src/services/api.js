@@ -390,50 +390,23 @@ export class ProjetService extends ApiService {
     } catch (error) {
       console.error('❌ Erreur soumission projet:', error)
       
-      // 🔄 FALLBACKS multiples en cas d'erreur
-      // Fallback 1: Si l'endpoint soumettre n'existe pas (404)
+      // 🎯 ENDPOINT UNIQUE - Plus de fallbacks complexes
+      // Si la route principale échoue, c'est un vrai problème à résoudre
       if (error.status === 404) {
-        console.log('🔄 Fallback 1: Tentative avec /projets (endpoint principal)')
-        try {
-          return await this.uploadFile('/projets', formData)
-        } catch (fallbackError) {
-          console.error('❌ Fallback 1 échoué:', fallbackError)
-          
-          // Fallback 2: Essayer d'autres endpoints possibles
-          if (fallbackError.status === 404) {
-            console.log('🔄 Fallback 2: Tentative avec un POST JSON simple')
-            try {
-              // Convertir FormData en objet simple pour JSON
-              const jsonData = {}
-              for (let [key, value] of formData.entries()) {
-                if (key === 'fichier') {
-                  jsonData.fichier = value.name // Juste le nom pour le test
-                } else {
-                  jsonData[key] = value
-                }
-              }
-              return await this.post('/projets', jsonData)
-            } catch (jsonError) {
-              console.error('❌ Fallback 2 échoué:', jsonError)
-              throw new Error('Service de soumission temporairement indisponible. Tous les endpoints ont échoué.')
-            }
-          } else {
-            throw fallbackError
-          }
-        }
+        throw new Error('Route de soumission non trouvée. Vérifiez que le backend est déployé.')
+      }
+      if (error.status === 401 || error.status === 403) {
+        throw new Error('Session expirée. Veuillez vous reconnecter.')
+      }
+      if (error.status === 400) {
+        throw new Error(error.message || 'Données de projet invalides.')
+      }
+      if (error.status >= 500) {
+        throw new Error('Service temporairement indisponible. Réessayez dans quelques minutes.')
       }
       
-      // Fallback 3: Pour les erreurs 500 du backend
-      if (error.status === 500) {
-        console.log('🔄 Fallback 3: Backend en erreur, tentative avec endpoint alternatif')
-        try {
-          return await this.uploadFile('/projets', formData)
-        } catch (serverError) {
-          throw new Error('Service temporairement indisponible. Le backend est en cours de déploiement.')
-        }
-      }
-      
-      throw error
+      // Pour toute autre erreur
+      throw new Error(error.message || 'Erreur lors de la soumission du projet.')
     }
   }
 
