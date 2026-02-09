@@ -849,18 +849,18 @@ export default function SoumettrePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <a 
-                href="mailto:support@jig2026.com"
+                href="mailto:jigeain@gmail.com"
                 className="inline-flex items-center px-4 py-2 bg-jig-primary text-white rounded-lg hover:bg-red-600 transition-colors"
               >
                 <FiMail className="w-4 h-4 mr-2" />
-                support@jig2026.com
+                jigeain@gmail.com
               </a>
               <a 
-                href="tel:+2250123456789"
+                href="tel:+22578793501"
                 className="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
               >
                 <FiPhone className="w-4 h-4 mr-2" />
-                +225 01 23 45 67 89
+                +225 78 79 35 01
               </a>
             </div>
           </div>

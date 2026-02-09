@@ -115,13 +115,41 @@ router.post("/", (req, res) => {
   });
 });
 
-// 🚀 ROUTE SOUMETTRE COMPLÈTE - Avec middlewares d'upload
-router.post("/soumettre", 
-  authenticateToken, 
-  upload.single("fichier"), 
-  handleMulterError,
-  soumettreProjet
-);
+// 🚀 ROUTE SOUMETTRE HYBRIDE - auth simple + upload manuel (temporaire)
+router.post("/soumettre", authenticateToken, async (req, res) => {
+  try {
+    console.log('🚀 Route hybride appelée - auth OK, upload manuel');
+    console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
+    console.log('User:', req.user ? req.user.id : 'Pas d\'utilisateur');
+    console.log('Body:', req.body);
+    
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Authentification requise",
+        code: 'AUTH_REQUIRED'
+      });
+    }
+    
+    // Appel direct du contrôleur sans multer pour l'instant
+    await soumettreProjet(req, res);
+    
+  } catch (error) {
+    console.error('❌ Erreur route hybride:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erreur interne du serveur'
+    });
+  }
+});
+
+// 🚀 ROUTE SOUMETTRE COMPLÈTE - Avec middlewares d'upload (désactivée temporairement)
+// router.post("/soumettre", 
+//   authenticateToken, 
+//   upload.single("fichier"), 
+//   handleMulterError,
+//   soumettreProjet
+// );
 
 // 🧪 ROUTE TEST SIMPLE - Pour vérifier que POST fonctionne (backup)
 router.post("/test", (req, res) => {

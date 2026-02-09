@@ -1,653 +1,238 @@
 'use client'
 
-import { NetworkErrorHandler } from '../utils/networkErrorHandler.js'
+// ==============================
+// CONFIGURATION API
+// ==============================
+const API_BASE_URL = 'https://jig-projet-1.onrender.com/api'
 
-// Configuration de l'API - RENDER BACKEND EXCLUSIVEMENT
-const RENDER_API_URL = 'https://jig-projet-1.onrender.com/api'
-let API_BASE_URL = RENDER_API_URL
+console.log('🎯 API BASE URL:', API_BASE_URL)
 
-// Logs pour diagnostiquer le problème
-console.log('🎯 API_BASE_URL FORCÉ vers RENDER:', API_BASE_URL)
-console.log('🚫 Toute référence Railway est bloquée')
-console.log('🔧 Variables env disponibles:', {
-  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-  NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL
-})
-
-// 🎯 DÉTECTION AUTOMATIQUE VERCEL API
-// Si on est sur Vercel ET qu'aucune API_URL externe n'est définie,
-// utiliser les API routes Vercel natives (/api/*)
-if (typeof window !== 'undefined' && 
-    window.location.hostname.includes('vercel.app') && 
-    !process.env.NEXT_PUBLIC_API_URL) {
-  API_BASE_URL = '/api' // Utiliser les API routes Vercel
-  console.log('🎯 Mode Vercel API détecté - utilisation des routes natives')
-}
-
-// S'assurer que l'URL se termine par /api pour les backends externes
-if (API_BASE_URL && !API_BASE_URL.startsWith('/api') && !API_BASE_URL.endsWith('/api')) {
-  API_BASE_URL = `${API_BASE_URL}/api`
-}
-
-// Classe pour gérer les appels API
+// ==============================
+// CLASSE BASE API
+// ==============================
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL
   }
 
   getToken() {
-    // 1. Essayer depuis le store Zustand persisté
-    try {
-      const persistedAuth = localStorage.getItem('jig-auth-storage')
-      if (persistedAuth) {
-        const authData = JSON.parse(persistedAuth)
-        if (authData?.state?.token) {
-          return authData.state.token
-        }
-      }
-    } catch (e) {
-      console.warn('Erreur lecture token depuis auth store:', e)
-    }
-    
-    // 2. Fallback vers les anciennes clés
-    return localStorage.getItem('jig2026_token') || 
-           localStorage.getItem('token') || 
-           localStorage.getItem('authToken')
+    return localStorage.getItem('jig2026_token')
   }
 
   isAuthenticated() {
     return !!this.getToken()
   }
 
-  // Méthode générique pour faire des requêtes avec gestion d'erreur réseau
+  // ==============================
+  // REQUÊTES JSON UNIQUEMENT
+  // ==============================
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`
-    console.log('🌐 API Request:', options.method || 'GET', url)
-    
-    const defaultOptions = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const token = this.getToken()
+
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
     }
 
-    // Ajouter le token d'authentification depuis différentes sources
-    let token = null;
-    
-    // 1. Essayer depuis le store Zustand persisté
-    try {
-      const persistedAuth = localStorage.getItem('jig-auth-storage')
-      if (persistedAuth) {
-        const authData = JSON.parse(persistedAuth)
-        token = authData?.state?.token
-      }
-    } catch (e) {
-      console.warn('Erreur lecture auth store:', e)
-    }
-    
-    // 2. Fallback vers les anciennes clés de localStorage
-    if (!token) {
-      token = localStorage.getItem('jig2026_token') || 
-              localStorage.getItem('token') || 
-              localStorage.getItem('authToken')
-    }
-    
-    if (token) {
-      defaultOptions.headers.Authorization = `Bearer ${token}`
-      console.log('🔑 Token ajouté aux headers:', token.substring(0, 20) + '...')
-    } else {
-      console.log('⚠️ Pas de token trouvé pour la requête')
-    }
-
-    const finalOptions = {
-      ...defaultOptions,
+    const response = await fetch(url, {
       ...options,
-      headers: {
-        ...defaultOptions.headers,
-        ...options.headers,
-      },
+      headers,
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('jig2026_token')
+        window.location.href = '/'
+      }
+      throw new Error(data.message || 'Erreur API')
     }
 
-    try {
-      // Utiliser un simple fetch sans timeout pour éviter les interruptions
-      console.log('📤 Envoi requête avec options:', finalOptions)
-      const response = await fetch(url, finalOptions)
-      console.log('📥 Réponse reçue:', response.status, response.statusText)
-      
-      // Lire la réponse complètement avant de vérifier le status
-      const responseData = await response.json()
-      console.log('📊 Données reçues:', responseData)
-      
-      // Si la réponse n'est pas OK, lancer une erreur avec plus de détails
-      if (!response.ok) {
-        const errorData = responseData || { message: `Erreur HTTP: ${response.status}` }
-        
-        // Gestion spécifique des codes d'erreur
-        if (response.status === 401) {
-          // Token expiré ou invalide
-          localStorage.removeItem('jig2026_token')
-          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-            // Rediriger vers la page de connexion si ce n'est pas déjà la page d'accueil
-            window.location.href = '/'
-          }
-          throw new Error(errorData.message || 'Session expirée, veuillez vous reconnecter')
-        } else if (response.status === 403) {
-          throw new Error(errorData.message || 'Accès refusé')
-        } else if (response.status === 500) {
-          throw new Error(errorData.message || 'Erreur serveur, réessayez plus tard')
-        } else {
-          throw new Error(errorData.message || `Erreur HTTP: ${response.status}`)
-        }
-      }
-
-      return responseData
-    } catch (error) {
-      console.error('Erreur API:', error)
-      
-      // Gestion des erreurs réseau
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Le serveur est indisponible')
-      }
-      
-      throw error
-    }
+    return data
   }
 
-  // Méthodes HTTP raccourcies
-  async get(endpoint) {
+  get(endpoint) {
     return this.request(endpoint, { method: 'GET' })
   }
 
-  async post(endpoint, data) {
+  post(endpoint, data) {
     return this.request(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),
     })
   }
 
-  async patch(endpoint, data) {
+  patch(endpoint, data) {
     return this.request(endpoint, {
       method: 'PATCH',
       body: JSON.stringify(data),
     })
   }
 
-  async delete(endpoint) {
+  delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' })
   }
-
-  // Méthode pour envoyer des fichiers
-  async uploadFile(endpoint, formData) {
-    const url = `${this.baseURL}${endpoint}`
-    console.log('🌐 Upload Request:', 'POST', url)
-    
-    // Récupérer le token avec la même logique que request()
-    let token = null;
-    
-    // 1. Essayer depuis le store Zustand persisté
-    try {
-      const persistedAuth = localStorage.getItem('jig-auth-storage')
-      if (persistedAuth) {
-        const authData = JSON.parse(persistedAuth)
-        token = authData?.state?.token
-      }
-    } catch (e) {
-      console.warn('Erreur lecture auth store:', e)
-    }
-    
-    // 2. Fallback vers les anciennes clés de localStorage
-    if (!token) {
-      token = localStorage.getItem('jig2026_token') || 
-              localStorage.getItem('token') || 
-              localStorage.getItem('authToken')
-    }
-    
-    const headers = {}
-    
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
-      console.log('🔑 Token ajouté aux headers upload:', token.substring(0, 20) + '...')
-    } else {
-      console.log('⚠️ Pas de token trouvé pour l\'upload')
-    }
-    
-    console.log('📤 Envoi upload avec options:', { headers, method: 'POST' })
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: formData,
-      })
-
-      console.log('📥 Réponse upload reçue:', response.status)
-
-      let responseData = null
-      const contentType = response.headers.get('content-type')
-      
-      if (contentType && contentType.includes('application/json')) {
-        responseData = await response.json()
-        console.log('📊 Données upload reçues:', responseData)
-      } else {
-        responseData = await response.text()
-        console.log('📜 Texte upload reçu:', responseData)
-      }
-
-      // Si la réponse n'est pas OK, lancer une erreur avec plus de détails
-      if (!response.ok) {
-        const errorData = responseData || { message: `Erreur HTTP: ${response.status}` }
-        
-        // 🛠️ CORRECTION: Créer une erreur avec status code attaché pour les fallbacks
-        let errorMessage = errorData.message || `Erreur HTTP: ${response.status}`
-        let customError = new Error(errorMessage)
-        customError.status = response.status  // ✅ Attacher le status code
-        customError.response = errorData
-        
-        // Gestion spécifique des codes d'erreur
-        if (response.status === 401) {
-          // Token expiré ou invalide
-          localStorage.removeItem('jig2026_token')
-          if (typeof window !== 'undefined' && window.location.pathname !== '/') {
-            // Rediriger vers la page de connexion si ce n'est pas déjà la page d'accueil
-            window.location.href = '/'
-          }
-          customError.message = errorData.message || 'Session expirée, veuillez vous reconnecter'
-        } else if (response.status === 403) {
-          customError.message = errorData.message || 'Accès refusé'
-        } else if (response.status === 404) {
-          customError.message = errorData.message || 'Fichier non trouvé'
-        } else if (response.status === 500) {
-          customError.message = errorData.message || 'Erreur serveur, réessayez plus tard'
-        }
-        
-        throw customError
-      }
-
-      return responseData
-    } catch (error) {
-      console.error('❌ Erreur API upload:', error)
-      
-      // 🛠️ CORRECTION: Préserver le status code dans les erreurs propagées
-      if (error.status) {
-        // L'erreur a déjà un status code, la propager telle quelle
-        throw error
-      }
-      
-      // Gestion des erreurs réseau
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        let networkError = new Error('Le serveur est indisponible')
-        networkError.status = 0  // Status spécial pour erreurs réseau
-        throw networkError
-      }
-      
-      throw error
-    }
-  }
 }
 
-// Services spécialisés
+// ==============================
+// AUTH SERVICE
+// ==============================
 export class AuthService extends ApiService {
   async login(credentials) {
-    console.log('🔐 AuthService.login appelé avec:', credentials)
-    try {
-      const response = await this.post('/auth/login', credentials)
-      console.log('📨 Réponse brute de l\'API:', response)
-      
-      if (response.success && response.data && response.data.token) {
-        console.log('✅ Token reçu, sauvegarde en localStorage')
-        localStorage.setItem('jig2026_token', response.data.token)
-        localStorage.setItem('jig2026_user', JSON.stringify(response.data.user))
-      }
-      
-      return response
-    } catch (error) {
-      console.error('💥 Erreur dans AuthService.login:', error)
-      throw error
+    const response = await this.post('/auth/login', credentials)
+
+    if (response?.data?.token) {
+      localStorage.setItem('jig2026_token', response.data.token)
+      localStorage.setItem('jig2026_user', JSON.stringify(response.data.user))
     }
+
+    return response
   }
 
-  async register(userData) {
-    console.log('🔐 AuthService.register appelé avec:', userData)
-    try {
-      const response = await this.post('/auth/register', userData)
-      console.log('📨 Réponse brute de l\'API:', response)
-      return response
-    } catch (error) {
-      console.error('💥 Erreur dans AuthService.register:', error)
-      throw error
-    }
+  async register(data) {
+    return this.post('/auth/register', data)
   }
 
-  async logout() {
-    // Déconnexion côté client - pas besoin d'appel API
-    // On nettoie juste le localStorage
+  logout() {
     localStorage.removeItem('jig2026_token')
     localStorage.removeItem('jig2026_user')
-    
-    console.log('🚪 Déconnexion locale réussie')
   }
 
-  async getProfile() {
+  getProfile() {
     return this.get('/auth/profile')
-  }
-
-  async verifyToken() {
-    return this.get('/auth/verify')
-  }
-
-  getCurrentUser() {
-    // 1. Essayer depuis le store Zustand persisté
-    try {
-      const persistedAuth = localStorage.getItem('jig-auth-storage')
-      if (persistedAuth) {
-        const authData = JSON.parse(persistedAuth)
-        if (authData?.state?.user) {
-          return authData.state.user
-        }
-      }
-    } catch (e) {
-      console.warn('Erreur lecture user depuis auth store:', e)
-    }
-    
-    // 2. Fallback vers l'ancienne méthode
-    const user = localStorage.getItem('jig2026_user')
-    return user ? JSON.parse(user) : null
-  }
-
-  setToken(token) {
-    localStorage.setItem('jig2026_token', token)
-    this.token = token
   }
 }
 
+// ==============================
+// PROJET SERVICE
+// ==============================
 export class ProjetService extends ApiService {
-  async getAllProjets(filters = {}) {
-    const queryParams = new URLSearchParams(filters).toString()
-    
-    // TOUJOURS utiliser la route publique pour la page de vote
-    const endpoint = queryParams ? `/projets/public?${queryParams}` : '/projets/public'
-    
-    console.log('🔍 Appel API:', endpoint)
-    console.log('🔍 URL complète:', `${this.baseURL}${endpoint}`)
-    
-    // Ajouter un timestamp pour éviter le cache
-    const finalEndpoint = endpoint + (endpoint.includes('?') ? '&' : '?') + `_t=${Date.now()}`
-    
-    return this.get(finalEndpoint)
+  getAllProjets(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    return this.get(`/projets/public${params ? `?${params}` : ''}`)
   }
 
-  async getProjetById(id) {
+  getProjetById(id) {
     return this.get(`/projets/${id}`)
   }
 
-  async createProjet(formData) {
-    return this.uploadFile('/projets', formData)
-  }
-
+  // 🔥 UPLOAD PROJET – VERSION UNIQUE ET SAINE
   async soumettreProjet(formData) {
-    try {
-      console.log('📤 Soumission projet via /projets/soumettre')
-      return await this.uploadFile('/projets/soumettre', formData)
-    } catch (error) {
-      console.error('❌ Erreur soumission projet:', error)
-      
-      // 🎯 GES"TION D'ERREUR PROPRE - Plus de fallbacks
-      if (error.status === 401 || error.status === 403) {
-        throw new Error('Session expirée. Veuillez vous reconnecter.')
-      }
-      if (error.status === 400) {
-        throw new Error(error.message || 'Données de projet invalides.')
-      }
-      if (error.status === 404) {
-        throw new Error('Service de soumission non disponible.')
-      }
-      if (error.status >= 500) {
-        throw new Error('Erreur serveur. Réessayez plus tard.')
-      }
-      
-      // Pour toute autre erreur
-      throw new Error(error.message || 'Erreur lors de la soumission du projet.')
+    const token = this.getToken()
+
+    const response = await fetch(`${this.baseURL}/projets/soumettre`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Erreur soumission projet')
     }
+
+    return data
   }
 
-  async updateProjet(id, formData) {
-    return this.uploadFile(`/projets/${id}`, formData)
+  getMesProjets() {
+    return this.get('/projets/mes-projets')
   }
 
-  async deleteProjet(id) {
-    return this.delete(`/projets/${id}`)
-  }
-
-  async getProjetsByUser(userId) {
-    return this.get(`/projets/user/${userId}`)
-  }
-
-  // 🛠️ CORRECTION: Méthode getMesProjets robuste avec fallbacks
-  async getMesProjets() {
-    try {
-      console.log('🔍 getMesProjets: Tentative route /projets/mes-projets')
-      const response = await this.get('/projets/mes-projets')
-      console.log('✅ getMesProjets: Succès avec /projets/mes-projets')
-      return response
-    } catch (error) {
-      console.warn('⚠️ getMesProjets: Échec route directe, tentative fallback')
-      
-      // Fallback: utiliser l'ID utilisateur depuis le token
-      try {
-        // Récupérer l'utilisateur depuis le localStorage ou le store
-        const userFromStorage = JSON.parse(localStorage.getItem('jig2026_user') || '{}')
-        const authData = JSON.parse(localStorage.getItem('jig-auth-storage') || '{}')
-        
-        const userId = userFromStorage?.id || authData?.state?.user?.id
-        
-        if (userId) {
-          console.log('🔄 getMesProjets: Fallback avec /projets/user/' + userId)
-          return await this.get(`/projets/user/${userId}`)
-        } else {
-          throw new Error('Utilisateur non identifié pour récupérer ses projets')
-        }
-      } catch (fallbackError) {
-        console.error('❌ getMesProjets: Échec total:', fallbackError)
-        throw new Error('Service temporairement indisponible. Veuillez réessayer.')
-      }
-    }
-  }
-
-  async getCategories() {
+  getCategories() {
     return this.get('/projets/categories')
   }
 }
 
+// ==============================
+// VOTE SERVICE
+// ==============================
 export class VoteService extends ApiService {
-  async vote(projetId, valeur) {
-    // Récupérer le token et parser les infos utilisateur
-    const token = this.getToken()
-    if (!token) {
-      throw new Error('Utilisateur non connecté')
-    }
-
-    // Décoder le token pour obtenir les infos utilisateur
-    let user
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      user = payload
-    } catch (error) {
-      throw new Error('Token invalide')
-    }
-
-    const voteData = {
-      projetId: parseInt(projetId),
-      valeur: parseInt(valeur),
-      typeVote: user.role === 'JURY' ? 'JURY' : 'ETUDIANT'
-    }
-
-    // Ajouter l'ID utilisateur selon le rôle
-    if (user.role === 'JURY') {
-      voteData.juryId = user.id
-    } else {
-      voteData.userId = user.id
-    }
-
-    console.log('📨 Données de vote envoyées:', voteData)
-    return this.post('/votes', voteData)
+  vote(projetId, valeur) {
+    return this.post('/votes', { projetId, valeur })
   }
 
-  async getVotesByProjet(projetId) {
-    return this.get(`/votes/${projetId}`)
+  getVotesByProjet(id) {
+    return this.get(`/votes/${id}`)
   }
 
-  async getMyVotes() {
-    return this.get('/votes/my-votes')
-  }
-
-  async getClassement(categorie = null) {
-    const endpoint = categorie ? `/votes/classement?categorie=${categorie}` : '/votes/classement'
-    return this.get(endpoint)
-  }
-
-  async getResults() {
-    return this.get('/votes/results')
-  }
-
-  async getFinalResults() {
-    return this.get('/votes/final-results')
-  }
-
-  async getAllVotes() {
-    return this.get('/votes')
-  }
-
-  async getScores() {
-    return this.get('/votes/scores/all')
-  }
-
-  async canVote(projetId) {
-    return this.get(`/votes/can-vote/${projetId}`)
+  getClassement(categorie) {
+    return this.get(`/votes/classement${categorie ? `?categorie=${categorie}` : ''}`)
   }
 }
 
+// ==============================
+// COMMENTAIRES
+// ==============================
 export class CommentaireService extends ApiService {
-  async addComment(projetId, contenu) {
+  addComment(projetId, contenu) {
     return this.post('/commentaires', { projetId, contenu })
   }
 
-  async getCommentsByProjet(projetId) {
+  getCommentsByProjet(projetId) {
     return this.get(`/commentaires/projet/${projetId}`)
   }
-
-  async updateComment(id, contenu) {
-    return this.patch(`/commentaires/${id}`, { contenu })
-  }
-
-  async deleteComment(id) {
-    return this.delete(`/commentaires/${id}`)
-  }
 }
 
+// ==============================
+// CONTACT
+// ==============================
 export class ContactService extends ApiService {
-  async sendMessage(contactData) {
-    return this.post('/contact', contactData)
+  sendMessage(data) {
+    return this.post('/contact', data)
   }
 
-  async getAllMessages() {
+  getAllMessages() {
     return this.get('/contact')
   }
-
-  async updateMessage(id, data) {
-    return this.patch(`/contact/${id}`, data)
-  }
 }
 
+// ==============================
+// GALERIE (UPLOAD SIMPLE)
+// ==============================
 export class GalerieService extends ApiService {
-  async getAllImages() {
+  getAllImages() {
     return this.get('/galerie')
   }
 
   async addImage(formData) {
-    return this.uploadFile('/galerie', formData)
-  }
+    const token = this.getToken()
 
-  async updateImage(id, data) {
-    return this.patch(`/galerie/${id}`, data)
-  }
+    const response = await fetch(`${this.baseURL}/galerie`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    })
 
-  async deleteImage(id) {
-    return this.delete(`/galerie/${id}`)
-  }
-}
-
-export class AccessControlService extends ApiService {
-  async canAccessPage(page) {
-    return this.get(`/access-control/can-access/${page}`)
-  }
-
-  async getContestStatus() {
-    return this.get('/access-control/status')
-  }
-
-  async validateRanking(token) {
-    // Remplacer temporairement le token pour cette requête
-    const oldToken = localStorage.getItem('jig2026_token')
-    localStorage.setItem('jig2026_token', token)
-    
-    try {
-      return this.post('/access-control/validate-ranking', {})
-    } finally {
-      // Restaurer l'ancien token
-      if (oldToken) {
-        localStorage.setItem('jig2026_token', oldToken)
-      } else {
-        localStorage.removeItem('jig2026_token')
-      }
-    }
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.message)
+    return data
   }
 }
 
-export class ProjetSuiviService extends ApiService {
-  async getMesSuivis() {
-    return this.get('/projet-suivi/mes-suivis')
-  }
-
-  async getSuiviProjet(projetId, includeHidden = false) {
-    const params = includeHidden ? '?includeHidden=true' : ''
-    return this.get(`/projet-suivi/projet/${projetId}${params}`)
-  }
-
-  async ajouterRemarque(data) {
-    return this.post('/projet-suivi/ajouter', data)
-  }
-
-  async masquerSuivi(suiviId) {
-    return this.patch(`/projet-suivi/${suiviId}/masquer`, {})
-  }
-
-  async supprimerSuivi(suiviId) {
-    return this.delete(`/projet-suivi/${suiviId}`)
-  }
-}
-
+// ==============================
+// PROGRAMME
+// ==============================
 export class ProgrammeService extends ApiService {
-  async getAllProgrammes() {
+  getAllProgrammes() {
     return this.get('/programmes')
   }
 
-  async getProgrammeById(id) {
-    return this.get(`/programmes/${id}`)
-  }
-
-  async createProgramme(data) {
+  createProgramme(data) {
     return this.post('/programmes', data)
-  }
-
-  async updateProgramme(id, data) {
-    return this.patch(`/programmes/${id}`, data)
-  }
-
-  async deleteProgramme(id) {
-    return this.delete(`/programmes/${id}`)
   }
 }
 
-// Instances des services avec vérification d'initialisation
+// ==============================
+// INSTANCES
+// ==============================
 export const authService = new AuthService()
 export const projetService = new ProjetService()
 export const voteService = new VoteService()
@@ -655,48 +240,13 @@ export const commentaireService = new CommentaireService()
 export const contactService = new ContactService()
 export const galerieService = new GalerieService()
 export const programmeService = new ProgrammeService()
-export const accessControlService = new AccessControlService()
-export const projetSuiviService = new ProjetSuiviService()
 
-// 🛠️ GUARDS: Vérification que tous les services ont les méthodes requises
-if (typeof projetService.getMesProjets !== 'function') {
-  console.error('❌ CRITICAL: projetService.getMesProjets not found!')
-  // Ajouter la méthode manuellement si elle manque
-  projetService.getMesProjets = async function() {
-    console.log('🔄 Fallback getMesProjets appelé')
-    try {
-      const userFromStorage = JSON.parse(localStorage.getItem('jig2026_user') || '{}')
-      const userId = userFromStorage?.id
-      if (userId) {
-        return await this.get(`/projets/user/${userId}`)
-      }
-      throw new Error('Utilisateur non connecté')
-    } catch (error) {
-      throw new Error('Service temporairement indisponible')
-    }
-  }
+export default {
+  authService,
+  projetService,
+  voteService,
+  commentaireService,
+  contactService,
+  galerieService,
+  programmeService,
 }
-
-const apiServices = {
-  auth: authService,
-  projets: projetService,
-  votes: voteService,
-  commentaires: commentaireService,
-  contact: contactService,
-  galerie: galerieService,
-  programmes: programmeService,
-  accessControl: accessControlService,
-  projetSuivi: projetSuiviService,
-}
-
-// Log pour vérifier l'initialisation
-console.log('✅ Services API initialisés:', {
-  authService: !!authService,
-  projetService: !!projetService,
-  projetServiceMethods: {
-    getMesProjets: typeof projetService.getMesProjets,
-    soumettreProjet: typeof projetService.soumettreProjet
-  }
-})
-
-export default apiServices
