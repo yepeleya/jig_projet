@@ -45,8 +45,7 @@ export class CommentaireService {
             id: true,
             nom: true,
             prenom: true,
-            role: true,
-            specialite: true
+            role: true
           }
         }
       }
@@ -74,8 +73,7 @@ export class CommentaireService {
             id: true,
             nom: true,
             prenom: true,
-            role: true,
-            specialite: true
+            role: true
           }
         }
       }
@@ -100,8 +98,7 @@ export class CommentaireService {
             id: true,
             nom: true,
             prenom: true,
-            role: true,
-            specialite: true
+            role: true
           }
         }
       },
@@ -121,8 +118,7 @@ export class CommentaireService {
             id: true,
             nom: true,
             prenom: true,
-            role: true,
-            specialite: true
+            role: true
           }
         }
       },

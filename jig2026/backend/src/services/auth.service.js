@@ -54,13 +54,17 @@ export class AuthService {
     })
 
     if (!user) {
-      throw new Error('Email ou mot de passe incorrect')
+      const error = new Error('Email ou mot de passe incorrect')
+      error.status = 400
+      throw error
     }
 
     // Vérifier le mot de passe
     const isValidPassword = await bcrypt.compare(password, user.motDePasse)
     if (!isValidPassword) {
-      throw new Error('Email ou mot de passe incorrect')
+      const error = new Error('Email ou mot de passe incorrect')
+      error.status = 400
+      throw error
     }
 
     // Préparer les données utilisateur

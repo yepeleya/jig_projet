@@ -22,7 +22,7 @@ export class ProjetSuiviService {
             select: { nom: true, prenom: true, role: true }
           },
           jury: {
-            select: { nom: true, prenom: true, specialite: true }
+            select: { nom: true, prenom: true }
           },
           projet: {
             select: { titre: true, statut: true }
@@ -61,7 +61,7 @@ export class ProjetSuiviService {
             select: { nom: true, prenom: true, role: true }
           },
           jury: {
-            select: { nom: true, prenom: true, specialite: true }
+            select: { nom: true, prenom: true }
           }
         },
         orderBy: {
@@ -117,7 +117,7 @@ export class ProjetSuiviService {
             select: { nom: true, prenom: true, role: true }
           },
           jury: {
-            select: { nom: true, prenom: true, specialite: true }
+            select: { nom: true, prenom: true }
           },
           projet: {
             select: { titre: true, statut: true }
@@ -163,7 +163,7 @@ export class ProjetSuiviService {
             select: { nom: true, prenom: true, role: true }
           },
           jury: {
-            select: { nom: true, prenom: true, specialite: true }
+            select: { nom: true, prenom: true }
           },
           projet: {
             select: { titre: true, statut: true }
