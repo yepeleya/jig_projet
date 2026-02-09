@@ -111,6 +111,14 @@ router.post("/soumettre",
   soumettreProjet
 );
 
+// 🔄 ROUTE FALLBACK: POST /api/projets → redirige vers /soumettre
+router.post("/", 
+  authenticateToken, 
+  upload.single("fichier"), 
+  handleMulterError,
+  soumettreProjet
+);
+
 router.get("/", authenticateToken, async (req, res) => {
   // Route de secours si le controller principal échoue
   try {
