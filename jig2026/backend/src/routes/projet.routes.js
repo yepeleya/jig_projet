@@ -115,33 +115,52 @@ router.post("/", (req, res) => {
   });
 });
 
-// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - Sans middlewares complexes
-router.post("/soumettre", (req, res) => {
-  try {
-    console.log('🚀 Route POST /api/projets/soumettre appelée !');
-    console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
-    console.log('Body:', req.body);
-    
-    // Réponse test immédiate
-    res.json({
-      success: true,
-      message: 'Route /soumettre accessible !',
-      timestamp: new Date().toISOString(),
-      received: {
-        hasAuth: !!req.headers.authorization,
-        bodyKeys: Object.keys(req.body || {}),
-        method: req.method
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ Erreur route soumettre:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Erreur route soumettre'
-    });
-  }
+// 🚀 ROUTE SOUMETTRE COMPLÈTE - Avec middlewares d'upload
+router.post("/soumettre", 
+  authenticateToken, 
+  upload.single("fichier"), 
+  handleMulterError,
+  soumettreProjet
+);
+
+// 🧪 ROUTE TEST SIMPLE - Pour vérifier que POST fonctionne (backup)
+router.post("/test", (req, res) => {
+  console.log('🧪 Route POST /api/projets/test appelée');
+  res.json({
+    success: true,
+    message: 'Route POST /api/projets/test fonctionne !',
+    timestamp: new Date().toISOString(),
+    body: req.body
+  });
 });
+
+// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - DÉSACTIVÉE (remplacée par la complète)
+// router.post("/soumettre", (req, res) => {
+//   try {
+//     console.log('🚀 Route POST /api/projets/soumettre appelée !');
+//     console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
+//     console.log('Body:', req.body);
+//     
+//     // Réponse test immédiate
+//     res.json({
+//       success: true,
+//       message: 'Route /soumettre accessible !',
+//       timestamp: new Date().toISOString(),
+//       received: {
+//         hasAuth: !!req.headers.authorization,
+//         bodyKeys: Object.keys(req.body || {}),
+//         method: req.method
+//       }
+//     });
+//     
+//   } catch (error) {
+//     console.error('❌ Erreur route soumettre:', error);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Erreur route soumettre'
+//     });
+//   }
+// });
 
 // Routes principales AVEC middlewares (pour plus tard)
 // router.post("/soumettre", 
