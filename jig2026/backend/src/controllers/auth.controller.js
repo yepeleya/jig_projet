@@ -8,7 +8,7 @@ const registerSchema = z.object({
   prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
   email: z.string().email('Email invalide'),
   password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-  role: z.enum(['ADMIN', 'ETUDIANT', 'JURY', 'VISITEUR']).default('ETUDIANT')
+  role: z.enum(['ADMIN', 'ETUDIANT', 'JURY']).default('ETUDIANT')
 })
 
 const loginSchema = z.object({
