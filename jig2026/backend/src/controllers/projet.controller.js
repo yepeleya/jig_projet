@@ -1,25 +1,26 @@
-// Imports sécurisés avec gestion d'erreur
-let prisma = null;
-try {
-  const prismaModule = await import("../utils/prismaClient.js");
-  prisma = prismaModule.default;
-  console.log('✅ Prisma client chargé avec succès dans projet.controller');
-} catch (error) {
-  console.error('❌ CRÍTICO: Erreur chargement Prisma dans projet.controller:', error.message);
-  // Fallback: essayer import direct
-  try {
-    prisma = (await import("@prisma/client")).PrismaClient;
-    prisma = new prisma();
-    console.log('✅ Fallback: Prisma client direct chargé');
-  } catch (fallbackError) {
-    console.error('❌ Fallback Prisma échec:', fallbackError.message);
-  }
-}
-
+// Import classique SANS top-level await (cause d'échec des routes)
+import prismaClient from "../utils/prismaClient.js";
 import { NotificationService } from "../services/notification.service.js";
 import { ConfigurationService } from "../services/configuration.service.js";
 import path from "path";
 import fs from "fs";
+
+// Prisma avec fallback sécurisé
+let prisma = null;
+
+// Fonction d'initialisation Prisma (appelée par les fonctions, pas au module level)
+const initPrisma = () => {
+  if (!prisma) {
+    try {
+      prisma = prismaClient;
+      console.log('✅ Prisma client initialisé');
+    } catch (error) {
+      console.error('❌ Erreur init Prisma:', error.message);
+      prisma = null;
+    }
+  }
+  return prisma;
+};
 
 // Utilitaires de validation
 const validateProjectData = (data) => {
@@ -93,7 +94,8 @@ const validateFileType = (file) => {
 // Route de soumission de projet avec protection Prisma
 export const soumettreProjet = async (req, res) => {
   // 🛡️ PROTECTION: Vérifier que Prisma est disponible
-  if (!prisma) {
+  const db = initPrisma();
+  if (!db) {
     console.error('❌ CRÍTICO: Prisma indisponible pour soumettreProjet');
     return res.status(503).json({
       success: false,
@@ -149,7 +151,7 @@ export const soumettreProjet = async (req, res) => {
     }
 
     // 🛡️ VALIDATION DE SÉCURITÉ NIVEAU 4 : Limitation par utilisateur
-    const projetsExistants = await prisma.projet.count({
+    const projetsExistants = await db.projet.count({
       where: { userId: user.id }
     });
     
@@ -206,7 +208,7 @@ export const soumettreProjet = async (req, res) => {
     console.log('✅ Validation fichier réussie');
 
     // 🛡️ VALIDATION DE SÉCURITÉ NIVEAU 7 : Vérification anti-doublon
-    const projetSimilaire = await prisma.projet.findFirst({
+    const projetSimilaire = await db.projet.findFirst({
       where: {
         userId: user.id,
         titre: {
@@ -224,7 +226,7 @@ export const soumettreProjet = async (req, res) => {
     }
 
     // 🚀 CRÉATION DU PROJET (Transaction sécurisée)
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       // Créer le projet
       const nouveauProjet = await tx.projet.create({
         data: { 
@@ -310,7 +312,7 @@ const enrichirProjets = async (projets) => {
     // Récupérer l'utilisateur
     let utilisateur = null;
     if (projet.userId) {
-      utilisateur = await prisma.user.findUnique({
+      utilisateur = await db.user.findUnique({
         where: { id: projet.userId },
         select: {
           id: true,
@@ -323,7 +325,7 @@ const enrichirProjets = async (projets) => {
     }
 
     // Récupérer les votes
-    const votes = await prisma.vote.findMany({
+    const votes = await db.vote.findMany({
       where: { projetId: projet.id }
     });
 
@@ -349,6 +351,15 @@ const enrichirProjets = async (projets) => {
 };
 
 export const getProjets = async (req, res) => {
+  // 🛡️ PROTECTION: Vérifier que Prisma est disponible
+  const db = initPrisma();
+  if (!db) {
+    return res.status(503).json({
+      success: false,
+      error: "Service de base de données temporairement indisponible",
+    });
+  }
+
   try {
     const { statut } = req.query;
     
@@ -368,7 +379,7 @@ export const getProjets = async (req, res) => {
     }
 
     // Requête simplifiée sans relations problématiques
-    const projets = await prisma.projet.findMany({
+    const projets = await db.projet.findMany({
       where: whereClause,
       orderBy: {
         createdAt: 'desc'
@@ -388,7 +399,8 @@ export const getProjets = async (req, res) => {
 // Route publique pour les projets approuvés (utilisée pour le vote public)
 export const getProjetsPublics = async (req, res) => {
   // 🛡️ PROTECTION: Vérifier que Prisma est disponible
-  if (!prisma) {
+  const db = initPrisma();
+  if (!db) {
     console.error('❌ Prisma indisponible pour getProjetsPublics');
     return res.status(503).json({
       success: false,
@@ -415,8 +427,8 @@ export const getProjetsPublics = async (req, res) => {
     }
 
     // DEBUG: Vérifier d'abord tous les projets
-    const totalProjets = await prisma.projet.count();
-    const projetsApprouves = await prisma.projet.count({
+    const totalProjets = await db.projet.count();
+    const projetsApprouves = await db.projet.count({
       where: {
         statut: {
           in: ['APPROUVE', 'TERMINE']  
@@ -426,7 +438,7 @@ export const getProjetsPublics = async (req, res) => {
     console.log(`🔍 Total projets en BDD: ${totalProjets}, Approuvés: ${projetsApprouves}`);
 
     // Récupération avec filtre de statut pour vote public
-    const projets = await prisma.projet.findMany({
+    const projets = await db.projet.findMany({
       where: whereClause,
       orderBy: {
         createdAt: 'desc'
