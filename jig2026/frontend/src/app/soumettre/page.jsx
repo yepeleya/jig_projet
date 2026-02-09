@@ -206,7 +206,7 @@ export default function SoumettrePage() {
       formData.append('titre', data.projectTitle)
       formData.append('description', data.description)
       formData.append('categorie', data.category)
-      formData.append('niveau', user?.niveau || 'Licence') // Utiliser le niveau de l'utilisateur ou par défaut
+      // Note: niveau supprimé car n'existe pas dans le schema backend
 
       console.log('🚀 Données du formulaire:', data)
       console.log('📁 Fichier sélectionné:', selectedFile)

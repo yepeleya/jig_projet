@@ -81,8 +81,8 @@ export interface Commentaire {
 // API Frontend
 export const frontendApi = {
   // Authentification
-  login: async (email: string, motDePasse: string) => {
-    const response = await api.post('/users/login', { email, motDePasse })
+  login: async (email: string, password: string) => {
+    const response = await api.post('/users/login', { email, password })
     return response.data
   },
 
@@ -90,8 +90,7 @@ export const frontendApi = {
     nom: string
     prenom: string
     email: string
-    motDePasse: string
-    filiere?: string
+    password: string
   }) => {
     const response = await api.post('/users/register', {
       ...userData,
