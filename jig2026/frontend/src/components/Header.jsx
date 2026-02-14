@@ -85,10 +85,7 @@ export default function Header() {
             <div className="flex-shrink-0">
               <Link href="/" className="flex items-center space-x-3">
                 <Logo variant="white" size="md" />
-                <div className="text-white">
-                  <span className="text-xl font-bold">JIG 2026</span>
-                  <p className="text-xs text-red-100 hidden sm:block">Journée de l&apos;Infographiste</p>
-                </div>
+
               </Link>
             </div>
 

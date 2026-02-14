@@ -45,10 +45,6 @@ export default function Footer() {
             <div className="flex justify-center mb-6">
               <div className="flex items-center space-x-4">
                 <Logo variant="white" size="lg" />
-                <div className="text-left">
-                  <div className="text-3xl font-black">2026</div>
-                  <div className="text-sm font-light text-red-100">Journée de l&apos;Infographiste</div>
-                </div>
               </div>
             </div>
 
