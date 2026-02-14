@@ -231,6 +231,38 @@ export class ProgrammeService extends ApiService {
 }
 
 // ==============================
+// ACCESS CONTROL
+// ==============================
+export class AccessControlService extends ApiService {
+  canAccessPage(pageName) {
+    return this.get(`/access-control/page/${pageName}`)
+  }
+
+  getContestStatus() {
+    return this.get('/access-control/status')
+  }
+
+  validateRanking() {
+    return this.post('/access-control/validate')
+  }
+}
+
+// ==============================
+// PROJET SUIVI
+// ==============================
+export class ProjetSuiviService extends ApiService {
+  getMesSuivis() {
+    return this.get('/projets/mes-suivis')
+  }
+
+  getSuiviById(id) {
+    return this.get(`/projets/suivi/${id}`)
+  }
+}
+
+
+
+// ==============================
 // INSTANCES
 // ==============================
 export const authService = new AuthService()
@@ -240,6 +272,9 @@ export const commentaireService = new CommentaireService()
 export const contactService = new ContactService()
 export const galerieService = new GalerieService()
 export const programmeService = new ProgrammeService()
+export const accessControlService = new AccessControlService()
+export const projetSuiviService = new ProjetSuiviService()
+
 
 export default {
   authService,
@@ -249,4 +284,7 @@ export default {
   contactService,
   galerieService,
   programmeService,
+  accessControlService,
+  projetSuiviService,
 }
+
