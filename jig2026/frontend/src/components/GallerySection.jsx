@@ -16,86 +16,86 @@ export default function GallerySection() {
     {
       id: 1,
       src: "un.jpg",
-      title: "Exposition JIG 2023 - Photographie",
-      category: "Photographie",
-      year: "2023"
+      title: "",
+      category: "",
+      year: " "
     },
     {
       id: 2,
       src: "MasterClasses.jpg",
-      title: "Atelier Animation 3D - JIG 2022",
-      category: "Animation 3D",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 3,
       src: "trois.jpg",
-      title: "Concours PAO - JIG 2023",
-      category: "PAO",
-      year: "2023"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 4,
       src: "Manifestation1.jpg",
-      title: "Workshop Design - JIG 2022",
-      category: "Design",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 5,
       src: "remise de prix.jpg",
-      title: "Cérémonie de clôture - JIG 2023",
-      category: "Événement",
-      year: "2023"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 6,
       src: "six.jpg",
-      title: "Exposition étudiante - JIG 2022",
-      category: "Exposition",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 7,
       src: "setp.jpg",
-      title: "Atelier Motion Design - JIG 2023",
-      category: "Motion Design",
-      year: "2023"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 8,
       src: "huit.jpg",
-      title: "Concours Créatif - JIG 2022",
-      category: "Créativité",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 9,
       src: "dix.jpg",
-      title: "Networking JIG 2023",
-      category: "Networking",
-      year: "2023"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 10,
       src: "onze.jpg",
-      title: "Workshop Photo - JIG 2022",
-      category: "Photographie",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 11,
       src: "douze.jpg",
-      title: "Présentation Projets - JIG 2023",
-      category: "Projets",
-      year: "2023"
+      title: "",
+      category: "",
+      year: ""
     },
     {
       id: 12,
       src: "treize.jpg",
-      title: "Jury et Évaluation - JIG 2022",
-      category: "Évaluation",
-      year: "2022"
+      title: "",
+      category: "",
+      year: ""
     }
   ]
 

@@ -34,6 +34,8 @@ import ClientOnly from '@/components/ClientOnly'
 import { useAccessControl } from '../../hooks/useAccessControl'
 import { AccessGuard } from '../../components/AccessGuard'
 import apiServices from '@/services/api'
+import { projetService } from '@/services/api'
+
 
 const apiService = apiServices
 

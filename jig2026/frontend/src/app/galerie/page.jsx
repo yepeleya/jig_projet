@@ -30,63 +30,63 @@ export default function GaleriePage() {
     {
       id: 1,
       src: 'un.jpg',
-      alt: 'Atelier Photographie JIG 2023',
+      alt: '',
       title: 'Atelier Photographie',
       year: '2023'
     },
     {
       id: 2,
       src: 'MasterClasses.jpg',
-      alt: 'Master Classes JIG 2023',
+      alt: '',
       title: 'Master Classes',
       year: '2023'
     },
     {
       id: 3,
       src: 'trois.jpg',
-      alt: 'Animation 3D Workshop JIG 2022',
-      title: 'Animation 3D Workshop',
+      alt: '',
+      title: '',
       year: '2022'
     },
     {
       id: 4,
       src: 'Manifestation1.jpg',
-      alt: 'Manifestation JIG 2023',
+      alt: '',
       title: 'Manifestation JIG',
       year: '2023'
     },
     {
       id: 5,
       src: 'remise de prix.jpg',
-      alt: 'Cérémonie de remise des prix JIG 2023',
+      alt: '',
       title: 'Remise des Prix',
       year: '2023'
     },
     {
       id: 6,
       src: 'six.jpg',
-      alt: 'Exposition étudiante JIG 2022',
+      alt: '',
       title: 'Exposition Étudiante',
       year: '2022'
     },
     {
       id: 7,
       src: 'setp.jpg',
-      alt: 'Workshop Motion Design JIG 2022',
+      alt: '',
       title: 'Workshop Motion Design',
       year: '2022'
     },
     {
       id: 8,
       src: 'huit.jpg',
-      alt: 'Événement JIG 2023',
+      alt: '',
       title: 'Événement JIG',
       year: '2023'
     },
     {
       id: 9,
       src: 'dix.jpg',
-      alt: 'Session Networking JIG 2022',
+      alt: '',
       title: 'Session Networking',
       year: '2022'
     }

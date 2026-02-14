@@ -13,33 +13,33 @@ export default function AboutSection() {
   const jigImages = [
     {
       src: "/galerie/MasterClasses.jpg",
-      title: "Master Classes",
-      description: "Sessions de formation avec experts"
+      title: "",
+      description: ""
     },
     {
       src: "/galerie/Manifestation1.jpg", 
-      title: "Manifestation JIG",
-      description: "Événement principal de la journée"
+      title: "",
+      description: ""
     },
     {
       src: "/galerie/remise de prix.jpg",
-      title: "Remise des Prix",
-      description: "Cérémonie de récompenses"
+      title: "",
+      description: ""
     },
     {
       src: "/galerie/vrai master.jpg",
-      title: "Ateliers Pratiques",
-      description: "Formation hands-on"
+      title: "",
+      description: ""
     },
     {
       src: "/galerie/trois.jpg",
-      title: "Projets Étudiants",
-      description: "Exposition des créations"
+      title: "",
+      description: ""
     },
     {
       src: "/galerie/six.jpg",
-      title: "Networking",
-      description: "Échanges entre participants"
+      title: "",
+      description: ""
     }
   ]
 
@@ -101,8 +101,8 @@ export default function AboutSection() {
           <div data-aos="fade-right" className="space-y-6">
             <p className="text-lg text-gray-700 leading-relaxed">
               La <strong className="text-jig-primary">Journée de l'Infographiste (JIG)</strong> est un événement annuel 
-              qui célèbre la créativité et l'innovation dans le domaine de l'infographie et du design numérique. 
-              Organisée par l'ISTC Polytechnique, cette journée unique rassemble étudiants, professionnels et passionnés 
+              qui célèbre la créativité et l'innovation dans le domaine de l’école 'infographie et du design numérique. 
+              Organisée par l’école des arts et images numériques de l’istc Polytechnique<strong className="text-jig-primary"> (EAIN) </strong>, cette journée unique rassemble étudiants, professionnels et passionnés 
               autour de leur amour commun pour l'art visuel et la technologie.
             </p>
 
