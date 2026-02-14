@@ -34,7 +34,7 @@ export default function Logo({ variant = 'red', size = 'md', className = '' }: L
     <div className={`flex items-center ${className}`}>
       <Image
         src={logoSrc}
-        alt="JIG 2026 - ISTC Polytechnique"
+        alt=""
         width={300}
         height={120}
         className={`${sizeClasses[size]} object-contain`}

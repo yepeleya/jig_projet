@@ -18,7 +18,7 @@ export default function Logo({ variant = 'red', size = 'md', className = '' }) {
     <div className={`flex items-center ${className}`}>
       <Image
         src={logoSrc}
-        alt="JIG 2026 - Journée de l'Infographiste"
+        alt=""
         width={300}
         height={120}
         className={`${sizeClasses[size]} object-contain`}
