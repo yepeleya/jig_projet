@@ -7,6 +7,7 @@ import Hero from '@/components/Hero'
 import AboutSection from '@/components/AboutSection'
 import ProgramSection from '@/components/ProgramSection'
 import GallerySection from '@/components/GallerySection'
+import AfficheOfficielle from '@/components/AfficheOfficielle'
 import useAOS from '../hooks/useAOS'
 import 'aos/dist/aos.css'
 
@@ -16,6 +17,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen">
       <Hero />
+      <AfficheOfficielle />
       <AboutSection />
       <ProgramSection />
       <GallerySection />

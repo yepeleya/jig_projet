@@ -1,19 +1,18 @@
 import { useEffect } from 'react'
 
 const useAOS = () => {
-  // Temporairement désactivé pour résoudre les problèmes SSR
-  // useEffect(() => {
-  //   // Importer AOS uniquement côté client pour éviter les erreurs SSR
-  //   if (typeof window !== 'undefined') {
-  //     import('aos').then((AOS) => {
-  //       AOS.default.init({
-  //         duration: 800,
-  //         once: true,
-  //         easing: 'ease-out-cubic',
-  //       })
-  //     })
-  //   }
-  // }, [])
+  useEffect(() => {
+    // Importer AOS uniquement côté client pour éviter les erreurs SSR
+    if (typeof window !== 'undefined') {
+      import('aos').then((AOS) => {
+        AOS.default.init({
+          duration: 800,
+          once: true,
+          easing: 'ease-out-cubic',
+        })
+      })
+    }
+  }, [])
 }
 
 // Promise pour charger AOS avec des effets customisés

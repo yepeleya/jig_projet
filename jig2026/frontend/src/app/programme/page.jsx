@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { 
   FaAward, 
   FaUsers, 
@@ -17,7 +18,8 @@ import {
   FaMusic,
   FaBullhorn,
   FaHeart,
-  FaChalkboardTeacher
+  FaChalkboardTeacher,
+  FaImages
 } from 'react-icons/fa'
 import AOS from 'aos'
 import IntervenantsSection from '../../components/IntervenantsSection'
@@ -331,6 +333,130 @@ export default function ProgrammePage() {
               <p className="text-sm text-gray-500 mb-2">Des questions sur le programme ?</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Section Galerie des Affiches */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4">
+          
+          {/* Titre de la section */}
+          <div data-aos="fade-up" className="text-center mb-12">
+            <div className="inline-flex items-center justify-center bg-gradient-to-r from-jig-primary to-red-600 text-white px-6 py-3 rounded-full shadow-lg mb-6">
+              <FaImages className="w-5 h-5 mr-2" />
+              <h2 className="text-xl font-semibold">Galerie des Affiches JIG 2026</h2>
+            </div>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Découvrez toutes les affiches officielles de nos panels, masterclass et stands
+            </p>
+          </div>
+
+          {/* Affiches des Panels */}
+          <div className="mb-16">
+            <h3 data-aos="fade-up" className="text-2xl font-bold text-gray-800 mb-8 text-center">
+               Affiches des Panels
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }, (_, i) => (
+                <div key={i} data-aos="zoom-in" data-aos-delay={i * 100} 
+                     className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                  <div className="relative aspect-[3/4]">
+                    <Image
+                      src={`/affiche/affiche_panel${i + 1}.jpeg`}
+                      alt={`Affiche Panel ${i + 1} - JIG 2026`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-3 text-center">
+                    <h4 className="font-semibold text-gray-800 text-sm">Panel</h4>
+                    <p className="text-gray-600 text-xs">JIG 2026</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Affiches des Masterclass */}
+          <div className="mb-16">
+            <h3 data-aos="fade-up" className="text-2xl font-bold text-gray-800 mb-8 text-center">
+              🎓 Affiches des Masterclass
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div data-aos="zoom-in" data-aos-delay="100" 
+                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/affiche/affiche_masterClass.jpeg"
+                    alt=""
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4 text-center">
+                  <h4 className="font-bold text-gray-800">Masterclass </h4>
+                  <p className="text-gray-600 text-sm">Formation 2D animation</p>
+                </div>
+              </div>
+              
+              <div data-aos="zoom-in" data-aos-delay="200" 
+                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/affiche/affiche_masterClass1.jpeg"
+                    alt="Affiche Masterclass 1 - JIG 2026"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4 text-center">
+                  <h4 className="font-bold text-gray-800">Masterclass </h4>
+                  <p className="text-gray-600 text-sm">Formation Retouche Photo</p>
+                </div>
+              </div>
+              
+              <div data-aos="zoom-in" data-aos-delay="300" 
+                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/affiche/affiche_masterClass2.jpeg"
+                    alt="Affiche Masterclass 2 - JIG 2026"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-4 text-center">
+                  <h4 className="font-bold text-gray-800">Masterclass </h4>
+                  <p className="text-gray-600 text-sm">Formation Création de personnages</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Affiche des Stands */}
+          <div className="mb-8">
+            <h3 data-aos="fade-up" className="text-2xl font-bold text-gray-800 mb-8 text-center">
+              🏪 Affiche des Stands
+            </h3>
+            <div className="flex justify-center">
+              <div data-aos="zoom-in" data-aos-delay="100" 
+                   className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-md">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/affiche/affiche_stands.jpeg"
+                    alt="Affiche des Stands - JIG 2026"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6 text-center">
+                  <h4 className="text-xl font-bold text-gray-800 mb-2">Espace Stands</h4>
+                  <p className="text-gray-600">Découvrez nos exposants et partenaires</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
