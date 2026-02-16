@@ -4,8 +4,10 @@
 // API SERVICE WITH ENHANCED ERROR HANDLING
 // ==============================
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? process.env.NEXT_PUBLIC_API_URL || 'https://jig-backend-2026.onrender.com/api'
+  ? 'https://jig-backend-2026.onrender.com/api'  // ✅ URL FORCÉE VERS RENDER
   : 'http://localhost:10000/api'
+
+console.log('🎯 API_BASE_URL configurée:', API_BASE_URL)
 
 export class ApiService {
   constructor() {
