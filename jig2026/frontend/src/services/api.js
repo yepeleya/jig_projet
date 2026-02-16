@@ -1,57 +1,56 @@
 'use client'
 
 // ==============================
-// CONFIGURATION API
+// API SERVICE WITH ENHANCED ERROR HANDLING
 // ==============================
-const API_BASE_URL = 'https://jig-projet-1.onrender.com/api'
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? process.env.NEXT_PUBLIC_API_URL || 'https://jig-backend-2026.onrender.com/api'
+  : 'http://localhost:10000/api'
 
-console.log('🎯 API BASE URL:', API_BASE_URL)
-
-// ==============================
-// CLASSE BASE API
-// ==============================
-class ApiService {
+export class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL
   }
 
   getToken() {
-    return localStorage.getItem('jig2026_token')
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('jig2026_token')
+    }
+    return null
   }
 
-  isAuthenticated() {
-    return !!this.getToken()
-  }
-
-  // ==============================
-  // REQUÊTES JSON UNIQUEMENT
-  // ==============================
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`
     const token = this.getToken()
-
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    }
-
-    const response = await fetch(url, {
+    
+    const config = {
       ...options,
-      headers,
-    })
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        localStorage.removeItem('jig2026_token')
-        window.location.href = '/'
-      }
-      throw new Error(data.message || 'Erreur API')
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
     }
 
-    return data
+    console.log('🔄 API Request:', { url, method: config.method || 'GET' })
+
+    try {
+      const response = await fetch(url, config)
+      console.log('📡 API Response Status:', response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('✅ API Response Data:', data)
+      return data
+
+    } catch (error) {
+      console.error('💥 API Error:', error)
+      throw error
+    }
   }
 
   get(endpoint) {
@@ -65,9 +64,9 @@ class ApiService {
     })
   }
 
-  patch(endpoint, data) {
+  put(endpoint, data) {
     return this.request(endpoint, {
-      method: 'PATCH',
+      method: 'PUT', 
       body: JSON.stringify(data),
     })
   }
@@ -81,19 +80,19 @@ class ApiService {
 // AUTH SERVICE
 // ==============================
 export class AuthService extends ApiService {
+  async register(userData) {
+    return this.post('/auth/register', userData)
+  }
+
   async login(credentials) {
     const response = await this.post('/auth/login', credentials)
-
-    if (response?.data?.token) {
+    
+    if (response.data?.token) {
       localStorage.setItem('jig2026_token', response.data.token)
       localStorage.setItem('jig2026_user', JSON.stringify(response.data.user))
     }
-
+    
     return response
-  }
-
-  async register(data) {
-    return this.post('/auth/register', data)
   }
 
   logout() {
@@ -107,7 +106,7 @@ export class AuthService extends ApiService {
 }
 
 // ==============================
-// PROJET SERVICE
+// PROJET SERVICE WITH ENHANCED ERROR HANDLING
 // ==============================
 export class ProjetService extends ApiService {
   getAllProjets(filters = {}) {
@@ -119,25 +118,64 @@ export class ProjetService extends ApiService {
     return this.get(`/projets/${id}`)
   }
 
-  // 🔥 UPLOAD PROJET – VERSION UNIQUE ET SAINE
+  // 🔥 SOUMISSION PROJET AVEC GESTION D'ERREURS RENFORCÉE
   async soumettreProjet(formData) {
-    const token = this.getToken()
+    try {
+      console.log('🚀 Début soumission projet...')
+      const token = this.getToken()
 
-    const response = await fetch(`${this.baseURL}/projets/soumettre`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    })
+      if (!token) {
+        throw new Error('Token d\'authentification manquant')
+      }
 
-    const data = await response.json()
+      // Vérification que formData est bien un FormData
+      if (!(formData instanceof FormData)) {
+        throw new Error('Les données doivent être au format FormData')
+      }
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Erreur soumission projet')
+      console.log('📤 Envoi vers /projets/soumettre...')
+      
+      const response = await fetch(`${this.baseURL}/projets/soumettre`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Ne pas définir Content-Type pour FormData (le navigateur le fait automatiquement)
+        },
+        body: formData,
+      })
+
+      console.log('📡 Status de réponse:', response.status)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('❌ Erreur serveur:', errorData)
+        
+        // Messages d'erreur plus descriptifs  
+        if (response.status === 404) {
+          throw new Error('Service de soumission non disponible. Veuillez réessayer plus tard.')
+        } else if (response.status === 401) {
+          throw new Error('Session expirée. Veuillez vous reconnecter.')
+        } else if (response.status === 413) {
+          throw new Error('Les fichiers sont trop volumineux.')
+        } else {
+          throw new Error(errorData.message || `Erreur serveur (${response.status})`)
+        }
+      }
+
+      const data = await response.json()
+      console.log('✅ Projet soumis avec succès:', data)
+      return data
+
+    } catch (error) {
+      console.error('💥 Erreur lors de la soumission:', error)
+      
+      // Fallback en cas d'erreur réseau
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Problème de connexion. Vérifiez votre connexion internet.')
+      }
+      
+      throw error
     }
-
-    return data
   }
 
   getMesProjets() {
@@ -260,8 +298,6 @@ export class ProjetSuiviService extends ApiService {
   }
 }
 
-
-
 // ==============================
 // INSTANCES
 // ==============================
@@ -275,16 +311,14 @@ export const programmeService = new ProgrammeService()
 export const accessControlService = new AccessControlService()
 export const projetSuiviService = new ProjetSuiviService()
 
-
 export default {
-  authService,
-  projetService,
-  voteService,
-  commentaireService,
-  contactService,
-  galerieService,
-  programmeService,
-  accessControlService,
-  projetSuiviService,
+  auth: authService,
+  projets: projetService,
+  votes: voteService,
+  commentaires: commentaireService,
+  contact: contactService,
+  galerie: galerieService,
+  programme: programmeService,
+  accessControl: accessControlService,
+  projetSuivi: projetSuiviService,
 }
-

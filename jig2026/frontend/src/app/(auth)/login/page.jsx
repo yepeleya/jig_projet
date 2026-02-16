@@ -19,7 +19,30 @@ import { authService } from '@/services/api'
 import { useAuthStore } from '@/store/authStore'
 import { useNotification } from '@/hooks/useNotification'
 import NotificationToast from '@/components/NotificationToast'
-import Logo from '@/components/Logo'
+
+// Composant Logo simple
+const Logo = ({ variant = 'red', size = 'md', className = '' }) => {
+  const sizeClasses = {
+    sm: 'h-8 w-auto',
+    md: 'h-12 w-auto', 
+    lg: 'h-16 w-auto',
+    xl: 'h-20 w-auto'
+  }
+
+  const logoSrc = variant === 'white' 
+    ? '/logo/logo_blanc.png'
+    : '/logo/logo_rouge.jpeg'
+
+  return (
+    <div className={`flex items-center ${className}`}>
+      <img
+        src={logoSrc}
+        alt="Logo JIG"
+        className={`${sizeClasses[size]} object-contain`}
+      />
+    </div>
+  )
+}
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({

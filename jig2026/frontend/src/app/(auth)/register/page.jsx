@@ -1,31 +1,48 @@
-/**
- * 🎨 FORMULAIRE D'INSCRIPTION STYLE SPLIT-SCREEN - COMPATIBLE BACKEND
- * Design moderne avec split-screen et champs compatibles Prisma
- */
-
 'use client'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
 import { 
   FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaExclamationTriangle,
-  FaGraduationCap, FaArrowLeft, FaSpinner, FaCheck, FaUsers, FaTrophy
+  FaGraduationCap, FaSpinner, FaCheck, FaSchool, FaUserTie
 } from 'react-icons/fa'
 import { authService } from '@/services/api'
-import AOS from 'aos'
-import 'aos/dist/aos.css'
-import Logo from '@/components/Logo'
+
+// Composant Logo
+const Logo = ({ variant = 'red', size = 'md', className = '' }) => {
+  const sizeClasses = {
+    sm: 'h-8 w-auto',
+    md: 'h-12 w-auto', 
+    lg: 'h-16 w-auto',
+    xl: 'h-20 w-auto'
+  }
+
+  const logoSrc = variant === 'white' 
+    ? '/logo/logo_blanc.png'
+    : '/logo/logo_rouge.jpeg'
+
+  return (
+    <div className={`flex items-center ${className}`}>
+      <img
+        src={logoSrc}
+        alt="Logo JIG"
+        className={`${sizeClasses[size]} object-contain`}
+      />
+    </div>
+  )
+}
 
 export default function RegisterPage() {
-  // State simplifié - Seulement les champs du schéma Prisma
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
     email: '', 
-    password: '',           // ✅ password au lieu de motDePasse
-    confirmerPassword: ''   // ✅ pour la validation côté client
+    password: '',
+    confirmerPassword: '',
+    typeUtilisateur: 'ETUDIANT',
+    filiere: '',
+    ecole: ''
   })
   
   const [showPassword, setShowPassword] = useState(false)
@@ -36,15 +53,15 @@ export default function RegisterPage() {
   
   const router = useRouter()
 
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-      easing: 'ease-out-cubic',
-    })
-  }, [])
+  const filieres = [
+    { value: 'EAIN', label: 'EAIN - École des Arts et Images Numériques' },
+    { value: 'EJ', label: 'EJ - École de Journalisme' },
+    { value: 'EPA', label: 'EPA - École de Production Audio-Visuel' },
+    { value: 'EPM', label: 'EPM - École de Publicité Marketing' },
+    { value: 'ETTA', label: 'ETTA - École de Télécommunication' },
+    { value: 'AUTRE', label: 'Autre école (non-ISTC)' }
+  ]
 
-  // Gestion des notifications
   const showNotification = (type, message) => {
     setNotification({ show: true, type, message })
     setTimeout(() => {
@@ -52,70 +69,78 @@ export default function RegisterPage() {
     }, 5000)
   }
 
-  // Gestion des changements de champs
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
-
-    // Nettoyer l'erreur quand l'utilisateur tape
+    
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
       }))
     }
+
+    if (name === 'typeUtilisateur') {
+      setFormData(prev => ({
+        ...prev,
+        filiere: '',
+        ecole: ''
+      }))
+    }
+
+    if (name === 'filiere' && value !== 'AUTRE') {
+      setFormData(prev => ({
+        ...prev,
+        ecole: ''
+      }))
+    }
   }
 
-  // Validation simplifiée
   const validateForm = () => {
     const newErrors = {}
-
-    // Validation nom
+    
     if (!formData.nom.trim()) {
       newErrors.nom = 'Le nom est requis'
-    } else if (formData.nom.trim().length < 2) {
-      newErrors.nom = 'Le nom doit contenir au moins 2 caractères'
-    }
-
-    // Validation prénom
-    if (!formData.prenom.trim()) {
-      newErrors.prenom = 'Le prénom est requis'
-    } else if (formData.prenom.trim().length < 2) {
-      newErrors.prenom = 'Le prénom doit contenir au moins 2 caractères'
-    }
-
-    // Validation email
-    if (!formData.email.trim()) {
-      newErrors.email = 'L\'email est requis'
-    } else {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailRegex.test(formData.email.trim())) {
-        newErrors.email = 'Format d\'email invalide'
-      }
     }
     
-    // Validation mot de passe
+    if (!formData.prenom.trim()) {
+      newErrors.prenom = 'Le prénom est requis'
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'L\'email est requis'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'L\'email n\'est pas valide'
+    }
+    
     if (!formData.password.trim()) {
       newErrors.password = 'Le mot de passe est requis'
     } else if (formData.password.length < 6) {
       newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères'
     }
     
-    // Validation confirmation mot de passe
     if (!formData.confirmerPassword.trim()) {
       newErrors.confirmerPassword = 'Veuillez confirmer le mot de passe'
     } else if (formData.password !== formData.confirmerPassword) {
       newErrors.confirmerPassword = 'Les mots de passe ne correspondent pas'
+    }
+
+    if (formData.typeUtilisateur === 'ETUDIANT' && !formData.filiere) {
+      newErrors.filiere = 'La filière est requise pour les étudiants'
+    }
+
+    if (formData.filiere === 'AUTRE' && !formData.ecole.trim()) {
+      newErrors.ecole = 'Le nom de l\'école est requis'
     }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -124,44 +149,38 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      // Préparer les données compatibles backend
-      const { confirmerPassword, ...dataToSend } = formData
+      const { confirmerPassword, typeUtilisateur, filiere, ecole, ...dataToSend } = formData
       
-      // Ajouter le rôle par défaut
+      // Format compatible avec le backend
       const finalData = {
-        ...dataToSend,
-        role: 'ETUDIANT'  // ✅ Rôle compatible backend
+        nom: dataToSend.nom,
+        prenom: dataToSend.prenom,
+        email: dataToSend.email,
+        password: dataToSend.password, // Backend attend 'password', pas 'motDePasse'
+        role: 'ETUDIANT'
       }
       
-      console.log('📤 Envoi des données d\'inscription (format compatible):', finalData)
+      console.log('📤 Envoi des données d\'inscription:', finalData)
       
       const response = await authService.register(finalData)
       console.log('📥 Réponse reçue:', response)
       
-      // Gestion de la réponse
-      if (response && response.data && response.data.user) {
-        showNotification('success', 'Inscription réussie ! Redirection...')
-        
-        setTimeout(() => {
-          router.push('/login?message=registration-success')
-        }, 2000)
-        
-      } else {
-        showNotification('error', 'Erreur lors de l\'inscription')
-      }
+      showNotification('success', 'Inscription réussie ! Redirection...')
+      
+      setTimeout(() => {
+        router.push('/login?message=registration-success')
+      }, 2000)
       
     } catch (error) {
       console.error('💥 Erreur d\'inscription:', error)
       
-      const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
-                          'Erreur lors de l\'inscription'
-                          
+      const errorMessage = error?.message || 'Erreur lors de l\'inscription'
       showNotification('error', errorMessage)
     } finally {
       setIsLoading(false)
     }
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -183,145 +202,71 @@ export default function RegisterPage() {
         </div>
       )}
 
-      {/* Partie gauche - Information JIG 2026 */}
+      {/* Partie gauche - Information */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-red-600 via-red-700 to-red-800 p-12 flex-col justify-center relative overflow-hidden">
-        {/* Motifs de fond */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-64 h-64 bg-white rounded-full"></div>
           <div className="absolute bottom-32 right-16 w-48 h-48 bg-white rounded-full"></div>
-          <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-white rounded-full"></div>
         </div>
 
-        {/* Contenu principal */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
-          className="relative z-10"
-        >
-          
-          {/* Logo et titre */}
-          <div className="mb-8">
-            <Logo size="2xl" variant="white" className="mb-6" />
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-              Rejoignez le
-              <span className="block text-yellow-300">JIG 2026</span>
-            </h1>
-            <p className="text-xl text-red-100 leading-relaxed max-w-md">
-              Participez à la plus grande compétition d'infographie de Côte d'Ivoire
-            </p>
-          </div>
-
-          {/* Points forts */}
-          <div className="space-y-6">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex items-center space-x-4"
-            >
-              <div className="bg-white bg-opacity-20 p-3 rounded-full">
-                <FaUsers className="text-white text-xl" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Communauté créative</h3>
-                <p className="text-red-100">Rejoignez plus de 500 infographistes passionnés</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex items-center space-x-4"
-            >
-              <div className="bg-white bg-opacity-20 p-3 rounded-full">
-                <FaTrophy className="text-white text-xl" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Prix attractifs</h3>
-                <p className="text-red-100">Plus de 2 millions FCFA de prix à gagner</p>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex items-center space-x-4"
-            >
-              <div className="bg-white bg-opacity-20 p-3 rounded-full">
-                <FaGraduationCap className="text-white text-xl" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Apprentissage</h3>
-                <p className="text-red-100">Rencontrez des professionnels et développez vos compétences</p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* CTA secondaire */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="mt-12 pt-8 border-t border-white border-opacity-20"
-          >
-            <div className="flex items-center justify-between text-white">
-              <div>
-                <p className="text-sm text-red-100 mb-2">Déjà inscrit ?</p>
-                <Link href="/login" className="text-lg font-medium hover:text-yellow-300 transition-colors flex items-center">
-                  <FaArrowLeft className="mr-2" />
-                  Se connecter
-                </Link>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">2026</div>
-                <div className="text-sm text-red-100">Edition</div>
-              </div>
+        <div className="relative z-10">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-xl mb-6">
+              <FaGraduationCap className="text-red-600 text-3xl" />
             </div>
-          </motion.div>
-        </motion.div>
+            <h1 className="text-4xl font-bold text-white mb-3">Rejoignez la JIG 2026</h1>
+            <p className="text-red-100 text-lg">Créez votre compte pour participer</p>
+          </div>
+        </div>
       </div>
 
-      {/* Partie droite - Formulaire d'inscription */}
+      {/* Partie droite - Formulaire */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
         
-        {/* Bouton retour mobile */}
-        <div className="lg:hidden absolute top-4 left-4 z-10">
-          <Link href="/login" className="flex items-center text-gray-600 hover:text-red-600 transition-colors">
-            <FaArrowLeft className="mr-2" />
-            Retour
-          </Link>
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="w-full max-w-md"
-        >
+        <div className="w-full max-w-md">
           
-          {/* Header mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <Logo size="lg" variant="red" className="mb-4 justify-center" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Créer un compte</h2>
-            <p className="text-gray-600">Rejoignez le JIG 2026</p>
-          </div>
-
-          {/* Header desktop */}
-          <div className="hidden lg:block text-center mb-8" data-aos="fade-down">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-              <FaGraduationCap className="text-red-600 text-2xl" />
-            </div>
+          <div className="text-center mb-8">
+            <Logo size="lg" className="mb-6 justify-center" />
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Inscription</h2>
             <p className="text-gray-600">Créez votre compte participant</p>
           </div>
 
-          {/* Formulaire */}
           <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               
+              {/* Type d'utilisateur */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Type de compte *
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange({ target: { name: 'typeUtilisateur', value: 'ETUDIANT' }})}
+                    className={`flex items-center justify-center p-3 border rounded-xl transition-all ${
+                      formData.typeUtilisateur === 'ETUDIANT' 
+                        ? 'border-red-500 bg-red-50 text-red-600' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    <FaGraduationCap className="mr-2" />
+                    Étudiant
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange({ target: { name: 'typeUtilisateur', value: 'INVITE' }})}
+                    className={`flex items-center justify-center p-3 border rounded-xl transition-all ${
+                      formData.typeUtilisateur === 'INVITE' 
+                        ? 'border-red-500 bg-red-50 text-red-600' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                  >
+                    <FaUserTie className="mr-2" />
+                    Invité
+                  </button>
+                </div>
+              </div>
+
               {/* Nom */}
               <div>
                 <label htmlFor="nom" className="block text-sm font-medium text-gray-700 mb-2">
@@ -344,14 +289,10 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.nom && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-2 flex items-center"
-                  >
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.nom}
-                  </motion.p>
+                  </p>
                 )}
               </div>
 
@@ -377,14 +318,10 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.prenom && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-2 flex items-center"
-                  >
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.prenom}
-                  </motion.p>
+                  </p>
                 )}
               </div>
 
@@ -406,20 +343,83 @@ export default function RegisterPage() {
                     className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
-                    placeholder="votre@email.com"
+                    placeholder="votre.email@exemple.com"
                   />
                 </div>
                 {errors.email && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-2 flex items-center"
-                  >
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.email}
-                  </motion.p>
+                  </p>
                 )}
               </div>
+
+              {/* Filière - Affiché seulement pour les étudiants */}
+              {formData.typeUtilisateur === 'ETUDIANT' && (
+                <div>
+                  <label htmlFor="filiere" className="block text-sm font-medium text-gray-700 mb-2">
+                    Filière / École *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FaSchool className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      id="filiere"
+                      name="filiere"
+                      value={formData.filiere}
+                      onChange={handleInputChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                        errors.filiere ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                      }`}
+                    >
+                      <option value="">Sélectionnez votre filière</option>
+                      {filieres.map((filiere) => (
+                        <option key={filiere.value} value={filiere.value}>
+                          {filiere.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.filiere && (
+                    <p className="text-red-500 text-sm mt-2 flex items-center">
+                      <FaExclamationTriangle className="mr-1 h-4 w-4" />
+                      {errors.filiere}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Nom de l'école pour "Autre" */}
+              {formData.filiere === 'AUTRE' && (
+                <div>
+                  <label htmlFor="ecole" className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom de votre école *
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FaSchool className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      id="ecole"
+                      name="ecole"
+                      type="text"
+                      value={formData.ecole}
+                      onChange={handleInputChange}
+                      className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
+                        errors.ecole ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
+                      }`}
+                      placeholder="Nom de votre établissement"
+                    />
+                  </div>
+                  {errors.ecole && (
+                    <p className="text-red-500 text-sm mt-2 flex items-center">
+                      <FaExclamationTriangle className="mr-1 h-4 w-4" />
+                      {errors.ecole}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Mot de passe */}
               <div>
@@ -433,13 +433,13 @@ export default function RegisterPage() {
                   <input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleInputChange}
                     className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
                       errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'
                     }`}
-                    placeholder="Au moins 6 caractères"
+                    placeholder="Votre mot de passe"
                   />
                   <button
                     type="button"
@@ -450,14 +450,10 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-2 flex items-center"
-                  >
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.password}
-                  </motion.p>
+                  </p>
                 )}
               </div>
 
@@ -473,7 +469,7 @@ export default function RegisterPage() {
                   <input
                     id="confirmerPassword"
                     name="confirmerPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmerPassword}
                     onChange={handleInputChange}
                     className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 ${
@@ -490,36 +486,19 @@ export default function RegisterPage() {
                   </button>
                 </div>
                 {errors.confirmerPassword && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-2 flex items-center"
-                  >
+                  <p className="text-red-500 text-sm mt-2 flex items-center">
                     <FaExclamationTriangle className="mr-1 h-4 w-4" />
                     {errors.confirmerPassword}
-                  </motion.p>
+                  </p>
                 )}
               </div>
 
-              {/* Information */}
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <p className="text-sm text-blue-800 flex items-start">
-                  <FaGraduationCap className="mr-2 mt-0.5 flex-shrink-0" />
-                  <span>
-                    <strong className="font-medium">Inscription étudiante :</strong> Votre compte sera créé avec le statut étudiant. 
-                    Vous pourrez participer au concours dès validation de votre profil.
-                  </span>
-                </p>
-              </div>
-
               {/* Bouton de soumission */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 type="submit"
-                disabled={isLoading || Object.keys(errors).length > 0}
+                disabled={isLoading}
                 className={`w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-xl font-medium shadow-lg transition-all duration-200 flex items-center justify-center ${
-                  isLoading || Object.keys(errors).length > 0
+                  isLoading
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:from-red-700 hover:to-red-800 hover:shadow-xl transform hover:-translate-y-0.5'
                 }`}
@@ -535,7 +514,7 @@ export default function RegisterPage() {
                     Créer mon compte JIG 2026
                   </>
                 )}
-              </motion.button>
+              </button>
 
               {/* Lien de connexion */}
               <div className="text-center pt-4 border-t border-gray-100">
@@ -548,7 +527,7 @@ export default function RegisterPage() {
               </div>
             </form>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )

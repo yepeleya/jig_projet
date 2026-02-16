@@ -31,64 +31,64 @@ export default function GaleriePage() {
       id: 1,
       src: 'un.jpg',
       alt: '',
-      title: 'Atelier Photographie',
-      year: '2023'
+      title: '',
+      year: ''
     },
     {
       id: 2,
       src: 'MasterClasses.jpg',
       alt: '',
-      title: 'Master Classes',
-      year: '2023'
+      title: '',
+      year: ''
     },
     {
       id: 3,
       src: 'trois.jpg',
       alt: '',
       title: '',
-      year: '2022'
+      year: ''
     },
     {
       id: 4,
       src: 'Manifestation1.jpg',
       alt: '',
-      title: 'Manifestation JIG',
-      year: '2023'
+      title: '',
+      year: ''
     },
     {
       id: 5,
       src: 'remise de prix.jpg',
       alt: '',
-      title: 'Remise des Prix',
-      year: '2023'
+      title: '',
+      year: ''
     },
     {
       id: 6,
       src: 'six.jpg',
       alt: '',
-      title: 'Exposition Étudiante',
-      year: '2022'
+      title: '',
+      year: ''
     },
     {
       id: 7,
       src: 'setp.jpg',
       alt: '',
-      title: 'Workshop Motion Design',
-      year: '2022'
+      title: '',
+      year: ''
     },
     {
       id: 8,
       src: 'huit.jpg',
       alt: '',
-      title: 'Événement JIG',
-      year: '2023'
+      title: '',
+      year: ''
     },
     {
       id: 9,
       src: 'dix.jpg',
       alt: '',
-      title: 'Session Networking',
-      year: '2022'
+      title: '',
+      year: ''
     }
   ]
 
@@ -178,7 +178,7 @@ export default function GaleriePage() {
                     <div className="absolute inset-0 flex items-center justify-center z-10 text-center text-white p-6">
                       <div>
                         <div className="text-sm font-medium mb-2 opacity-80">
-                          JIG {image.year}
+                           {image.year}
                         </div>
                         <h3 className="text-lg font-bold leading-tight">
                           {image.title}

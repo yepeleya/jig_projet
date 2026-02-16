@@ -1,19 +1,20 @@
 /**
- * Utilitaires pour la gestion des permissions et rôles
+ * Utilitaires pour la gestion des permissions et rôles - VERSION AMELIOREE
  */
 
-// Définition des permissions par rôle
+// Définition des permissions par type d'utilisateur
 export const PERMISSIONS = {
   ETUDIANT: [
-    'submit_project',    // Peut soumettre des projets
+    'submit_project',    // Peut soumettre des projets (selon filière)
     'vote',             // Peut voter
     'comment',          // Peut commenter
     'view_projects'     // Peut voir les projets
   ],
-  UTILISATEUR: [
+  INVITE: [
     'vote',             // Peut voter
     'comment',          // Peut commenter  
     'view_projects'     // Peut voir les projets
+    // PAS submit_project
   ],
   JURY: [
     'vote',             // Peut voter
@@ -35,19 +36,34 @@ export const PERMISSIONS = {
 }
 
 // Vérifier si un utilisateur a une permission spécifique
-export const hasPermission = (userRole, permission) => {
-  if (!userRole || !permission) return false
-  return PERMISSIONS[userRole]?.includes(permission) || false
+export const hasPermission = (user, permission) => {
+  if (!user || !permission) return false
+  const userType = user.typeUtilisateur || user.role
+  return PERMISSIONS[userType]?.includes(permission) || false
 }
 
 // Vérifier si un utilisateur peut soumettre des projets
-// Seuls les étudiants de l'EAIN (ISTC Polytechnique) peuvent soumettre
+// RÈGLES BUSINESS :
+// - Seuls les ÉTUDIANTS peuvent soumettre (pas les invités)
+// - Seuls les étudiants EAIN peuvent PARTICIPER AU CONCOURS
+// - Les autres filières peuvent soumettre mais sans participation concours
 export const canSubmitProject = (user) => {
   if (!user) return false
   
+  // Seuls les étudiants peuvent soumettre
+  if (user.typeUtilisateur === 'INVITE') return false
+  if (user.typeUtilisateur !== 'ETUDIANT' && user.role !== 'ETUDIANT') return false
+  
+  return true  // Tous les étudiants peuvent soumettre
+}
+
+// Vérifier si un utilisateur peut PARTICIPER AU CONCOURS (gagner des prix)
+export const canParticipateContest = (user) => {
+  if (!user) return false
+  
+  // Seuls les étudiants EAIN peuvent participer au concours
   return (
-    user.role === 'ETUDIANT' &&
-    user.ecole === 'ISTC_POLYTECHNIQUE' &&
+    user.typeUtilisateur === 'ETUDIANT' && 
     user.filiere === 'EAIN'
   )
 }

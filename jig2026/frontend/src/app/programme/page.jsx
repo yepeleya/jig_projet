@@ -493,12 +493,9 @@ export default function ProgrammePage() {
               <FaClock className="text-4xl text-jig-primary mx-auto mb-4" />
               <h3 className="text-xl font-bold text-gray-800 mb-3">Horaires</h3>
               <p className="text-gray-600 mb-3">
-                Accueil : 8h00<br />
-                Début : 8h30<br />
-                Fin : 18h00
-              </p>
-              <p className="text-sm text-gray-500">
-                Pause déjeuner : 12h - 14h
+                Accueil : 08h00 - 09h30<br />
+                Début : 09h30<br />
+                Fin : 12h00
               </p>
             </div>
             

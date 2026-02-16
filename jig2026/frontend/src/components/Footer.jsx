@@ -65,11 +65,8 @@ export default function Footer() {
               Contact Email
             </h4>
             <div className="space-y-2 text-red-100">
-              <a href="mailto:jig@istc.edu" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
-                jig@istc.edu
-              </a>
-              <a href="mailto:info@jig2026.com" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
-                info@jig2026.com
+              <a href="mailto:jigeain@gmail.com" className="hover:text-white transition-colors flex items-center justify-center lg:justify-start">
+                jigeain@gmail.com
               </a>
             </div>
           </div>
@@ -123,7 +120,7 @@ export default function Footer() {
             <div className="flex items-center space-x-1 mt-4 md:mt-0">
               <span>Fait avec</span>
               <Heart className="w-4 h-4 text-red-300 fill-current" />
-              <span>par l&apos;équipe JIG</span>
+              <span>par l&apos;équipe EAIN</span>
             </div>
 
           </div>

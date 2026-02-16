@@ -7,16 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modèle utilisateur MINIMAL - Uniquement champs existants en DB
+// Modèle utilisateur avec nouveaux champs pour l'amélioration de l'inscription
 model User {
-  id         Int      @id @default(autoincrement())
-  nom        String
-  prenom     String
-  email      String   @unique
-  motDePasse String
-  role       Role     @default(ETUDIANT)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id              Int            @id @default(autoincrement())
+  nom             String
+  prenom          String
+  email           String         @unique
+  motDePasse      String
+  role            Role           @default(ETUDIANT)
+  typeUtilisateur TypeUtilisateur @default(ETUDIANT)
+  filiere         Filiere?       // Optionnel pour les invités
+  ecole           String?        // Pour "Autre" école
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   
   // Relations de base uniquement  
   projets          Projet[]
@@ -305,4 +308,18 @@ enum TypeParticipation {
   PARTENAIRE
   MEDIA
   VIP
+}
+
+enum TypeUtilisateur {
+  ETUDIANT
+  INVITE
+}
+
+enum Filiere {
+  EAIN    // École des Arts et Images Numériques
+  EJ      // École de Journalisme
+  EPA     // École de Production Audio-Visuel
+  EPM     // École de Publicité Marketing  
+  ETTA    // École de Télécommunication
+  AUTRE   // Autre école
 }
