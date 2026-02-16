@@ -8,6 +8,7 @@ datasource db {
 }
 
 // Modèle utilisateur avec nouveaux champs pour l'amélioration de l'inscription
+// 🔄 Migration forcée: 2026-02-16 22:54:33 - Redéploiement Render requis
 model User {
   id              Int            @id @default(autoincrement())
   nom             String
