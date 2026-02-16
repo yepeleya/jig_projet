@@ -2,13 +2,16 @@ import { AuthService } from '../services/auth.service.js'
 import { NotificationService } from '../services/notification.service.js'
 import { z } from 'zod'
 
-// Schémas de validation - Champs de base uniquement
+// Schémas de validation - Avec nouveaux champs pour inscription améliorée
 const registerSchema = z.object({
   nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
   prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
   email: z.string().email('Email invalide'),
   password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-  role: z.enum(['ADMIN', 'ETUDIANT', 'JURY']).default('ETUDIANT')
+  role: z.enum(['ADMIN', 'ETUDIANT', 'JURY']).default('ETUDIANT'),
+  typeUtilisateur: z.enum(['ETUDIANT', 'INVITE']).default('ETUDIANT'),
+  filiere: z.enum(['EAIN', 'EJ', 'EPA', 'EPM', 'ETTA', 'AUTRE']).optional().nullable(),
+  ecole: z.string().optional().nullable()
 })
 
 const loginSchema = z.object({

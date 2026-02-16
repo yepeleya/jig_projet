@@ -6,9 +6,18 @@ import jwt from 'jsonwebtoken'
 const prisma = new PrismaClient()
 
 export class AuthService {
-  // Inscription utilisateur
+  // Inscription utilisateur avec nouveaux champs
   static async register(userData) {
-    const { nom, prenom, email, password, role = 'ETUDIANT' } = userData
+    const { 
+      nom, 
+      prenom, 
+      email, 
+      password, 
+      role = 'ETUDIANT',
+      typeUtilisateur = 'ETUDIANT',
+      filiere = null,
+      ecole = null
+    } = userData
     
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
@@ -22,21 +31,27 @@ export class AuthService {
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Créer l'utilisateur avec champs de base uniquement
+    // Créer l'utilisateur avec nouveaux champs
     const user = await prisma.user.create({
       data: {
         nom,
         prenom,
         email,
         motDePasse: hashedPassword,
-        role
+        role,
+        typeUtilisateur,
+        filiere,
+        ecole
       },
       select: {
         id: true,
         nom: true,
         prenom: true,
         email: true,
-        role: true
+        role: true,
+        typeUtilisateur: true,
+        filiere: true,
+        ecole: true
       }
     })
 

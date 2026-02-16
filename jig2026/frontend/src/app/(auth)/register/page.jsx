@@ -149,18 +149,21 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     try {
-      const { confirmerPassword, typeUtilisateur, filiere, ecole, ...dataToSend } = formData
+      const { confirmerPassword, ...dataToSend } = formData
       
-      // Format compatible avec le backend
+      // Format complet avec nouveaux champs pour backend
       const finalData = {
         nom: dataToSend.nom,
         prenom: dataToSend.prenom,
         email: dataToSend.email,
         password: dataToSend.password, // Backend attend 'password', pas 'motDePasse'
-        role: 'ETUDIANT'
+        role: 'ETUDIANT',
+        typeUtilisateur: dataToSend.typeUtilisateur,
+        filiere: dataToSend.filiere || null,
+        ecole: dataToSend.ecole || null
       }
       
-      console.log('📤 Envoi des données d\'inscription:', finalData)
+      console.log('📤 Envoi des données d\'inscription complètes:', finalData)
       
       const response = await authService.register(finalData)
       console.log('📥 Réponse reçue:', response)
