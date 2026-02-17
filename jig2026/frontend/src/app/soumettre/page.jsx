@@ -333,15 +333,7 @@ export default function SoumettrePage() {
               <div className="flex items-start">
                 <FiCheckCircle className="w-6 h-6 text-green-600 mr-3 mt-0.5" />
                 <div>
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    ✨ Étudiant EAIN - Soumission autorisée
-                  </h3>
-                  <p className="text-green-700 mb-2">
-                    Vous êtes étudiant à l'<strong>EAIN (École des Arts et Images Numériques)</strong> de l'<strong>ISTC Polytechnique</strong>.
-                  </p>
-                  <p className="text-green-700 text-sm">
-                    Vous pouvez soumettre votre projet au concours JIG 2026 !
-                  </p>
+                
                 </div>
               </div>
             </div>

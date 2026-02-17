@@ -275,16 +275,18 @@ export class ProgrammeService extends ApiService {
 // ==============================
 export class AccessControlService extends ApiService {
   canAccessPage(pageName) {
-    return this.get(`/access-control/page/${pageName}`)
-  }
+  return this.get(`/access-control/can-access/${pageName}`)
+}
+
 
   getContestStatus() {
     return this.get('/access-control/status')
   }
 
-  validateRanking() {
-    return this.post('/access-control/validate')
-  }
+ validateRanking() {
+  return this.post('/access-control/validate-ranking')
+}
+
 }
 
 // ==============================
