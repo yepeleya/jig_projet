@@ -115,34 +115,6 @@ router.post("/", (req, res) => {
   });
 });
 
-// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - VERSION TEST
-router.post("/soumettre", (req, res) => {
-  try {
-    console.log('🚀 Route POST /api/projets/soumettre appelée !');
-    console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
-    console.log('Body:', req.body);
-
-    // ✅ Réponse test immédiate
-    res.json({
-      success: true,
-      message: 'Route /soumettre accessible !',
-      timestamp: new Date().toISOString(),
-      received: {
-        hasAuth: !!req.headers.authorization,
-        bodyKeys: Object.keys(req.body || {}),
-        method: req.method
-      }
-    });
-
-  } catch (error) {
-    console.error('❌ Erreur route soumettre:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Erreur route soumettre'
-    });
-  }
-});
-
 
 // 🚀 ROUTE SOUMETTRE AVEC AUTH + UPLOAD
 router.post(
