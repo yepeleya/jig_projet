@@ -115,96 +115,44 @@ router.post("/", (req, res) => {
   });
 });
 
-// 🚀 ROUTE SOUMETTRE HYBRIDE - auth simple + upload manuel (temporaire)
-router.post("/soumettre", authenticateToken, async (req, res) => {
+// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - VERSION TEST
+router.post("/soumettre", (req, res) => {
   try {
-    console.log('🚀 Route hybride appelée - auth OK, upload manuel');
+    console.log('🚀 Route POST /api/projets/soumettre appelée !');
     console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
-    console.log('User:', req.user ? req.user.id : 'Pas d\'utilisateur');
     console.log('Body:', req.body);
-    
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        error: "Authentification requise",
-        code: 'AUTH_REQUIRED'
-      });
-    }
-    
-    // Appel direct du contrôleur sans multer pour l'instant
-    await soumettreProjet(req, res);
-    
+
+    // ✅ Réponse test immédiate
+    res.json({
+      success: true,
+      message: 'Route /soumettre accessible !',
+      timestamp: new Date().toISOString(),
+      received: {
+        hasAuth: !!req.headers.authorization,
+        bodyKeys: Object.keys(req.body || {}),
+        method: req.method
+      }
+    });
+
   } catch (error) {
-    console.error('❌ Erreur route hybride:', error);
+    console.error('❌ Erreur route soumettre:', error);
     res.status(500).json({
       success: false,
-      error: 'Erreur interne du serveur'
+      error: 'Erreur route soumettre'
     });
   }
 });
 
-// 🚀 ROUTE SOUMETTRE COMPLÈTE - Avec middlewares d'upload (désactivée temporairement)
-// router.post("/soumettre", 
-//   authenticateToken, 
-//   upload.single("fichier"), 
-//   handleMulterError,
-//   soumettreProjet
-// );
 
-// 🧪 ROUTE TEST SIMPLE - Pour vérifier que POST fonctionne (backup)
-router.post("/test", (req, res) => {
-  console.log('🧪 Route POST /api/projets/test appelée');
-  res.json({
-    success: true,
-    message: 'Route POST /api/projets/test fonctionne !',
-    timestamp: new Date().toISOString(),
-    body: req.body
-  });
-});
-
-// 🚀 ROUTE SOUMETTRE SIMPLIFIÉE - DÉSACTIVÉE (remplacée par la complète)
-// router.post("/soumettre", (req, res) => {
-//   try {
-//     console.log('🚀 Route POST /api/projets/soumettre appelée !');
-//     console.log('Headers:', req.headers.authorization ? 'Auth présent' : 'Pas d\'auth');
-//     console.log('Body:', req.body);
-//     
-//     // Réponse test immédiate
-//     res.json({
-//       success: true,
-//       message: 'Route /soumettre accessible !',
-//       timestamp: new Date().toISOString(),
-//       received: {
-//         hasAuth: !!req.headers.authorization,
-//         bodyKeys: Object.keys(req.body || {}),
-//         method: req.method
-//       }
-//     });
-//     
-//   } catch (error) {
-//     console.error('❌ Erreur route soumettre:', error);
-//     res.status(500).json({
-//       success: false,
-//       error: 'Erreur route soumettre'
-//     });
-//   }
-// });
-
-// Routes principales AVEC middlewares (pour plus tard)
-// router.post("/soumettre", 
-//   authenticateToken, 
-//   upload.single("fichier"), 
-//   handleMulterError,
-//   soumettreProjet
-// );
-
-// 🔄 ROUTE FALLBACK: POST /api/projets → redirige vers /soumettre
-router.post("/", 
-  authenticateToken, 
-  upload.single("fichier"), 
+// 🚀 ROUTE SOUMETTRE AVEC AUTH + UPLOAD
+router.post(
+  "/soumettre",
+  authenticateToken,
+  upload.single("fichier"),
   handleMulterError,
   soumettreProjet
 );
+
 
 router.get("/", authenticateToken, async (req, res) => {
   // Route de secours si le controller principal échoue
