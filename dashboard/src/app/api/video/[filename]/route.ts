@@ -6,7 +6,8 @@ export async function GET(
 ) {
   try {
     const { filename } = await params
-    const backendUrl = `http://localhost:5000/api/projets/video/${filename}`
+    const backendUrl = `https://jig-projet-1.onrender.com/api/projets/video/${filename}`
+
     
     // Récupérer les headers de range pour le streaming
     const range = request.headers.get('range')
