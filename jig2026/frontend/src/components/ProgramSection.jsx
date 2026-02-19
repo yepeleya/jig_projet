@@ -61,13 +61,13 @@ export default function ProgramSection() {
     },
     {
       time: "09h45 - 10h05",
-      title: "Remise de diplôme à la présidente sortante",
+      title: "Remise de diplôme à la Présidente sortante",
       description: "Cérémonie officielle de remise de diplôme et reconnaissance des services rendus."
     },
     {
       time: "10h05 - 10h35",
       title: "Panel 1 : Se démarquer dans le monde créatif",
-      description: "Se démarquer dans le monde créatif : survivre et réussir dans l'infographie aujourd'hui. Intervenants : Chafick Adibade (Enseignant), Bourama Junior (Directeur artistique), Hamdan Nasser (Directeur artistique), Adja Soro (Fondatrice de l'agence Kä)"
+      description: "Se démarquer dans le monde créatif : survivre et réussir dans l'infographie aujourd'hui. Intervenants : Chafick Adjibade (Enseignant), Bourama Junior (Directeur artistique), Hamdan Nasser (Directeur artistique), Adja Soro (Fondatrice de l'agence Kä)"
     },
     {
       time: "10h35 - 10h40",

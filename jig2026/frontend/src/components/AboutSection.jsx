@@ -102,7 +102,7 @@ export default function AboutSection() {
             <p className="text-lg text-gray-700 leading-relaxed">
               La <strong className="text-jig-primary">Journée de l'Infographiste (JIG)</strong> est un événement annuel 
               qui célèbre la créativité et l'innovation dans le domaine de l’école 'infographie et du design numérique. 
-              Organisée par l’école des arts et images numériques de l’istc Polytechnique<strong className="text-jig-primary"> (EAIN) </strong>, cette journée unique rassemble étudiants, professionnels et passionnés 
+              Organisée par l’École des Arts et Images Numériques de l’ISTC Polytechnique<strong className="text-jig-primary"> (EAIN) </strong>, cette journée unique rassemble étudiants, professionnels et passionnés 
               autour de leur amour commun pour l'art visuel et la technologie.
             </p>
 

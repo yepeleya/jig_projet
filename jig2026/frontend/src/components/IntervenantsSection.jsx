@@ -7,7 +7,7 @@ import useAOS from '../hooks/useAOS'
 const intervenants = [
   {
     id: 1,
-    nom: "Chafick Adibade",
+    nom: "Chafick Adjibade",
     titre: "Enseignant",
     panel: "Panel 1",
     description: "Expert en pédagogie et formation en arts numériques",
